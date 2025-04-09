@@ -14,6 +14,27 @@ def authenticate():
         return False
     return auth.username, auth.password
 
+@app.route("/register")
+def register():
+    return '''
+    <h1>Enter your username and password</h1>
+    <form action="/submit_registration" method="post">
+    <input type="text" name="username" id="username">
+    <input type="password" name="password" id="password">
+    <input type="submit" value="Submit">
+    </form>
+    '''
+
+@app.route("/submit_registration", methods=['POST'])
+def submit_registration():
+    username = request.form['username']
+    password = request.form['password']
+    if password and username:
+        users[username] = password
+        return Response("User registered",200)
+    else:
+        return Response("Registration failed", 401)
+
 def requires_auth(f):
     """Decorator to enforce HTTP basic auth."""
     from functools import wraps
