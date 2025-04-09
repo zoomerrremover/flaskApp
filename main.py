@@ -14,7 +14,7 @@ def authenticate():
         return False
     return auth.username, auth.password
 
-@app.route("/register")
+@app.route("/register",methods=['get'])
 def register():
     return '''
     <h1>Enter your username and password</h1>
@@ -53,21 +53,21 @@ def authenticate_response():
         {'WWW-Authenticate': 'Basic realm="Login Required"'}
     )
 
-@app.route("/create")
+@app.route("/create",methods=['POST'])
 @requires_auth
 def create():
     return "<p>Create!</p>"
 
-@app.route("/update")
+@app.route("/update",methods=['PUT'])
 @requires_auth
 def update():
     return "<p>Update!</p>"
 
-@app.route("/read")
+@app.route("/read",methods=['GET'])
 def read():
     return "<p>READ!</p>"
 
-@app.route("/delete")
+@app.route("/delete",methods=['DELETE'])
 @requires_auth
 def delete():
     return "<p>Delete!</p>"
