@@ -10,18 +10,18 @@ def create_post():
 
 
 @post_route.route("/",methods=['GET'])
-def create_post():
+def get_post():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
 
 @post_route.route("/name",methods=['GET'])
-def create_post():
+def get_post_by_name():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
 
 @post_route.route("/",methods=['PUT'])
-def create_post():
+def update_post():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
 
 
 @post_route.route("/",methods=['DELETE'])
-def create_post():
+def delete_post():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)

@@ -9,17 +9,17 @@ def create_user():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
 
 @user_route.route("/",methods=['GET'])
-def create_user():
+def get_user():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
 
 @user_route.route("/name",methods=['GET'])
-def create_user():
+def get_by_name_user():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
 
 @user_route.route("/",methods=['PUT'])
-def create_user():
+def update_user():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
 
 @user_route.route("/",methods=['DELETE'])
-def create_user():
+def delete_user():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
