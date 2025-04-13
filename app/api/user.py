@@ -1,18 +1,25 @@
-@app.route("/create",methods=['POST'])
-@requires_auth
-def create():
-    return "<p>Create!</p>"
+from flask import Blueprint, render_template, abort, Response, request
+from http import HTTPStatus
 
-@app.route("/update",methods=['PUT'])
-@requires_auth
-def update():
-    return "<p>Update!</p>"
+user_route = Blueprint('user_route', __name__,
+                        template_folder='templates')
 
-@app.route("/read",methods=['GET'])
-def read():
-    return "<p>READ!</p>"
+@user_route.route("/",methods=['POST'])
+def create_user():
+    return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
 
-@app.route("/delete",methods=['DELETE'])
-@requires_auth
-def delete():
-    return "<p>Delete!</p>"
+@user_route.route("/",methods=['GET'])
+def create_user():
+    return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
+
+@user_route.route("/name",methods=['GET'])
+def create_user():
+    return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
+
+@user_route.route("/",methods=['PUT'])
+def create_user():
+    return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
+
+@user_route.route("/",methods=['DELETE'])
+def create_user():
+    return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
