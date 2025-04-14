@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey
 
-from db.engine import session
+from app.db.engine import session
 
 Base = declarative_base()
 
@@ -101,7 +101,7 @@ class Post(LocalDbModel):
     id:int = Column(Integer,primary_key = True)
     title:str = Column(String,nullable = False)
     text_content:str = Column(String,nullable = False)
-    date_posted = Column(TIMESTAMP,nullable = False)
+    date_posted:datetime = Column(TIMESTAMP,nullable = False)
     author = relationship('User',back_populates="author")
 
     @classmethod
