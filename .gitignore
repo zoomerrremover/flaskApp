@@ -15,6 +15,9 @@ pip-selfcheck.json
 ### dotenv template
 *.env
 
+### drawio UML diagrams
+*.drawio
+
 ### VirtualEnv template
 # Virtualenv
 # http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
