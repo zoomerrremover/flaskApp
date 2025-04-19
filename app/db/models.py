@@ -78,8 +78,10 @@ class User(LocalDbModel):
     id:int = Column(Integer, primary_key=True)
     username:str = Column(String,nullable=False)
     role:str = Column(String,nullable=False)
+    email:str = Column(String,nullable=False)
     password:str = Column(String,nullable=False)
-    posts = relationship("Post",back_populates = 'author')
+    articles = relationship("Article",back_populates = 'author')
+    suggestions = relationship("Suggestion", back_populates='author')
 
     @classmethod
     def get_user_by_id(cls, user_id:int):
@@ -97,34 +99,86 @@ class User(LocalDbModel):
     def update_user_by_id(cls, user_id:int, **kwargs) -> int:
         return cls.update(cls.id == user_id, **kwargs)
 
-class Post(LocalDbModel):
-    __tablename__ = "posts"
+class Course(LocalDbModel):
+    __tablename__ = "course"
+    id:int = Column(Integer,primary_key = True)
+    title:str = Column(String,nullable = False)
+    category: str = Column(String, nullable=False)
+    intro_text:str = Column(String,nullable = False)
+    date_posted:datetime = Column(TIMESTAMP,nullable = False)
+    articles = relationship("Article", back_populates='course')
+
+    @classmethod
+    def get_course_by_id(cls,course_id:int):
+        return cls.get_filtered_first(cls,course_id)
+
+    @classmethod
+    def delete_course_by_id(cls,course_id:int):
+        return cls.delete_course_by_id(course_id)
+
+    @classmethod
+    def update_course_by_id(cls,course_id:int,**kwargs):
+        cls.update_course_by_id(course_id,**kwargs)
+
+    @classmethod
+    def get_courses(cls):
+        cls.get_list_all()
+
+class Article(LocalDbModel):
+    __tablename__ = "articles"
     id:int = Column(Integer,primary_key = True)
     title:str = Column(String,nullable = False)
     text_content:str = Column(String,nullable = False)
     date_posted:datetime = Column(TIMESTAMP,nullable = False)
+    course_id: int = Column(Integer, ForeignKey('courses.id'))
     user_id: int = Column(Integer, ForeignKey('users.id'))
-    author = relationship('User',back_populates="posts")
+    author = relationship('User',back_populates="articles")
+    course = relationship("Course", back_populates='articles')
+    suggestions = relationship("Suggestion", back_populates='article')
 
     @classmethod
-    def get_post_by_id(cls,post_id:int):
-        return cls.get_filtered_first(cls,post_id)
+    def get_article_by_id(cls,article_id:int):
+        return cls.get_filtered_first(cls,article_id)
 
     @classmethod
-    def search_posts_by_content(cls,func):
-        return cls.get_filtered_all(func(cls.text_content))
+    def delete_article_by_id(cls,article_id:int):
+        return cls.delete_article_by_id(article_id)
 
     @classmethod
-    def delete_post_by_id(cls,post_id:int):
-        return cls.delete_post_by_id(post_id)
+    def update_article_by_id(cls,article_id:int,**kwargs):
+        cls.update_article_by_id(article_id,**kwargs)
 
     @classmethod
-    def update_post_by_id(cls,post_id:int,**kwargs):
-        cls.update_post_by_id(post_id,**kwargs)
-
-    @classmethod
-    def get_posts(cls):
+    def get_articles(cls):
         cls.get_list_all()
+
+class Suggestion(LocalDbModel):
+    __tablename__ = "suggestions"
+    id:int = Column(Integer,primary_key = True)
+    title:str = Column(String,nullable = False)
+    text_content:str = Column(String,nullable = False)
+    date_posted:datetime = Column(TIMESTAMP,nullable = False)
+    article_id: int = Column(Integer, ForeignKey('articles.id'))
+    user_id: int = Column(Integer, ForeignKey('users.id'))
+    author = relationship('User',back_populates="suggestions")
+    article = relationship("Article", back_populates='articles')
+
+    @classmethod
+    def get_suggestion_by_id(cls,suggestion_id:int):
+        return cls.get_filtered_first(cls,suggestion_id)
+
+    @classmethod
+    def delete_suggestion_by_id(cls,suggestion_id:int):
+        return cls.delete_suggestion_by_id(suggestion_id)
+
+    @classmethod
+    def update_suggestion_by_id(cls,suggestion_id:int,**kwargs):
+        cls.update_suggestion_by_id(suggestion_id,**kwargs)
+
+    @classmethod
+    def get_suggestions(cls):
+        cls.get_list_all()
+
 
 
 
