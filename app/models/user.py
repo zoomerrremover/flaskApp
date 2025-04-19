@@ -6,10 +6,10 @@ class UserRead(BaseModel):
     username: str = Field(max_length=24)
 
 class UserUpdateName(BaseModel):
-    new_username: str = Field(max_length=24)
+    username: str = Field(max_length=24)
 
 class UserUpdatePassword(BaseModel):
-    new_password: str = Field(max_length=32)
+    password: str = Field(max_length=32)
 
 class UserCreate(BaseModel):
     username: str = Field(max_length=24)
