@@ -98,11 +98,13 @@ class User(LocalDbModel):
         return cls.update(cls.id == user_id, **kwargs)
 
 class Post(LocalDbModel):
+    __tablename__ = "posts"
     id:int = Column(Integer,primary_key = True)
     title:str = Column(String,nullable = False)
     text_content:str = Column(String,nullable = False)
     date_posted:datetime = Column(TIMESTAMP,nullable = False)
-    author = relationship('User',back_populates="author")
+    user_id: int = Column(Integer, ForeignKey('users.id'))
+    author = relationship('User',back_populates="posts")
 
     @classmethod
     def get_post_by_id(cls,post_id:int):

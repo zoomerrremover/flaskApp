@@ -1,6 +1,6 @@
 from http import HTTPStatus
-from flask import requst, Response
-from authentication import authenticate
+from flask import request, Response, jsonify
+from app.authentication import authenticate
 from functools import wraps
 from pydantic.main import BaseModel, ValidationError
 
