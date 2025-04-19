@@ -158,6 +158,8 @@ class Suggestion(LocalDbModel):
     title:str = Column(String,nullable = False)
     text_content:str = Column(String,nullable = False)
     date_posted:datetime = Column(TIMESTAMP,nullable = False)
+    up_vote = Column(Integer,nullable = False)
+    down_vote = Column(Integer,nullable = False)
     article_id: int = Column(Integer, ForeignKey('articles.id'))
     user_id: int = Column(Integer, ForeignKey('users.id'))
     author = relationship('User',back_populates="suggestions")

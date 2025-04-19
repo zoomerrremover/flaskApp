@@ -84,12 +84,16 @@ def create_suggestion(
         text_content:str,
         article_id:int,
         user_id:int,
+        up_vote:int = 0,
+        down_vote:int = 0,
         date_posted:datetime = datetime.now()) -> Suggestion:
     return Suggestion(
         title=title,
         text_content=text_content,
         article_id = article_id,
         user_id = user_id,
+        up_vote = up_vote,
+        down_vote = down_vote,
         date_posted=date_posted
     )
 
