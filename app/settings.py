@@ -1,5 +1,6 @@
 from os import getenv
 from dotenv import load_dotenv
+import re
 
 load_dotenv()
 
@@ -9,6 +10,13 @@ DB_HOST = getenv('DB_HOST',default='localhost')
 DB_PORT = getenv('DB_PORT',default=5432)
 DB_NAME = getenv('DB_NAME',default='default_db')
 
+RE_PASSWORD = re.compile("^(?=.*[a-zA-Z])(?!.*\s).+$")
+RE_USERNAME = re.compile("^[a-zA-Z0-9_]{3,20}$")
+USER_ROLES = ["user","editor","admin"]
 DB_STRING = (
     f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 )
+
+ERR_USERNAME = "Username shall not contain any spaces, and shall be between 3 and 20 characters !"
+ERR_PASSWORD = "Password shall contain at least 1 letter."
+ERR_ROLES = "Role shall match existing role."
