@@ -12,6 +12,7 @@ DB_NAME = getenv('DB_NAME',default='default_db')
 
 RE_PASSWORD = re.compile("^(?=.*[a-zA-Z])(?!.*\s).+$")
 RE_USERNAME = re.compile("^[a-zA-Z0-9_]{3,20}$")
+RE_TEXT_CONTENT = re.compile(r"^[a-zA-Z0-9\s.,!?'-]+$")
 USER_ROLES = ["user","editor","admin"]
 DB_STRING = (
     f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
@@ -20,3 +21,4 @@ DB_STRING = (
 ERR_USERNAME = "Username shall not contain any spaces, and shall be between 3 and 20 characters !"
 ERR_PASSWORD = "Password shall contain at least 1 letter."
 ERR_ROLES = "Role shall match existing role."
+ERR_TEXT_CONTENT = "Text content shall not be less than 3 characters."

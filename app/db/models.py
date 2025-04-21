@@ -104,7 +104,7 @@ class Course(LocalDbModel):
     id:int = Column(Integer,primary_key = True)
     title:str = Column(String,nullable = False)
     category: str = Column(String, nullable=False)
-    intro_text:str = Column(String,nullable = False)
+    text_content:str = Column(String,nullable = False)
     date_posted:datetime = Column(TIMESTAMP,nullable = False)
     articles = relationship("Article", back_populates='course')
 
