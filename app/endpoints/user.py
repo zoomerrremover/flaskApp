@@ -4,8 +4,7 @@ from app.decorators import validate_request, serialize_response, validate_reques
 from app.models.user import *
 from app.db.service import create_user,get_users, update_user_by_id, delete_user_by_id, get_user_by_id
 
-user_route = Blueprint('user_route', __name__,
-                        template_folder='templates')
+user_route = Blueprint('user_route', __name__, url_prefix='/user')
 
 @user_route.route("/",methods=['POST'])
 @validate_request(UserCreate)
