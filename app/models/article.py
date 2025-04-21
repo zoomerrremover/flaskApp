@@ -2,7 +2,7 @@ from pydantic import validator
 from pydantic.fields import Field
 from pydantic.main import BaseModel
 from datetime import datetime
-from app.models.common import ValidationModel
+from app.models.common import ValidationTextModel
 
 class ShowArticle(BaseModel):
     title:str = Field(maxlength = "32")
@@ -10,7 +10,7 @@ class ShowArticle(BaseModel):
     date_posted: datetime = Field()
     #Do we send reference data ?
 
-class CreateArticle(ValidationModel):
+class CreateArticle(ValidationTextModel):
     title:str = Field(maxlength = "32")
     text_content: str = Field(maxlength="8000")
     # Do we send reference data ?
@@ -22,7 +22,7 @@ class CreateArticle(ValidationModel):
     def validate_text_content(cls, value):
         return cls.validate_text_content(value)
 
-class UpdateArticle(ValidationModel):
+class UpdateArticle(ValidationTextModel):
     title:str = Field(maxlength = "32")
     text_content: str = Field(maxlength="8000")
     # Do we send reference data ?

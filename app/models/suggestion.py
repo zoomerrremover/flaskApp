@@ -2,7 +2,7 @@ from pydantic import validator
 from pydantic.fields import Field
 from pydantic.main import BaseModel
 from datetime import datetime
-from app.models.common import ValidationModel
+from app.models.common import ValidationTextModel
 
 class ShowSuggestion(BaseModel):
     title:str = Field(maxlength = "32")
@@ -12,7 +12,7 @@ class ShowSuggestion(BaseModel):
     down_vote: int = Field()
     #Do we send reference data ?
 
-class CreateSuggestion(ValidationModel):
+class CreateSuggestion(ValidationTextModel):
     title:str = Field(maxlength = "32")
     text_content: str = Field(maxlength="8000")
     # Do we send reference data ?
@@ -24,7 +24,7 @@ class CreateSuggestion(ValidationModel):
     def validate_text_content(cls, value):
         return cls.validate_text_content(value)
 
-class UpdateSuggestion(ValidationModel):
+class UpdateSuggestion(ValidationTextModel):
     title:str = Field(maxlength = "32")
     text_content: str = Field(maxlength="8000")
     # Do we send reference data ?
