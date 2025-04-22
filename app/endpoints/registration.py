@@ -8,7 +8,7 @@ from app.security.security import generate_json_jwt
 
 registration_route = Blueprint('registration_route', __name__, url_prefix='/registration')
 
-
+#TODO: Add email verification to make sure email is original and real
 @registration_route.route("/",methods=['POST'])
 @validate_request(UserRegister)
 def route_register_user(data: UserRegister):

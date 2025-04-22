@@ -5,7 +5,7 @@ from app.models.user import UserUpdatePassword,UserUpdateName, UserUpdateRole, U
 from app.db.service import create_user,get_users, update_user_by_id, delete_user_by_id, get_user_by_id
 
 user_route = Blueprint('user_route', __name__, url_prefix='/users')
-
+#TODO: Plan and implement endpoints, test them
 @user_route.route("/",methods=['GET'])
 @require_auth()
 def route_get_users():

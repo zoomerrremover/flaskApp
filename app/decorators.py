@@ -3,7 +3,7 @@ from flask import request, Response, jsonify
 from functools import wraps
 from pydantic.main import BaseModel, ValidationError
 from app.security.security import verify_jwt
-
+#TODO: Add string argument intake which stands for role required, and check for role
 def require_auth():
     def decorator(f):
         @wraps(f)
