@@ -1,6 +1,6 @@
 from pydantic.main import BaseModel, ValidationError
 from pydantic import validator
-from app.settings import RE_USERNAME, RE_PASSWORD, ERR_USERNAME, ERR_PASSWORD, ERR_ROLES, USER_ROLES, RE_TEXT_CONTENT, ERR_TEXT_CONTENT
+from app.settings import RE_USERNAME, RE_PASSWORD, ERR_USERNAME_VALIDITY, ERR_PASSWORD, ERR_ROLES, USER_ROLES, RE_TEXT_CONTENT, ERR_TEXT_CONTENT
 from flask import Response
 
 
@@ -27,7 +27,7 @@ class ValidationUserNameModel(BaseModel):
     @staticmethod
     def validate_username(value):
         if not RE_USERNAME.match(value):
-            raise ValidationError(ERR_USERNAME)
+            raise ValidationError(ERR_USERNAME_VALIDITY)
         return value
 
 

@@ -1,17 +1,15 @@
 from pydantic import validator, EmailStr
 from pydantic.fields import Field
 from pydantic.main import BaseModel
-from common import ValidationTextModel, ValidationUserNameModel,ValidationPasswordModel, ValidationRoleModel
+from app.models.common import ValidationTextModel, ValidationUserNameModel,ValidationPasswordModel, ValidationRoleModel
 
 
 class UserRead(BaseModel):
     username: str = Field(max_length=24)
-    id: int = Field()
 
 
 class UserSuRead(BaseModel):
     username: str = Field(max_length=24)
-    password: str = Field(max_length=32)
     email: EmailStr
 
 
