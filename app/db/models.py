@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey
-
+from app.db.engine import engine
 from app.db.engine import session
 
 Base = declarative_base()
@@ -88,6 +88,14 @@ class User(LocalDbModel):
         return cls.get_filtered_first(cls.id == user_id)
 
     @classmethod
+    def get_filtered_users(cls, *args: object):
+        return cls.get_filtered_all(*args)
+
+    @classmethod
+    def get_filtered_user(cls, *args: object):
+        return cls.get_filtered_first(*args)
+
+    @classmethod
     def get_users(cls):
         return cls.get_list_all()
 
@@ -100,7 +108,7 @@ class User(LocalDbModel):
         return cls.update(cls.id == user_id, **kwargs)
 
 class Course(LocalDbModel):
-    __tablename__ = "course"
+    __tablename__ = "courses"
     id:int = Column(Integer,primary_key = True)
     title:str = Column(String,nullable = False)
     category: str = Column(String, nullable=False)
@@ -163,7 +171,7 @@ class Suggestion(LocalDbModel):
     article_id: int = Column(Integer, ForeignKey('articles.id'))
     user_id: int = Column(Integer, ForeignKey('users.id'))
     author = relationship('User',back_populates="suggestions")
-    article = relationship("Article", back_populates='articles')
+    article = relationship("Article", back_populates='suggestions')
 
     @classmethod
     def get_suggestion_by_id(cls,suggestion_id:int):
@@ -182,6 +190,8 @@ class Suggestion(LocalDbModel):
         cls.get_list_all()
 
 
+
+Base.metadata.create_all(engine)
 
 
 

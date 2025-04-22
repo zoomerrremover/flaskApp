@@ -1,24 +1,16 @@
-from flask import Blueprint, render_template, abort, Response, request
+from flask import Blueprint, render_template, Response, request, jsonify
 from http import HTTPStatus
-from app.decorators import validate_request, serialize_response, validate_request_params
-from app.models.user import *
+from app.decorators import validate_request, validate_request_params, require_auth
+from app.models.user import UserUpdatePassword,UserUpdateName, UserUpdateRole, UserUpdateEmail
 from app.db.service import create_user,get_users, update_user_by_id, delete_user_by_id, get_user_by_id
 
-user_route = Blueprint('user_route', __name__, url_prefix='/user')
-
-@user_route.route("/",methods=['POST'])
-@validate_request(UserCreate)
-def route_create_user(data: UserCreate):
-    create_user(**data.dict())
-    return Response("User Create", HTTPStatus.OK)
+user_route = Blueprint('user_route', __name__, url_prefix='/users')
 
 @user_route.route("/",methods=['GET'])
-@serialize_response(UserRead)
-def route_get_user():
+@require_auth()
+def route_get_users():
     users =  get_users()
-    return [UserRead(
-        username = data.username
-    ) for data in users]
+    return jsonify([user.model_dump() for user in users])
 
 @user_route.route("/password",methods=['PATCH'])
 @validate_request_params("id")
@@ -28,10 +20,26 @@ def route_update_user_password(data: UserUpdatePassword):
     update_user_by_id(user_id,**data.dict())
     return Response("Password changed",HTTPStatus.OK)
 
-@user_route.route("/",methods=['PATCH'])
+@user_route.route("/username",methods=['PATCH'])
 @validate_request_params("id")
 @validate_request(UserUpdateName)
-def route_update_user(data: UserUpdateName):
+def route_update_user_name(data: UserUpdateName):
+    user_id = request.args.get('id')
+    update_user_by_id(user_id,**data.dict())
+    return Response("Name changed",HTTPStatus.OK)
+
+@user_route.route("/role",methods=['PATCH'])
+@validate_request_params("id")
+@validate_request(UserUpdateRole)
+def route_update_user_role(data: UserUpdateRole):
+    user_id = request.args.get('id')
+    update_user_by_id(user_id,**data.dict())
+    return Response("Name changed",HTTPStatus.OK)
+
+@user_route.route("/email",methods=['PATCH'])
+@validate_request_params("id")
+@validate_request(UserUpdateEmail)
+def route_update_user_email(data: UserUpdateEmail):
     user_id = request.args.get('id')
     update_user_by_id(user_id,**data.dict())
     return Response("Name changed",HTTPStatus.OK)

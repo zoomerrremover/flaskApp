@@ -1,7 +1,13 @@
-from operator import truediv
-
+from app.security.hash import verify_password
 from app.db.models import User, Course, Article, Suggestion
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
+from http import HTTPStatus
+from flask import Response
+from app.settings import ERR_USERNAME_ORIGINAL
+from app.models.user import UserRead, UserSuRead
+from app.strategies import string_compare
+from app.security.hash import passwd_to_hash
 
 def create_user(
     username:str,
@@ -9,18 +15,45 @@ def create_user(
     email: str,
     role:str = 'user'
 ) -> User:
-    return User(
-        username=username,
-        password = password,
-        email = email,
-        role = role
-    ).save().as_dict()
+        return User(
+            username=username,
+            password = passwd_to_hash(password),
+            email = email,
+            role = role
+        ).save().as_dict()
 
 def get_users():
-    return User.get_users()
+    users =  User.get_users()
+    return [UserRead(username = data.username) for data in users]
+
+def get_users_by_name(name:str):
+    users = User.get_filtered_users(string_compare(name))
+    return [UserRead(username = data.username) for data in users]
 
 def get_user_by_id(user_id:int):
-    return User.get_user_by_id(user_id)
+    data = User.get_user_by_id(user_id)
+    return UserRead(username = data.username)
+
+def get_user_login(username:str,password:str):
+    comp = string_compare(username)
+    predicate =  User.__table__.c.username == username
+    user = User.get_filtered_first(predicate)
+    result = None
+    if user and verify_password(password,user.password):
+        result = user
+    return result
+
+def get_user_name_is_original(username:str)->bool:
+    predicate = User.__table__.c.username == username
+    user = User.get_filtered_user(predicate)
+    result = True
+    if user:
+        result = False
+    return result
+
+def get_su_user_by_id(user_id:int):
+    data = User.get_user_by_id(user_id)
+    return UserSuRead(username = data.username, email = data.email)
 
 def delete_user_by_id(user_id:int):
     return User.delete_user_by_id(user_id)
