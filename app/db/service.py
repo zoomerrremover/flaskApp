@@ -43,12 +43,20 @@ def get_user_login(username:str,password:str):
         result = user
     return result
 
-def get_user_name_is_original(username:str)->bool:
+def get_username_is_original(username:str)->bool:
     predicate = User.__table__.c.username == username
     user = User.get_filtered_user(predicate)
     result = True
     if user:
         result = False
+    return result
+
+def get_email_is_valid(email:str)->bool:
+    predicate = User.__table__.c.email == email
+    user = User.get_filtered_user(predicate)
+    result = False
+    if not user and is_valid_email(email):
+        result = True
     return result
 
 def get_su_user_by_id(user_id:int):

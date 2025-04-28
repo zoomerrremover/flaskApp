@@ -3,3 +3,4 @@ pydantic
 sqlalchemy
 fuzzywuzzy
 jwt
+email-validator
