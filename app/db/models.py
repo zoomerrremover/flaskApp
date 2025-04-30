@@ -1,11 +1,7 @@
-from datetime import datetime
-
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import relationship
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey
-from app.db.engine import engine
-from app.db.engine import session
-
-Base = declarative_base()
+from app.db.engine import session, Base
+from app.common import str_compare
 
 class LocalDbModel(Base):
     __abstract__ = True
@@ -73,120 +69,47 @@ class LocalDbModel(Base):
         return request
 
 class User(LocalDbModel):
-
     __tablename__ = 'users'
-    id:int = Column(Integer, primary_key=True)
-    username:str = Column(String,nullable=False)
-    role:str = Column(String,nullable=False)
-    email:str = Column(String,nullable=False)
-    password:str = Column(String,nullable=False)
+    id: int = Column(Integer, primary_key=True)
+    username: str = Column(String,nullable=False)
+    role: str = Column(String,nullable=False)
+    email: str = Column(String,nullable=False)
+    password: str = Column(String,nullable=False)
     articles = relationship("Article",back_populates = 'author')
     suggestions = relationship("Suggestion", back_populates='author')
-
-    @classmethod
-    def get_user_by_id(cls, user_id:int):
-        return cls.get_filtered_first(cls.id == user_id)
-
-    @classmethod
-    def get_filtered_users(cls, *args: object):
-        return cls.get_filtered_all(*args)
-
-    @classmethod
-    def get_filtered_user(cls, *args: object):
-        return cls.get_filtered_first(*args)
 
     @classmethod
     def get_users(cls):
         return cls.get_list_all()
 
     @classmethod
-    def delete_user_by_id(cls,user_id:int):
-        cls.delete(cls.id == user_id)
+    def get_user_by_id(cls, user_id: int) -> object:
+        return cls.get_filtered_first(cls.id == user_id)
 
     @classmethod
-    def update_user_by_id(cls, user_id:int, **kwargs) -> int:
+    def get_user_by_exact_name(cls, username: str) -> object:
+        return cls.get_filtered_first(cls.username == username)
+
+    @classmethod
+    def get_user_by_exact_email(cls, email: str) -> object:
+        return cls.get_filtered_first(cls.email == email)
+
+    @classmethod
+    def get_users_by_username(cls, username: str) -> object:
+        return cls.get_filtered_all(str_compare(cls.username, username, 20))
+
+    @classmethod
+    def get_users_by_email(cls, email: str) -> object:
+        return cls.get_filtered_all(str_compare(cls.email, email, 80))
+
+    @classmethod
+    def get_users_by_role(cls, role: str) -> object:
+        return cls.get_filtered_all(cls.role == role)
+
+    @classmethod
+    def update_user_by_id(cls, user_id: int, **kwargs) -> int:
         return cls.update(cls.id == user_id, **kwargs)
 
-class Course(LocalDbModel):
-    __tablename__ = "courses"
-    id:int = Column(Integer,primary_key = True)
-    title:str = Column(String,nullable = False)
-    category: str = Column(String, nullable=False)
-    text_content:str = Column(String,nullable = False)
-    date_posted:datetime = Column(TIMESTAMP,nullable = False)
-    articles = relationship("Article", back_populates='course')
-
     @classmethod
-    def get_course_by_id(cls,course_id:int):
-        return cls.get_filtered_first(cls,course_id)
-
-    @classmethod
-    def delete_course_by_id(cls,course_id:int):
-        return cls.delete_course_by_id(course_id)
-
-    @classmethod
-    def update_course_by_id(cls,course_id:int,**kwargs):
-        cls.update_course_by_id(course_id,**kwargs)
-
-    @classmethod
-    def get_courses(cls):
-        cls.get_list_all()
-
-class Article(LocalDbModel):
-    __tablename__ = "articles"
-    id:int = Column(Integer,primary_key = True)
-    title:str = Column(String,nullable = False)
-    text_content:str = Column(String,nullable = False)
-    date_posted:datetime = Column(TIMESTAMP,nullable = False)
-    course_id: int = Column(Integer, ForeignKey('courses.id'))
-    user_id: int = Column(Integer, ForeignKey('users.id'))
-    author = relationship('User',back_populates="articles")
-    course = relationship("Course", back_populates='articles')
-    suggestions = relationship("Suggestion", back_populates='article')
-
-    @classmethod
-    def get_article_by_id(cls,article_id:int):
-        return cls.get_filtered_first(cls,article_id)
-
-    @classmethod
-    def delete_article_by_id(cls,article_id:int):
-        return cls.delete_article_by_id(article_id)
-
-    @classmethod
-    def update_article_by_id(cls,article_id:int,**kwargs):
-        cls.update_article_by_id(article_id,**kwargs)
-
-    @classmethod
-    def get_articles(cls):
-        cls.get_list_all()
-
-class Suggestion(LocalDbModel):
-    __tablename__ = "suggestions"
-    id:int = Column(Integer,primary_key = True)
-    title:str = Column(String,nullable = False)
-    text_content:str = Column(String,nullable = False)
-    date_posted:datetime = Column(TIMESTAMP,nullable = False)
-    up_vote = Column(Integer,nullable = False)
-    down_vote = Column(Integer,nullable = False)
-    article_id: int = Column(Integer, ForeignKey('articles.id'))
-    user_id: int = Column(Integer, ForeignKey('users.id'))
-    author = relationship('User',back_populates="suggestions")
-    article = relationship("Article", back_populates='suggestions')
-
-    @classmethod
-    def get_suggestion_by_id(cls,suggestion_id:int):
-        return cls.get_filtered_first(cls,suggestion_id)
-
-    @classmethod
-    def delete_suggestion_by_id(cls,suggestion_id:int):
-        return cls.delete_suggestion_by_id(suggestion_id)
-
-    @classmethod
-    def update_suggestion_by_id(cls,suggestion_id:int,**kwargs):
-        cls.update_suggestion_by_id(suggestion_id,**kwargs)
-
-    @classmethod
-    def get_suggestions(cls):
-        cls.get_list_all()
-
-Base.metadata.create_all(engine)
+    def delete_user_by_id(cls, user_id: int):
+        cls.delete(cls.id == user_id)

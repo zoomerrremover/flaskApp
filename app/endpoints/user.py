@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, Response, request, jsonify
 from http import HTTPStatus
 from app.decorators import validate_request, validate_request_params, require_auth
 from app.models.user import UserUpdatePassword,UserUpdateName, UserUpdateRole, UserUpdateEmail
-from app.db.service import create_user, get_users, update_user_by_id, delete_user_by_id, get_user_by_id, \
+from app.db.service.service import get_users, update_user_by_id, delete_user_by_id, get_user_by_id, \
     get_users_by_name
 
 user_route = Blueprint('user_route', __name__, url_prefix='/users')
