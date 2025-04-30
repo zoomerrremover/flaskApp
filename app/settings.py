@@ -9,7 +9,8 @@ DB_PASS = getenv('DB_PASS',default=12345)
 DB_HOST = getenv('DB_HOST',default='localhost')
 DB_PORT = getenv('DB_PORT',default=5432)
 DB_NAME = getenv('DB_NAME',default='default_db')
-JWT_KEY = getenv('JWT_KEY')
+
+JWT_KEY = getenv('JWT_KEY',default='SECRET')
 ACCESS_TOKEN_TIME = 30
 PASSWORD_KEY = getenv('PASSWORD_KEY')
 ALGORITHM = 'HS256'

@@ -3,7 +3,7 @@ from flask import request, Response, jsonify
 from functools import wraps
 from pydantic.main import BaseModel, ValidationError
 from app.security.security import verify_jwt
-#TODO: Add string argument intake which stands for role required, and check for role
+
 def require_auth():
     def decorator(f):
         @wraps(f)
@@ -22,7 +22,6 @@ def require_auth():
         return wrapper
     return decorator
 
-
 def validate_request(model: type[BaseModel]):
     def decorator(f):
         @wraps(f)
@@ -35,7 +34,6 @@ def validate_request(model: type[BaseModel]):
         return wrapper
     return decorator
 
-
 def validate_request_params(*expected_params):
     def decorator(func):
         @wraps(func)
@@ -47,12 +45,10 @@ def validate_request_params(*expected_params):
                     found_params[param_name] = request.args[param_name]
                 else:
                     missing_params.append(param_name)
-
             if missing_params:
                 missing_params_str = ", ".join(missing_params)
                 error_message = f"Missing required parameters: {missing_params_str}"
                 return Response(error_message, HTTPStatus.BAD_REQUEST)
-
             kwargs.update(found_params)
             return func(*args, **kwargs)
         return wrapper

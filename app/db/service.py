@@ -6,7 +6,7 @@ from http import HTTPStatus
 from flask import Response
 from app.settings import ERR_USERNAME_ORIGINAL
 from app.models.user import UserRead, UserSuRead
-from app.strategies import string_compare
+from app.strategies import string_compare, is_valid_email
 from app.security.hash import passwd_to_hash
 
 def create_user(
@@ -20,7 +20,7 @@ def create_user(
             password = passwd_to_hash(password),
             email = email,
             role = role
-        ).save().as_dict()
+        ).save()
 
 def get_users():
     users =  User.get_users()
@@ -93,7 +93,6 @@ def update_course_by_id(course_id:int):
 def delete_post_by_id(course_id:int):
     return Course.delete_course_by_id(course_id)
 
-
 def create_article(
         title:str,
         text_content:str,
@@ -146,5 +145,3 @@ def update_suggestion_by_id(suggestion_id:int):
 
 def delete_suggestion_by_id(suggestion_id:int):
     return Suggestion.delete_suggestion_by_id(suggestion_id)
-
-

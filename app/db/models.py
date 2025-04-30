@@ -73,8 +73,8 @@ class LocalDbModel(Base):
         return request
 
 class User(LocalDbModel):
-    __tablename__ = 'users'
 
+    __tablename__ = 'users'
     id:int = Column(Integer, primary_key=True)
     username:str = Column(String,nullable=False)
     role:str = Column(String,nullable=False)
@@ -189,11 +189,4 @@ class Suggestion(LocalDbModel):
     def get_suggestions(cls):
         cls.get_list_all()
 
-
-
 Base.metadata.create_all(engine)
-
-
-
-
-
