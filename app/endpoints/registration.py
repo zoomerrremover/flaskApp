@@ -23,6 +23,6 @@ def route_name_check(username:str):
     result = Response(HTTPStatus.OK,"The username is original")
     if not RE_USERNAME.compile(username):
         result = Response(HTTPStatus.CONFLICT,ERR_USERNAME_VALIDITY)
-    elif not get_user_name_is_original(username):
+    elif not get_username_is_original(username):
         result = Response(HTTPStatus.CONFLICT, ERR_USERNAME_ORIGINAL)
     return result

@@ -8,7 +8,6 @@ post_route = Blueprint('post_route', __name__,
 def create_post():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
 
-
 @post_route.route("/",methods=['GET'])
 def get_post():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
@@ -20,7 +19,6 @@ def get_post_by_name():
 @post_route.route("/",methods=['PUT'])
 def update_post():
     return Response("Not Implemented",HTTPStatus.NOT_IMPLEMENTED)
-
 
 @post_route.route("/",methods=['DELETE'])
 def delete_post():
