@@ -14,9 +14,11 @@ def generate_jwt(user: User):
     }
     return jwt.encode(payload, JWT_KEY, ALGORITHM)
 
+
 def generate_json_jwt(user: User):
     jwttoken = generate_jwt(user)
     return jsonify({'access_token': jwttoken ,'token_type': 'jwt', 'expires_in': ACCESS_TOKEN_TIME*60 })
+
 
 def verify_jwt(token):
     try:

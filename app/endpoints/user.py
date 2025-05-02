@@ -1,10 +1,11 @@
 from flask import Blueprint, render_template, Response, request, jsonify
 from app.constants import UserRole
 from app.decorators import validate_model_request, validate_model_params, require_auth
+from app.errors import InvalidDataError
 from app.models.user import UserUpdate, UserGet, UserDelete
 from app.db.service.user_service import (get_all_users, update_user_by_id,
                                          delete_user_by_id, get_user_by_id,
-                                         get_users_by_name, get_su_users_by_email,
+                                         get_users_by_name, get_su_user_by_id,
                                          get_users_by_role)
 
 user_route = Blueprint('user_route', __name__, url_prefix='/users')
@@ -25,6 +26,15 @@ def get_users(model: UserGet):
     else:
         users = get_all_users()
     return jsonify([data.model_dump() for data in users])
+
+
+@user_route.route("/su", methods=['GET'])
+@require_auth(UserRole.admin)
+@validate_model_params(UserGet)
+def get_su_user(model: UserGet):
+    if model.id == None:
+        raise InvalidDataError("The id is required to view the user !")
+    return get_su_user_by_id(model.id)
 
 
 @user_route.route("/", methods=['PATCH'])

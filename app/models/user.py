@@ -91,5 +91,6 @@ class UserGet(ValidationUserNameModel, ValidationPasswordModel):
     def model_validate_username(cls, value):
         return cls.validate_username(value)
 
+
 class UserDelete(BaseModel):
     id: Optional[int] = Field()

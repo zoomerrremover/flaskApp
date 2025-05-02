@@ -28,14 +28,14 @@ class UserRole(Enum):
                     result = True
                 else:
                     result = False
-
             case _:
                 result = False
         return result
 
 
 class Errors:
-    ERR_USERNAME_VALIDITY = "Username shall not contain any spaces, and shall be between 3 and 20 characters !"
+    ERR_USERNAME_VALIDITY = ("Username shall not contain any spaces, and"
+                             " shall be between 3 and 20 characters !")
     ERR_USERNAME_ORIGINAL = "Username shall be original."
     ERR_PASSWORD = "Password shall contain at least 1 letter."
     ERR_ROLES = "Role shall match existing role."

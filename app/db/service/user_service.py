@@ -83,6 +83,10 @@ def get_su_user_by_id(user_id: int) -> UserSuRead:
 
 
 def update_user_by_id(user_id: int, **kwargs) -> int:
+    if 'email' in kwargs:
+        is_valid_email(kwargs['email'])
+    if 'username' in kwargs:
+        get_username_is_original(kwargs['username'])
     return User.update_user_by_id(user_id, **kwargs)
 
 
