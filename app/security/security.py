@@ -21,9 +21,7 @@ def generate_json_jwt(user: User):
 def verify_jwt(token):
     try:
         payload = jwt.decode(token, JWT_KEY, algorithms=[ALGORITHM])
-        return User(id=payload['user_id'],username=payload['username'],
+        return User(id=payload['user_id'], username=payload['username'],
                     role=payload['role'])
-    except jwt.ExpiredSignatureError:
-        return None
-    except jwt.InvalidTokenError:
+    except [jwt.ExpiredSignatureError, jwt.InvalidTokenError]:
         return None

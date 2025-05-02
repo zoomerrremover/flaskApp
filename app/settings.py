@@ -4,26 +4,20 @@ import re
 
 load_dotenv()
 
-DB_USER = getenv('DB_USER',default='admin')
-DB_PASS = getenv('DB_PASS',default=12345)
-DB_HOST = getenv('DB_HOST',default='localhost')
-DB_PORT = getenv('DB_PORT',default=5432)
-DB_NAME = getenv('DB_NAME',default='default_db')
+DB_USER = getenv('DB_USER', default='admin')
+DB_PASS = getenv('DB_PASS', default=12345)
+DB_HOST = getenv('DB_HOST', default='localhost')
+DB_PORT = getenv('DB_PORT', default=5432)
+DB_NAME = getenv('DB_NAME', default='default_db')
+DB_STRING =  f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
-JWT_KEY = getenv('JWT_KEY',default='SECRET')
+JWT_KEY = getenv('JWT_KEY', default='SECRET')
 ACCESS_TOKEN_TIME = 30
 PASSWORD_KEY = getenv('PASSWORD_KEY')
 ALGORITHM = 'HS256'
+AUTH_HEADER = 'Authorization'
+AUTH_PREFIX = 'JWT '
 
 RE_PASSWORD = re.compile("^(?=.*[a-zA-Z])(?!.*\s).+$")
 RE_USERNAME = re.compile("^[a-zA-Z0-9_]{3,20}$")
 RE_TEXT_CONTENT = re.compile(r"^[a-zA-Z0-9\s.,!?'-]+$")
-USER_ROLES = ("user","editor","admin")
-DB_STRING =  f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-
-ERR_USERNAME_VALIDITY = "Username shall not contain any spaces, and shall be between 3 and 20 characters !"
-ERR_USERNAME_ORIGINAL = "Username shall be original."
-ERR_PASSWORD = "Password shall contain at least 1 letter."
-ERR_ROLES = "Role shall match existing role."
-ERR_TEXT_CONTENT = "Text content shall not be less than 3 characters."
-ERR_AUTH = "Username of password does not match"

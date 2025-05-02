@@ -69,7 +69,7 @@ class LocalDbModel(Base):
         return request
 
 class User(LocalDbModel):
-    __tablename__ = 'users'
+    __tablename__: str = 'users'
     id: int = Column(Integer, primary_key=True)
     username: str = Column(String,nullable=False)
     role: str = Column(String,nullable=False)
@@ -83,18 +83,6 @@ class User(LocalDbModel):
         return cls.get_list_all()
 
     @classmethod
-    def get_user_by_id(cls, user_id: int) -> object:
-        return cls.get_filtered_first(cls.id == user_id)
-
-    @classmethod
-    def get_user_by_exact_name(cls, username: str) -> object:
-        return cls.get_filtered_first(cls.username == username)
-
-    @classmethod
-    def get_user_by_exact_email(cls, email: str) -> object:
-        return cls.get_filtered_first(cls.email == email)
-
-    @classmethod
     def get_users_by_username(cls, username: str) -> object:
         return cls.get_filtered_all(str_compare(cls.username, username, 20))
 
@@ -105,6 +93,18 @@ class User(LocalDbModel):
     @classmethod
     def get_users_by_role(cls, role: str) -> object:
         return cls.get_filtered_all(cls.role == role)
+
+    @classmethod
+    def get_user_by_id(cls, user_id: int) -> object:
+        return cls.get_filtered_first(cls.id == user_id)
+
+    @classmethod
+    def get_user_by_exact_name(cls, username: str) -> object:
+        return cls.get_filtered_first(cls.username == username)
+
+    @classmethod
+    def get_user_by_exact_email(cls, email: str) -> object:
+        return cls.get_filtered_first(cls.email == email)
 
     @classmethod
     def update_user_by_id(cls, user_id: int, **kwargs) -> int:
