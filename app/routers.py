@@ -1,5 +1,4 @@
 from flask import Flask
-from app.endpoints.posts import post_route
 from app.endpoints.user import user_route
 from app.endpoints.registration import registration_route
 from app.endpoints.login import login_route

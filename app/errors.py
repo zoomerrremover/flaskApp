@@ -6,5 +6,8 @@ class AuthorizationError(Exception):
 class AuthenticationError(Exception):
     code = HTTPStatus.FORBIDDEN
 
-class ConflictingData(Exception):
+class ConflictingDataError(Exception):
     code = HTTPStatus.CONFLICT
+
+class InvalidDataError(Exception):
+    code = HTTPStatus.BAD_REQUEST

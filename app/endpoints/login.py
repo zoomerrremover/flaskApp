@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, abort, Response, jsonify
 from app.decorators import validate_model_params
-from app.db.service.service import get_user_login
+from app.db.service.user_service import get_user_login
 from app.security.security import generate_json_jwt
 from app.models.user import UserLogIn
 

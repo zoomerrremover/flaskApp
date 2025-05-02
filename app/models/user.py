@@ -10,6 +10,12 @@ class UserRead(ValidationUserNameModel, ValidationRoleModel):
     username: str = Field(max_length=24)
     role: str = Field(max_length=10)
 
+
+class UserSuRead(ValidationUserNameModel, ValidationRoleModel):
+    username: str = Field(max_length=24)
+    role: str = Field(max_length=10)
+    email: EmailStr
+
     @validator("role")
     def model_validate_role(cls, value):
         return cls.validate_role(value)
@@ -72,10 +78,10 @@ class UserRoleUpdate(ValidationRoleModel):
 
 
 class UserGet(ValidationUserNameModel, ValidationPasswordModel):
-    id: Optional[int] = Field()
-    username: Optional[str] = Field(max_length=24)
-    role: Optional[str] = Field(max_length=10)
-    email: EmailStr
+    id: Optional[int] = None
+    username: Optional[str] = None
+    role: Optional[str] = None
+    email: EmailStr = None
 
     @validator("role")
     def model_validate_role(cls, value):
@@ -85,5 +91,5 @@ class UserGet(ValidationUserNameModel, ValidationPasswordModel):
     def model_validate_username(cls, value):
         return cls.validate_username(value)
 
-    class UserDelete(BaseModel):
-        id: Optional[int] = Field()
+class UserDelete(BaseModel):
+    id: Optional[int] = Field()

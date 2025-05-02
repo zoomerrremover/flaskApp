@@ -75,8 +75,6 @@ class User(LocalDbModel):
     role: str = Column(String,nullable=False)
     email: str = Column(String,nullable=False)
     password: str = Column(String,nullable=False)
-    articles = relationship("Article",back_populates = 'author')
-    suggestions = relationship("Suggestion", back_populates='author')
 
     @classmethod
     def get_users(cls):

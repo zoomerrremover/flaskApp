@@ -3,7 +3,7 @@ from functools import wraps
 from pydantic.main import BaseModel
 from app.security.security import verify_jwt
 from app.settings import AUTH_HEADER, AUTH_PREFIX
-from app.errors import ConflictingData, AuthenticationError
+from app.errors import ConflictingDataError, AuthenticationError
 from app.constants import Errors, UserRole
 
 def require_auth(role:UserRole = UserRole.user):

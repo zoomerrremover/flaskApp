@@ -3,7 +3,7 @@ from email_validator import validate_email, EmailNotValidError
 from flask import Response
 from app.models.user import UserRead, UserSuRead
 from app.security.hash import passwd_to_hash, verify_password
-from pydantic.main import ValidationError
+from app.errors import InvalidDataError, ConflictingDataError
 from app.constants import Errors
 from app.errors import AuthenticationError
 from typing import List
@@ -23,7 +23,7 @@ def create_user(username: str,
                 ).save()
 
 
-def get_users() -> List[UserRead]:
+def get_all_users() -> List[UserRead]:
     users = User.get_users()
     return [UserRead(username=data.username,
                      role=data.role) for data in users]
@@ -65,16 +65,16 @@ def get_user_login(username: str, password: str) -> User:
 def get_username_is_original(username: str) -> bool:
     user = User.get_user_by_exact_name(username)
     if user:
-        raise ValidationError(Errors.ERR_USERNAME_ORIGINAL)
+        raise InvalidDataError(Errors.ERR_USERNAME_ORIGINAL)
     return True
 
 
 def get_email_is_valid(email: str) -> bool:
     user = User.get_user_by_exact_email(email)
-    if not user and is_valid_email(email):
-        return True
-    else:
-        raise ValidationError(Errors.ERR_USERNAME_ORIGINAL)
+    if user:
+        raise ConflictingDataError(Errors.ERR_EMAIL_IS_ORIGINAL)
+    is_valid_email(email)
+    return True
 
 
 def get_su_user_by_id(user_id: int) -> UserSuRead:
