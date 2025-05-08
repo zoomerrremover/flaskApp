@@ -2,8 +2,7 @@ from pydantic import validator, EmailStr
 from pydantic.fields import Field
 from pydantic.main import BaseModel
 from typing import Optional
-from app.models.common import (ValidationUserNameModel, ValidationPasswordModel,
-                               ValidationRoleModel)
+from app.models.common import ValidationUserNameModel, ValidationPasswordModel, ValidationRoleModel
 
 
 class UserRead(ValidationUserNameModel, ValidationRoleModel):
@@ -77,7 +76,7 @@ class UserRoleUpdate(ValidationRoleModel):
         return cls.validate_role(value)
 
 
-class UserGet(ValidationUserNameModel, ValidationPasswordModel):
+class UserSearch(ValidationUserNameModel, ValidationPasswordModel):
     id: Optional[int] = None
     username: Optional[str] = None
     role: Optional[str] = None
@@ -90,7 +89,3 @@ class UserGet(ValidationUserNameModel, ValidationPasswordModel):
     @validator("username")
     def model_validate_username(cls, value):
         return cls.validate_username(value)
-
-
-class UserDelete(BaseModel):
-    id: Optional[int] = Field()
