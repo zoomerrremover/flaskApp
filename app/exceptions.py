@@ -1,16 +1,16 @@
-from http import HTTPStatus
+from werkzeug.exceptions import HTTPException
 
-class AuthorizationError(Exception):
+class AuthorizationError(HTTPException):
     code = HTTPStatus.UNAUTHORIZED
 
 
-class AuthenticationError(Exception):
+class AuthenticationError(HTTPException):
     code = HTTPStatus.FORBIDDEN
 
 
-class ConflictingDataError(Exception):
+class ConflictingDataError(HTTPException):
     code = HTTPStatus.CONFLICT
 
 
-class InvalidDataError(Exception):
+class InvalidDataError(HTTPException):
     code = HTTPStatus.BAD_REQUEST
