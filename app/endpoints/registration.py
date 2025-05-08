@@ -4,7 +4,7 @@ from app.decorators import validate_model_request, validate_model_params
 from app.models.user import UserRegister, UserRead
 from app.db.service.user_service import (create_user, get_username_is_original,
                                          get_email_is_valid)
-from app.errors import ConflictingDataError
+from app.exceptions import ConflictingDataError
 from app.constants import Errors
 from app.security.security import generate_json_jwt
 

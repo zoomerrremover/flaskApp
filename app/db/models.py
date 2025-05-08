@@ -1,7 +1,10 @@
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey
 from app.db.engine import session, Base
 from app.common import str_compare
+
+Base = declarative_base()
+
 
 class LocalDbModel(Base):
     __abstract__ = True

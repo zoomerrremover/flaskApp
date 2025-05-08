@@ -5,37 +5,9 @@ class UserRole(Enum):
     editor = 'editor'
     admin = 'admin'
 
-    @staticmethod
-    def compare(role_received, role_required) -> bool:
-        match role_required:
-            case UserRole.admin:
-                if role_received == UserRole.admin:
-                    result = True
-                else:
-                    result = False
 
-            case UserRole.editor:
-                if (role_received == UserRole.editor or
-                        role_received == UserRole.admin) :
-                    result = True
-                else:
-                    result = False
-
-            case UserRole.user:
-                if (role_received == UserRole.user or
-                    role_received == UserRole.editor or
-                    role_received == UserRole.admin) :
-                    result = True
-                else:
-                    result = False
-            case _:
-                result = False
-        return result
-
-
-class Errors:
-    ERR_USERNAME_VALIDITY = ("Username shall not contain any spaces, and"
-                             " shall be between 3 and 20 characters !")
+class Errors(Enum):
+    ERR_USERNAME_VALIDITY = "Username shall not contain any spaces, and shall be between 3 and 20 characters !"
     ERR_USERNAME_ORIGINAL = "Username shall be original."
     ERR_PASSWORD = "Password shall contain at least 1 letter."
     ERR_ROLES = "Role shall match existing role."

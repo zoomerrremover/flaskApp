@@ -3,8 +3,9 @@ from functools import wraps
 from pydantic.main import BaseModel
 from app.security.security import verify_jwt
 from app.settings import AUTH_HEADER, AUTH_PREFIX
-from app.errors import ConflictingDataError, AuthenticationError
+from app.exceptions import ConflictingDataError, AuthenticationError
 from app.constants import Errors, UserRole
+from app.common import user_role_is_satisfactory
 
 def require_auth(role:UserRole = UserRole.user):
     def decorator(f):
@@ -14,7 +15,7 @@ def require_auth(role:UserRole = UserRole.user):
             if auth_header and auth_header.startswith(AUTH_PREFIX):
                 token = auth_header.split(' ')[1]
                 user = verify_jwt(token)
-                if user and UserRole.compare(user.role, role):
+                if user and user_role_is_satisfactory(user.role, role):
                     request.current_user = user
                     return f(*args,**kwargs)
                 else:

@@ -5,7 +5,8 @@ import jwt
 from flask import jsonify
 
 def generate_jwt(user: User):
-    payload = {
+    payload = \
+    {
         'user_id': user.id,
         'username': user.username,
         'role': user.role,
@@ -16,14 +17,14 @@ def generate_jwt(user: User):
 
 
 def generate_json_jwt(user: User):
-    jwttoken = generate_jwt(user)
-    return jsonify({'access_token': jwttoken ,'token_type': 'jwt', 'expires_in': ACCESS_TOKEN_TIME*60 })
+    jwt_token = generate_jwt(user)
+    return jsonify({'access_token': jwt_token ,'token_type': 'jwt', 'expires_in': ACCESS_TOKEN_TIME*60 })
 
 
 def verify_jwt(token):
     try:
         payload = jwt.decode(token, JWT_KEY, algorithms=[ALGORITHM])
-        return User(id=payload['user_id'], username=payload['username'],
-                    role=payload['role'])
+        result = User(id=payload['user_id'], username=payload['username'], role=payload['role'])
     except [jwt.ExpiredSignatureError, jwt.InvalidTokenError]:
-        return None
+        result = None
+    return result
