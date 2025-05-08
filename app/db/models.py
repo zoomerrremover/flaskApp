@@ -2,6 +2,7 @@ from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey
 from app.db.engine import session, Base
 from app.common import str_compare
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -78,6 +79,7 @@ class User(LocalDbModel):
     role: str = Column(String,nullable=False)
     email: str = Column(String,nullable=False)
     password: str = Column(String,nullable=False)
+    articles = relationship('Article', back_populates="author")
 
     @classmethod
     def get_users(cls):
@@ -114,3 +116,32 @@ class User(LocalDbModel):
     @classmethod
     def delete_user_by_id(cls, user_id: int):
         cls.delete(cls.id == user_id)
+
+class Article(LocalDbModel):
+    __tablename__ = "articles"
+    id:int = Column(Integer,primary_key = True)
+    title:str = Column(String,nullable = False)
+    text_content:str = Column(String,nullable = False)
+    date_posted:datetime = Column(TIMESTAMP,nullable = False)
+    user_id: int = Column(Integer, ForeignKey('users.id'))
+    author = relationship('User',back_populates="articles")
+
+    @classmethod
+    def get_article_by_id(cls,article_id:int):
+        return cls.get_filtered_first(cls.id == article_id)
+
+    @classmethod
+    def get_articles(cls):
+        cls.get_list_all()
+
+    @classmethod
+    def search_articles_by_titles(cls,article_title: str):
+        return cls.get_filtered_all(str_compare(article_title,cls.title,50))
+
+    @classmethod
+    def delete_article_by_id(cls,article_id:int):
+        return cls.delete_article_by_id(article_id)
+
+    @classmethod
+    def update_article_by_id(cls,article_id:int,**kwargs):
+        cls.update_article_by_id(article_id,**kwargs)
