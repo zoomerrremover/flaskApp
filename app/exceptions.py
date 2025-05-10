@@ -1,4 +1,5 @@
 from werkzeug.exceptions import HTTPException
+from http import HTTPStatus
 
 class AuthorizationError(HTTPException):
     code = HTTPStatus.UNAUTHORIZED

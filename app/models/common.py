@@ -1,5 +1,6 @@
 from pydantic.main import BaseModel
 from pydantic import validator
+from pydantic.fields import Field
 from app.settings import RE_USERNAME, RE_PASSWORD, RE_TEXT_CONTENT
 from app.constants import Errors, UserRole
 from flask import Response
@@ -41,3 +42,7 @@ class ValidationRoleModel(BaseModel):
             UserRole(value)
         except:
             raise InvalidDataError(Errors.ERR_ROLES)
+
+class GenericIdModel(BaseModel):
+
+    id: int = Field()

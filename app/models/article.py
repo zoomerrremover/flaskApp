@@ -40,7 +40,8 @@ class ArticleUpdate(ValidationTextModel):
 
 
 class ArticleSearch(BaseModel):
-    title: Optional[str] = Field(max_length=32)
-    author: Optional[int] = Field(max_length=24)
-    text_content: Optional[str] = Field(max_length=8000)
-    date_posted: Optional[datetime] = Field()
+    id:  Optional[int] = None
+    title: Optional[str] = None
+    author: Optional[int] = None
+    text_content: Optional[str] = None
+    date_posted: Optional[datetime] = None

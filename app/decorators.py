@@ -3,7 +3,7 @@ from functools import wraps
 from pydantic.main import BaseModel
 from app.security.security import verify_jwt
 from app.settings import AUTH_HEADER, AUTH_PREFIX
-from app.exceptions import ConflictingDataError, AuthenticationError
+from app.exceptions import ConflictingDataError, AuthenticationError, AuthorizationError
 from app.constants import Errors, UserRole
 from app.common import user_role_is_satisfactory
 
@@ -19,9 +19,9 @@ def require_auth(role:UserRole = UserRole.user):
                     request.current_user = user
                     return f(*args,**kwargs)
                 else:
-                    raise AuthenticationError(Errors.ERR_LOGIN_REQUIRED)
+                    raise AuthorizationError(Errors.ERR_LOGIN_REQUIRED)
             else:
-                raise AuthenticationError(Errors.ERR_LOGIN_REQUIRED)
+                raise AuthorizationError(Errors.ERR_LOGIN_REQUIRED)
         return wrapper
     return decorator
 

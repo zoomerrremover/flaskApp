@@ -3,6 +3,8 @@ from app.db.models import User
 from datetime import datetime, timedelta
 import jwt
 from flask import jsonify
+from app.exceptions import AuthenticationError
+from app.constants import Errors
 
 def generate_jwt(user: User):
     payload = \
@@ -25,6 +27,6 @@ def verify_jwt(token):
     try:
         payload = jwt.decode(token, JWT_KEY, algorithms=[ALGORITHM])
         result = User(id=payload['user_id'], username=payload['username'], role=payload['role'])
-    except [jwt.ExpiredSignatureError, jwt.InvalidTokenError]:
-        result = None
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+        raise AuthenticationError(Errors.ERR_JWT)
     return result
