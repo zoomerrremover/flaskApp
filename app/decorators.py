@@ -1,4 +1,4 @@
-from flask import request, Response, jsonify
+from flask import request, Response, jsonify, g
 from functools import wraps
 from pydantic.main import BaseModel
 from app.security.security import verify_jwt
@@ -17,7 +17,7 @@ def require_auth(role:UserRole = UserRole.user):
                 token = auth_header.split(' ')[1]
                 user = verify_jwt(token)
                 if get_user_by_id(user.id) and user_role_is_satisfactory(user.role, role):
-                    request.current_user = user
+                    g.current_user = user
                     return f(*args,**kwargs)
                 else:
                     raise AuthorizationError(Errors.ERR_UNSATISFACTORY_ROLE)
