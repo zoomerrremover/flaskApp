@@ -16,7 +16,7 @@ ACCESS_TOKEN_TIME = 30
 PASSWORD_KEY = getenv('PASSWORD_KEY')
 ALGORITHM = 'HS256'
 AUTH_HEADER = 'Authorization'
-AUTH_PREFIX = 'JWT '
+AUTH_PREFIX = 'Bearer '
 
 RE_PASSWORD = re.compile("^(?=.*[a-zA-Z])(?!.*\s).+$")
 RE_USERNAME = re.compile("^[a-zA-Z0-9_]{3,20}$")

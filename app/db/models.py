@@ -1,6 +1,6 @@
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey
-from app.db.engine import session, Base
+from app.db.engine import session
 from app.common import str_compare
 from datetime import datetime
 
@@ -119,15 +119,15 @@ class User(LocalDbModel):
 
 class Article(LocalDbModel):
     __tablename__ = "articles"
-    id:int = Column(Integer,primary_key = True)
-    title:str = Column(String,nullable = False)
-    text_content:str = Column(String,nullable = False)
-    date_posted:datetime = Column(TIMESTAMP,nullable = False)
+    id: int = Column(Integer, primary_key = True)
+    title: str = Column(String, nullable = False)
+    text_content: str = Column(String, nullable = False)
+    date_posted: datetime = Column(TIMESTAMP, nullable = False)
     user_id: int = Column(Integer, ForeignKey('users.id'))
-    author = relationship('User',back_populates="articles")
+    author = relationship('User', back_populates="articles")
 
     @classmethod
-    def get_article_by_id(cls,article_id:int):
+    def get_article_by_id(cls,article_id: int):
         return cls.get_filtered_first(cls.id == article_id)
 
     @classmethod
@@ -135,13 +135,13 @@ class Article(LocalDbModel):
         cls.get_list_all()
 
     @classmethod
-    def search_articles_by_titles(cls,article_title: str):
-        return cls.get_filtered_all(str_compare(article_title,cls.title,50))
+    def search_articles_by_titles(cls, article_title: str):
+        return cls.get_filtered_all(str_compare(article_title, cls.title,50))
 
     @classmethod
-    def delete_article_by_id(cls,article_id:int):
+    def delete_article_by_id(cls,article_id: int):
         return cls.delete_article_by_id(article_id)
 
     @classmethod
-    def update_article_by_id(cls,article_id:int,**kwargs):
-        cls.update_article_by_id(article_id,**kwargs)
+    def update_article_by_id(cls,article_id: int, **kwargs):
+        cls.update_article_by_id(article_id, **kwargs)

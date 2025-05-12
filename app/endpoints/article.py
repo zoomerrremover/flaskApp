@@ -1,4 +1,5 @@
 import datetime
+from http import HTTPStatus
 
 from app.db.service.article_service import create_article, get_article_by_id, update_article_by_id, delete_article_by_id
 from app.decorators import validate_model_request, validate_model_params, require_auth
@@ -21,15 +22,18 @@ def get_article(data: GenericIdModel):
 def compose_article(data: ArticleCreate):
     user_id = request.current_user.id
     create_article(user_id, data.title, data.text_content, datetime.utcnow())
+    return HTTPStatus.NO_CONTENT
 
 @article_route.route("/", methods=['PATCH'])
 @require_auth(UserRole.editor)
 @validate_model_params(ArticleUpdate)
 def update_article(data: ArticleUpdate):
-    return update_article_by_id(data.id, **data.dict())
+    update_article_by_id(data.id, **data.dict())
+    return HTTPStatus.NO_CONTENT
 
 @article_route.route("/", methods=['DELETE'])
 @require_auth(UserRole.editor)
 @validate_model_params(GenericIdModel)
 def delete_article(data: GenericIdModel):
-    return delete_article_by_id(data.id)
+    delete_article_by_id(data.id)
+    return HTTPStatus.NO_CONTENT

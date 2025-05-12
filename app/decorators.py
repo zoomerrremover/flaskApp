@@ -6,6 +6,7 @@ from app.settings import AUTH_HEADER, AUTH_PREFIX
 from app.exceptions import ConflictingDataError, AuthenticationError, AuthorizationError
 from app.constants import Errors, UserRole
 from app.common import user_role_is_satisfactory
+from app.db.service.user_service import get_user_by_id
 
 def require_auth(role:UserRole = UserRole.user):
     def decorator(f):
@@ -15,13 +16,13 @@ def require_auth(role:UserRole = UserRole.user):
             if auth_header and auth_header.startswith(AUTH_PREFIX):
                 token = auth_header.split(' ')[1]
                 user = verify_jwt(token)
-                if user and user_role_is_satisfactory(user.role, role):
+                if get_user_by_id(user.id) and user_role_is_satisfactory(user.role, role):
                     request.current_user = user
                     return f(*args,**kwargs)
                 else:
-                    raise AuthorizationError(Errors.ERR_LOGIN_REQUIRED)
+                    raise AuthorizationError(Errors.ERR_UNSATISFACTORY_ROLE)
             else:
-                raise AuthorizationError(Errors.ERR_LOGIN_REQUIRED)
+                raise AuthenticationError(Errors.ERR_LOGIN_REQUIRED)
         return wrapper
     return decorator
 
