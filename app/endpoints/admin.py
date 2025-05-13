@@ -8,5 +8,5 @@ admin_route = Blueprint('admin_route', __name__, url_prefix='/admin')
 @admin_route.route("/", methods=['PATCH'])
 @require_auth()
 @validate_model_request(UserRoleUpdate)
-def update_user(data: UserRoleUpdate):
+def update_user_role(data: UserRoleUpdate):
     return update_user_by_id(data.id, **data.dict())

@@ -132,7 +132,7 @@ class Article(LocalDbModel):
 
     @classmethod
     def get_articles(cls):
-        cls.get_list_all()
+        return cls.get_list_all()
 
     @classmethod
     def search_articles_by_titles(cls, article_title: str):
@@ -140,8 +140,8 @@ class Article(LocalDbModel):
 
     @classmethod
     def delete_article_by_id(cls,article_id: int):
-        return cls.delete_article_by_id(article_id)
+        return cls.delete(article_id)
 
     @classmethod
     def update_article_by_id(cls,article_id: int, **kwargs):
-        cls.update_article_by_id(article_id, **kwargs)
+        return cls.update(article_id, **kwargs)

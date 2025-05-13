@@ -26,4 +26,4 @@ def name_check(data: UserUsernameModel):
     if not get_username_is_original(data.username):
         raise ConflictingDataError(Errors.ERR_USERNAME_ORIGINAL)
     else:
-        return HTTPStatus.NO_CONTENT
+        return HTTPStatus.OK

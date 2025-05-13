@@ -19,7 +19,7 @@ def get_user():
 def update_user(data: UserUpdate):
     user_id = g.current_user.id
     update_user_by_id(user_id, **data.dict())
-    return HTTPStatus.NO_CONTENT
+    return HTTPStatus.OK
 
 
 @user_route.route("/", methods=['DELETE'])
@@ -27,4 +27,4 @@ def update_user(data: UserUpdate):
 def delete_user():
     user_id = g.current_user.id
     delete_user_by_id(user_id)
-    return HTTPStatus.NO_CONTENT
+    return HTTPStatus.OK

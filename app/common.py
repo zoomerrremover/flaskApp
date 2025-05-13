@@ -8,8 +8,9 @@ def str_compare(base_string: str ,string_to_compare: str, index: int) -> bool:
 
 def user_role_is_satisfactory(role_input: UserRole, role_required: UserRole) -> bool:
     if role_input == UserRole.admin:
-        return True
+        result = True
     elif role_input == UserRole.editor:
-        return role_required == UserRole.editor or role_required == UserRole.user
+        result = role_required == UserRole.editor or role_required == UserRole.user
     else:
-        return role_required == UserRole.user
+        result = role_required == UserRole.user
+    return result
