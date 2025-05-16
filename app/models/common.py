@@ -43,6 +43,6 @@ class ValidationRoleModel(BaseModel):
         except:
             raise InvalidDataError(Errors.ERR_ROLES)
 
-class GenericIdModel(BaseModel):
 
+class GenericIdModel(BaseModel):
     id: int = Field()

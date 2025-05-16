@@ -10,8 +10,6 @@ def generate_jwt(user: User):
     payload = \
     {
         'user_id': user.id,
-        'username': user.username,
-        'role': user.role,
         'exp': datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_TIME),
         'iat': datetime.utcnow()
     }
@@ -26,7 +24,7 @@ def generate_json_jwt(user: User):
 def verify_jwt(token):
     try:
         payload = jwt.decode(token, JWT_KEY, algorithms=[ALGORITHM])
-        result = User(id=payload['user_id'], username=payload['username'], role=payload['role'])
+        result = User(id=payload['user_id'])
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         raise AuthenticationError(Errors.ERR_JWT)
     return result

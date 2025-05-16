@@ -1,49 +1,44 @@
 from app.db.models import User
 from email_validator import validate_email, EmailNotValidError
 from flask import Response
-from app.models.user import UserGet, UserAdminGet
 from app.security.hash import passwd_to_hash, verify_password
 from app.exceptions import InvalidDataError, ConflictingDataError
 from app.constants import Errors
 from app.exceptions import AuthenticationError
-from typing import List
+from app.constants import UserRole
 
 def is_valid_email(email: str):
     validate_email(email, check_deliverability=True)
 
 
-def create_user(username: str, password: str, email: str, role: str = 'user') -> User:
+def create_user(username: str, password: str, email: str, role: UserRole = UserRole.user) -> User:
     return User(username=username, password=passwd_to_hash(password), email=email, role=role).save()
 
 
-def get_all_users() -> List[UserGet]:
-    users = User.get_users()
-    return [UserGet(username=data.username, role=data.role) for data in users]
+def get_all_users():
+    return User.get_users()
 
 
-def get_users_by_name(username: str) -> List[UserGet]:
-    users = User.get_users_by_username(username)
-    return [UserGet(username=data.username, role=data.role) for data in users]
+def search_users_by_name(username: str):
+    return User.search_users_by_username(username)
 
 
-def get_users_by_role(role: str) -> List[UserGet]:
-    users = User.get_users_by_role(role)
-    return [UserGet(username=data.username, role=data.role) for data in users]
+def search_users_by_role(role: str):
+    return User.search_users_by_role(role)
 
 
-def get_su_users_by_email(email: str) -> List[UserAdminGet]:
-    users = User.get_users_by_email(email)
-    return [UserAdminGet(username=data.username, role=data.role, email=data.email) for data in users]
+def search_users_by_email(email: str):
+    return User.search_users_by_email(email)
 
 
-def get_user_by_id(user_id: int, admin: bool = False) -> User:
-    data = User.get_user_by_id(user_id)
-    return UserAdminGet(username=data.username, email=data.email, role=data.role) if admin else\
-        UserGet(username=data.username, role=data.role)
+def get_user_by_id(user_id: int) -> User:
+    data = User.get_by_id(user_id)
+    print(data)
+    return data
 
 
 def get_user_login(username: str, password: str) -> User:
-    user = User.get_user_by_exact_name(username)
+    user = User.get_user_by_name(username)
     if user and verify_password(password, user.password):
         return user
     else:
@@ -51,27 +46,30 @@ def get_user_login(username: str, password: str) -> User:
 
 
 def get_username_is_original(username: str) -> bool:
-    user = User.get_user_by_exact_name(username)
+    user = User.get_user_by_name(username)
     if user:
         raise InvalidDataError(Errors.ERR_USERNAME_ORIGINAL)
     return True
 
 
 def get_email_is_valid(email: str) -> bool:
-    user = User.get_user_by_exact_email(email)
+    user = User.get_user_by_email(email)
     if user:
         raise ConflictingDataError(Errors.ERR_EMAIL_IS_ORIGINAL)
     is_valid_email(email)
     return True
 
 
-def update_user_by_id(user_id: int, **kwargs) -> int:
-    if 'email' in kwargs:
+def update_user_by_id(user_id: int, **kwargs):
+    user = User.get_by_id(user_id)
+    if kwargs.__contains__('email') and kwargs['email'] != user.email:
         is_valid_email(kwargs['email'])
-    if 'username' in kwargs and kwargs['username'] != get_user_by_id(user_id).username:
+    if kwargs.__contains__('username') and kwargs['username'] != user.username:
         get_username_is_original(kwargs['username'])
-    return User.update_user_by_id(user_id, **kwargs)
+    if kwargs.__contains__('password') and not verify_password(kwargs['password'], user.password):
+        kwargs['password'] = passwd_to_hash(kwargs['password'])
+    return User.update_by_id(user_id, **kwargs)
 
 
 def delete_user_by_id(user_id: int) -> None:
-    return User.delete_user_by_id(user_id)
+    return User.delete_by_id(user_id)

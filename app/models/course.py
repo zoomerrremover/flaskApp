@@ -3,14 +3,12 @@ from pydantic.fields import Field
 from pydantic.main import BaseModel
 from typing import Optional
 from datetime import datetime
-from app.models.common import  ValidationTextModel, GenericIdModel
+from app.models.common import  GenericIdModel, ValidationTextModel
 
-class ArticleCreateModel(ValidationTextModel):
+class CourseCreateModel(ValidationTextModel):
     title: str = Field(max_length=32)
     text_content: str = Field(max_length=8000)
-    course_id: int = Field()
-    next_article: Optional[int] = None
-    previous_article: Optional[int] = None
+    category: str = Field(max_length=24)
 
     @validator("title")
     def model_validate_title(cls, value):
@@ -21,19 +19,19 @@ class ArticleCreateModel(ValidationTextModel):
         return cls.validate_text_content(value)
 
 
-class ArticleGetModel(ArticleCreateModel, GenericIdModel):
+class CourseGetModel(CourseCreateModel, GenericIdModel):
     user_id: int = Field()
-    date_posted: datetime = Field()
+    date_posted: Optional[datetime] = None
 
 
-class ArticleUpdateModel(ArticleCreateModel, GenericIdModel):
+class CourseUpdateModel(CourseCreateModel, GenericIdModel):
     pass
 
 
-class ArticleSearchModel(BaseModel):
-    id: Optional[int] = None
+class CourseSearchModel(BaseModel):
+    id:  Optional[int] = None
     title: Optional[str] = None
     author: Optional[int] = None
     text_content: Optional[str] = None
     date_posted: Optional[datetime] = None
-    course_id:  Optional[int] = None
+    category: Optional[str] = None

@@ -9,6 +9,10 @@ class AuthenticationError(HTTPException):
     code = HTTPStatus.FORBIDDEN
 
 
+class NothingFoundError(HTTPException):
+    code = HTTPStatus.NO_CONTENT
+
+
 class ConflictingDataError(HTTPException):
     code = HTTPStatus.CONFLICT
 

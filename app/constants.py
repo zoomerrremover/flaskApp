@@ -1,12 +1,34 @@
 from enum import Enum
 
-class UserRole(Enum):
+
+class StrEnum(str, Enum):
+    """Create a string enum.
+
+    Members of this class can be compared with strings, as well as members
+    of other string enums, using the ==, !=, in, and not in operators.
+    """
+
+    def __new__(cls, *args, **kwds):
+        if len(args) > 0:
+            value = args[0]
+            if not isinstance(value, str):
+                raise TypeError(
+                    f"Values of {cls.__name__} must be strings: "
+                    f"{value!r} is not a string"
+                )
+        return super().__new__(cls, *args, **kwds)
+
+    def __str__(self):
+        return str(self.value)
+
+
+class UserRole(StrEnum):
     user = 'user'
     editor = 'editor'
     admin = 'admin'
 
 
-class Errors(Enum):
+class Errors(StrEnum):
     ERR_USERNAME_VALIDITY = "Username shall not contain any spaces, and shall be between 3 and 20 characters !"
     ERR_USERNAME_ORIGINAL = "Username shall be original."
     ERR_PASSWORD = "Password shall contain at least 1 letter."
@@ -20,5 +42,5 @@ class Errors(Enum):
     ERR_EMAIL_IS_ORIGINAL = "The email supposed to be original"
 
 
-class Constants(Enum):
+class Constants(StrEnum):
     AUTH_PREFIX = 'Bearer '

@@ -72,7 +72,50 @@ class LocalDbModel(Base):
         session.commit()
         return request
 
-class User(LocalDbModel):
+
+class IdDbModel(LocalDbModel):
+    __abstract__ = True
+    id: int = Column(Integer, primary_key=True)
+
+    @classmethod
+    def get_all_models(cls):
+        return cls.get_list_all()
+
+    @classmethod
+    def get_by_id(cls, id: int) -> object:
+        return cls.get_filtered_first(cls.id == id)
+
+    @classmethod
+    def update_by_id(cls, model_id: int, **kwargs) -> int:
+        return cls.update(cls.id == model_id, **kwargs)
+
+    @classmethod
+    def delete_by_id(cls, id: int):
+        cls.delete(cls.id == id)
+
+
+class TextContentDbModel(IdDbModel):
+    __abstract__ = True
+    title: str = Column(String, nullable=False)
+    text_content: str = Column(String, nullable=False)
+    date_posted: datetime = Column(TIMESTAMP)
+    user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    @classmethod
+    def search_by_content(cls, content: str):
+        return str_compare(cls.title, content,70) or str_compare(cls.text_content, content, 20)
+
+    @classmethod
+    def search_by_user(cls, user_id: int):
+        return cls.get_filtered_all(cls.user_id == user_id)
+
+    @classmethod
+    def search_within_date_range(cls, start_date: datetime ,end_date: datetime):
+        filter_condition = (cls.created_at >= start_date) & (cls.created_at <= end_date)
+        return cls.get_filtered_all(filter_condition)
+
+
+class User(IdDbModel):
     __tablename__: str = 'users'
     id: int = Column(Integer, primary_key=True)
     username: str = Column(String,nullable=False)
@@ -80,68 +123,58 @@ class User(LocalDbModel):
     email: str = Column(String,nullable=False)
     password: str = Column(String,nullable=False)
     articles = relationship('Article', back_populates="author")
+    courses = relationship('Course', back_populates="author")
 
     @classmethod
-    def get_users(cls):
-        return cls.get_list_all()
-
-    @classmethod
-    def get_users_by_username(cls, username: str) -> object:
+    def search_users_by_username(cls, username: str) -> object:
         return cls.get_filtered_all(str_compare(cls.username, username, 20))
 
     @classmethod
-    def get_users_by_email(cls, email: str) -> object:
+    def search_users_by_email(cls, email: str) -> object:
         return cls.get_filtered_all(str_compare(cls.email, email, 80))
 
     @classmethod
-    def get_users_by_role(cls, role: str) -> object:
+    def search_users_by_role(cls, role: str) -> object:
         return cls.get_filtered_all(cls.role == role)
 
     @classmethod
-    def get_user_by_id(cls, user_id: int) -> object:
-        return cls.get_filtered_first(cls.id == user_id)
-
-    @classmethod
-    def get_user_by_exact_name(cls, username: str) -> object:
+    def get_user_by_name(cls, username: str) -> object:
         return cls.get_filtered_first(cls.username == username)
 
     @classmethod
-    def get_user_by_exact_email(cls, email: str) -> object:
+    def get_user_by_email(cls, email: str) -> object:
         return cls.get_filtered_first(cls.email == email)
 
-    @classmethod
-    def update_user_by_id(cls, user_id: int, **kwargs) -> int:
-        return cls.update(cls.id == user_id, **kwargs)
+
+class Course(TextContentDbModel):
+    __tablename__ = "courses"
+    id: int = Column(Integer, primary_key=True)
+    title: str = Column(String, nullable=False)
+    text_content: str = Column(String, nullable=False)
+    date_posted: datetime = Column(TIMESTAMP)
+    user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
+    author = relationship('User', back_populates="courses")
+    category: str = Column(String, nullable=False)
+    articles = relationship('Article', back_populates="course")
 
     @classmethod
-    def delete_user_by_id(cls, user_id: int):
-        cls.delete(cls.id == user_id)
+    def search_by_category(cls, category: str):
+        cls.get_filtered_all(cls.category == category)
 
-class Article(LocalDbModel):
+
+class Article(TextContentDbModel):
     __tablename__ = "articles"
-    id: int = Column(Integer, primary_key = True)
-    title: str = Column(String, nullable = False)
-    text_content: str = Column(String, nullable = False)
-    date_posted: datetime = Column(TIMESTAMP, nullable = False)
-    user_id: int = Column(Integer, ForeignKey('users.id'))
+    id: int = Column(Integer, primary_key=True)
+    title: str = Column(String, nullable=False)
+    text_content: str = Column(String, nullable=False)
+    date_posted: datetime = Column(TIMESTAMP)
+    user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
     author = relationship('User', back_populates="articles")
+    course_id: int  = Column(Integer, ForeignKey('courses.id'), nullable=False)
+    course = relationship('Course', back_populates="articles")
+    next_article: int = Column(Integer, ForeignKey('articles.id'))
+    previous_article: int = Column(Integer, ForeignKey('articles.id'))
 
     @classmethod
-    def get_article_by_id(cls,article_id: int):
-        return cls.get_filtered_first(cls.id == article_id)
-
-    @classmethod
-    def get_articles(cls):
-        return cls.get_list_all()
-
-    @classmethod
-    def search_articles_by_titles(cls, article_title: str):
-        return cls.get_filtered_all(str_compare(article_title, cls.title,50))
-
-    @classmethod
-    def delete_article_by_id(cls,article_id: int):
-        return cls.delete(article_id)
-
-    @classmethod
-    def update_article_by_id(cls,article_id: int, **kwargs):
-        return cls.update(article_id, **kwargs)
+    def search_by_course(cls, course_id: int):
+        cls.get_filtered_all(cls.course_id == course_id)

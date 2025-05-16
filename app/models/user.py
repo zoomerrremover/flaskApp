@@ -28,24 +28,32 @@ class UserPasswordModel(ValidationPasswordModel):
         return cls.validate_password(value)
 
 
-class UserGet(UserUsernameModel, UserRoleModel): pass
-
-
-class UserAdminGet(UserUsernameModel, UserRoleModel):
+class UserEmailModel(BaseModel):
     email: EmailStr
 
 
-class UserLogIn(UserUsernameModel, UserPasswordModel):pass
+class UserGetModel(GenericIdModel):
+    username: str = Field(max_length=24)
+    role: str = Field(max_length=10)
 
 
-class UserRoleUpdate(GenericIdModel, UserRoleModel): pass
+class UserAdminGetModel(UserGetModel, UserEmailModel):
+    pass
 
 
-class UserUpdate(UserUsernameModel, UserPasswordModel):
-    email: EmailStr
+class UserLogInModel(UserUsernameModel, UserPasswordModel):
+    pass
 
 
-class UserSearch(ValidationUserNameModel, ValidationPasswordModel):
+class UserRoleUpdateModel(GenericIdModel, UserRoleModel):
+    pass
+
+
+class UserUpdateModel(UserUsernameModel, UserPasswordModel, UserEmailModel):
+    pass
+
+
+class UserSearchModel(ValidationUserNameModel, ValidationPasswordModel):
     id: Optional[int] = None
     username: Optional[str] = None
     role: Optional[str] = None
