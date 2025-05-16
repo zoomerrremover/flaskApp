@@ -6,7 +6,7 @@ from app.db.service.course_service import get_course_by_id, create_course, updat
 from app.models.common import GenericIdModel
 from app.constants import UserRole
 from datetime import datetime
-from app.common import serialize_response
+from app.common import serialize_response, owner_or_editor_check
 from app.models.course import CourseGetModel
 
 course_route = Blueprint('course_route', __name__, url_prefix='/course')
@@ -29,9 +29,11 @@ def post_course(data: CourseCreateModel):
 
 
 @course_route.route("/", methods=['PATCH'])
-@require_auth(UserRole.editor)
+@require_auth()
 @validate_model_params(CourseUpdateModel)
 def update_course(data: CourseUpdateModel):
+    course = get_course_by_id(data.id)
+    owner_or_editor_check(course)
     args = data.dict()
     del args['id']
     update_course_by_id(data.id, **args)
@@ -39,8 +41,10 @@ def update_course(data: CourseUpdateModel):
 
 
 @course_route.route("/", methods=['DELETE'])
-@require_auth(UserRole.editor)
+@require_auth()
 @validate_model_params(GenericIdModel)
 def delete_course(data: GenericIdModel):
+    course = get_course_by_id(data.id)
+    owner_or_editor_check(course)
     delete_course_by_id(data.id)
     return "", HTTPStatus.OK

@@ -7,7 +7,7 @@ from app.models.article import ArticleUpdateModel, ArticleCreateModel
 from app.models.common import GenericIdModel
 from app.constants import UserRole
 from datetime import datetime
-from app.common import serialize_response
+from app.common import serialize_response, owner_or_editor_check
 from app.models.article import ArticleGetModel
 
 article_route = Blueprint('article', __name__, url_prefix='/article')
@@ -33,6 +33,8 @@ def post_article(data: ArticleCreateModel):
 @require_auth(UserRole.editor)
 @validate_model_params(ArticleUpdateModel)
 def update_article(data: ArticleUpdateModel):
+    article = get_article_by_id(data.id)
+    owner_or_editor_check(article)
     args = data.dict()
     del args['id']
     update_article_by_id(data.id, **args)
@@ -43,5 +45,7 @@ def update_article(data: ArticleUpdateModel):
 @require_auth(UserRole.editor)
 @validate_model_params(GenericIdModel)
 def delete_article(data: GenericIdModel):
+    article = get_article_by_id(data.id)
+    owner_or_editor_check(article)
     delete_article_by_id(data.id)
     return "", HTTPStatus.OK
