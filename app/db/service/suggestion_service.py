@@ -60,5 +60,6 @@ def update_reaction_to_suggestion(suggestion_id: int, user_id: int, like: bool):
 def delete_suggestion_by_id(course_id: int) -> None:
     return Suggestion.delete_by_id(course_id)
 
+
 def delete_suggestion_reaction(suggestion_id: int, user_id: int):
     return SuggestionReaction.delete_reaction(suggestion_id, user_id)
