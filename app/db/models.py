@@ -1,3 +1,5 @@
+from xmlrpc.client import Boolean
+
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey
 from app.db.engine import session
@@ -124,6 +126,7 @@ class User(IdDbModel):
     password: str = Column(String,nullable=False)
     articles = relationship('Article', back_populates="author")
     courses = relationship('Course', back_populates="author")
+    suggestions = relationship('Suggestion', back_populates="article")
 
     @classmethod
     def search_users_by_username(cls, username: str) -> object:
@@ -174,7 +177,52 @@ class Article(TextContentDbModel):
     course = relationship('Course', back_populates="articles")
     next_article: int = Column(Integer, ForeignKey('articles.id'))
     previous_article: int = Column(Integer, ForeignKey('articles.id'))
+    suggestions = relationship('Suggestion', back_populates="article")
 
     @classmethod
     def search_by_course(cls, course_id: int):
         cls.get_filtered_all(cls.course_id == course_id)
+
+
+class Suggestion(TextContentDbModel):
+    __tablename__ = "suggestions"
+    id: int = Column(Integer, primary_key=True)
+    title: str = Column(String, nullable=False)
+    text_content: str = Column(String, nullable=False)
+    date_posted: datetime = Column(TIMESTAMP)
+    user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
+    author = relationship('User', back_populates="suggestions")
+    article_id: int = Column(Integer, ForeignKey('article.id'), nullable=False)
+    article = relationship('Article', back_populates="suggestions")
+
+    @classmethod
+    def search_by_article(cls, article_id: int):
+        cls.get_filtered_all(cls.article_id == article_id)
+
+
+
+class SuggestionReaction(LocalDbModel):
+    __tablename__ = "suggestion_reactions"
+    like: bool = Column(Boolean, nullable=False)
+    suggestion_id: int = Column(Integer, ForeignKey('suggestions.id'), nullable=False)
+    user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
+
+    @classmethod
+    def get_reaction(cls, suggestion_id: int, user_id: int):
+        return cls.get_filtered_first(cls.suggestion_id == suggestion_id and cls.user_id == user_id)
+
+    @classmethod
+    def get_reactions_by_user(cls, user_id: int):
+        return cls.get_filtered_all(cls.user_id == user_id)
+
+    @classmethod
+    def get_reactions_by_suggestion(cls, suggestion_id: int):
+        return cls.get_filtered_all(cls.suggestion_id == suggestion_id)
+
+    @classmethod
+    def update_reaction(cls, suggestion_id: int, user_id: int, like: bool):
+        return cls.update(cls.suggestion_id == suggestion_id and cls.user_id == user_id, {"like": like})
+
+    @classmethod
+    def delete_reaction(cls, suggestion_id: int, user_id: int):
+        return cls.delete(cls.suggestion_id == suggestion_id and cls.user_id == user_id)
