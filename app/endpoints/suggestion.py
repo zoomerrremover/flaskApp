@@ -1,7 +1,10 @@
-from app.models.suggestion import SuggestionGetModel, SuggestionCreateModel, SuggestionUpdateModel, \
-                                   SuggestionReactionModel
-from app.db.service.suggestion_service import \
-    (
+from app.models.suggestion import (
+    SuggestionGetModel,
+    SuggestionCreateModel,
+    SuggestionUpdateModel,
+    SuggestionReactionModel
+)
+from app.db.service.suggestion import (
         create_suggestion,
         get_suggestion_by_id,
         get_suggestion_reaction,
@@ -9,7 +12,7 @@ from app.db.service.suggestion_service import \
         update_reaction_to_suggestion,
         delete_suggestion_reaction,
         delete_suggestion_by_id
-    )
+)
 from app.models.common import GenericIdModel
 from app.decorators import require_auth, validate_model_params, validate_model_request
 from app.common import serialize_response, owner_or_editor_check
@@ -35,16 +38,12 @@ def post_suggestion(data: SuggestionCreateModel):
     return serialize_response(SuggestionGetModel, create_suggestion(data.title, data.text_content, posted, user_id,
                                                             data.article_id))
 
-
-@suggestion_route.route("/", methods=['PATCH'])
+@suggestion_route.route("/", methods=["PATCH"])
 @require_auth()
 @validate_model_params(SuggestionUpdateModel)
 def update_suggestion(data: SuggestionUpdateModel):
-    course = get_suggestion_by_id(data.id)
-    owner_or_editor_check(course)
-    args = data.dict()
-    del args['id']
-    update_suggestion_by_id(data.id, **args)
+    owner_or_editor_check(get_suggestion_by_id(data.id))
+    update_suggestion_by_id(data.id, **data.dict(exclude={"id"}))
     return "", HTTPStatus.OK
 
 

@@ -5,7 +5,7 @@ from app.decorators import validate_model_request, validate_model_params, requir
 from flask import Blueprint, render_template, Response, request, jsonify, g
 from app.models.article import ArticleUpdateModel, ArticleCreateModel
 from app.models.common import GenericIdModel
-from app.constants import UserRole
+from app.constants import UserRolesEnum
 from datetime import datetime
 from app.common import serialize_response, owner_or_editor_check
 from app.models.article import ArticleGetModel
@@ -24,28 +24,36 @@ def get_article(data: GenericIdModel):
 @validate_model_request(ArticleCreateModel)
 def post_article(data: ArticleCreateModel):
     user_id = g.current_user.id
-    posted = None if g.current_user.role == UserRole.user else datetime.utcnow()
-    return serialize_response(ArticleGetModel, create_article(data.title, data.text_content, user_id, data.course_id,
-                          posted, data.next_article, data.previous_article))
+    posted = None if g.current_user.role == UserRolesEnum.user else datetime.utcnow()
+    return (
+        serialize_response(
+            ArticleGetModel,
+            create_article(
+                data.title,
+                data.text_content,
+                user_id,
+                data.course_id,
+                posted,
+                data.next_article,
+                data.previous_article
+            )
+        )
+    )
 
 
 @article_route.route("/", methods=['PATCH'])
-@require_auth(UserRole.editor)
+@require_auth(UserRolesEnum.editor)
 @validate_model_params(ArticleUpdateModel)
 def update_article(data: ArticleUpdateModel):
-    article = get_article_by_id(data.id)
-    owner_or_editor_check(article)
-    args = data.dict()
-    del args['id']
-    update_article_by_id(data.id, **args)
+    owner_or_editor_check(get_article_by_id(data.id))
+    update_article_by_id(data.id, **data.dict(exclude={"id"}))
     return "", HTTPStatus.OK
 
 
 @article_route.route("/", methods=['DELETE'])
-@require_auth(UserRole.editor)
+@require_auth(UserRolesEnum.editor)
 @validate_model_params(GenericIdModel)
 def delete_article(data: GenericIdModel):
-    article = get_article_by_id(data.id)
-    owner_or_editor_check(article)
+    owner_or_editor_check(get_article_by_id(data.id))
     delete_article_by_id(data.id)
     return "", HTTPStatus.OK

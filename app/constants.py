@@ -22,13 +22,13 @@ class StrEnum(str, Enum):
         return str(self.value)
 
 
-class UserRole(StrEnum):
+class UserRolesEnum(StrEnum):
     user = 'user'
     editor = 'editor'
     admin = 'admin'
 
 
-class Errors(StrEnum):
+class ErrorsMsgEnum(StrEnum):
     ERR_USERNAME_VALIDITY = "Username shall not contain any spaces, and shall be between 3 and 20 characters !"
     ERR_USERNAME_ORIGINAL = "Username shall be original."
     ERR_PASSWORD = "Password shall contain at least 1 letter."
@@ -42,5 +42,5 @@ class Errors(StrEnum):
     ERR_EMAIL_IS_ORIGINAL = "The email supposed to be original"
 
 
-class Constants(StrEnum):
+class CommonConstantsEnum(StrEnum):
     AUTH_PREFIX = 'Bearer '

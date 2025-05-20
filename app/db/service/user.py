@@ -1,34 +1,18 @@
-from app.db.models import User
+from app.db.models.models import User
 from email_validator import validate_email, EmailNotValidError
 from flask import Response
 from app.security.hash import passwd_to_hash, verify_password
 from app.exceptions import InvalidDataError, ConflictingDataError
-from app.constants import Errors
+from app.constants import ErrorsMsgEnum
 from app.exceptions import AuthenticationError
-from app.constants import UserRole
+from app.constants import UserRolesEnum
 
 def is_valid_email(email: str):
     validate_email(email, check_deliverability=True)
 
 
-def create_user(username: str, password: str, email: str, role: UserRole = UserRole.user) -> User:
+def create_user(username: str, password: str, email: str, role: UserRolesEnum = UserRolesEnum.user) -> User:
     return User(username=username, password=passwd_to_hash(password), email=email, role=role).save()
-
-
-def get_all_users():
-    return User.get_users()
-
-
-def search_users_by_name(username: str):
-    return User.search_users_by_username(username)
-
-
-def search_users_by_role(role: str):
-    return User.search_users_by_role(role)
-
-
-def search_users_by_email(email: str):
-    return User.search_users_by_email(email)
 
 
 def get_user_by_id(user_id: int) -> User:
@@ -42,20 +26,20 @@ def get_user_login(username: str, password: str) -> User:
     if user and verify_password(password, user.password):
         return user
     else:
-        raise AuthenticationError(Errors.ERR_AUTH)
+        raise AuthenticationError(ErrorsMsgEnum.ERR_AUTH)
 
 
 def get_username_is_original(username: str) -> bool:
     user = User.get_user_by_name(username)
     if user:
-        raise InvalidDataError(Errors.ERR_USERNAME_ORIGINAL)
+        raise InvalidDataError(ErrorsMsgEnum.ERR_USERNAME_ORIGINAL)
     return True
 
 
 def get_email_is_valid(email: str) -> bool:
     user = User.get_user_by_email(email)
     if user:
-        raise ConflictingDataError(Errors.ERR_EMAIL_IS_ORIGINAL)
+        raise ConflictingDataError(ErrorsMsgEnum.ERR_EMAIL_IS_ORIGINAL)
     is_valid_email(email)
     return True
 

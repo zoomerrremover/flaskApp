@@ -1,9 +1,8 @@
 from http import HTTPStatus
 from flask import Blueprint, render_template, Response, request, jsonify, g
-from app.decorators import validate_model_request, validate_model_params, require_auth
+from app.decorators import validate_model_params, require_auth
 from app.models.user import UserUpdateModel
 from app.db.service.user_service import update_user_by_id, delete_user_by_id, get_user_by_id
-from app.security.hash import verify_password, passwd_to_hash
 from app.common import serialize_response
 from app.models.user import UserGetModel
 

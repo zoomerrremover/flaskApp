@@ -1,36 +1,20 @@
-from app.db.models import Suggestion, SuggestionReaction
+from app.db.models.models import Suggestion, SuggestionReaction
 from datetime import datetime
 
 def create_suggestion(title: str, text_content: str, date_posted: datetime, user_id: int, article_id: int):
-    return \
-        (
-            Suggestion(title=title, text_content=text_content, date_posted=date_posted, user_id=user_id, article_id=article_id)
-            .save()
-        )
+    return (
+        Suggestion(
+            title=title,
+            text_content=text_content,
+            date_posted=date_posted,
+            user_id=user_id,
+            article_id=article_id
+        ).save()
+    )
 
 
 def react_to_suggestion(suggestion_id: int, user_id: int, like: bool):
     return SuggestionReaction(suggestion_id=suggestion_id, user_id=user_id, like=like).save()
-
-
-def search_suggestion_by_user(user_id: int):
-    return Suggestion.search_by_user(user_id)
-
-
-def search_suggestion_by_article(article_id: int):
-    return Suggestion.search_by_article(article_id)
-
-
-def search_suggestion_by_date(start_date: datetime, end_date: datetime):
-    return Suggestion.search_within_date_range(start_date, end_date)
-
-
-def search_suggestion_by_category(category: str):
-    return Suggestion.search_by_category(category)
-
-
-def search_suggestion_by_inner_content(content: str):
-    return Suggestion.search_by_content(content)
 
 
 def get_suggestion_by_id(course_id: int):

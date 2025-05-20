@@ -4,7 +4,7 @@ from app.decorators import validate_model_request, validate_model_params, requir
 from app.models.course import CourseCreateModel, CourseUpdateModel
 from app.db.service.course_service import get_course_by_id, create_course, update_course_by_id, delete_course_by_id
 from app.models.common import GenericIdModel
-from app.constants import UserRole
+from app.constants import UserRolesEnum
 from datetime import datetime
 from app.common import serialize_response, owner_or_editor_check
 from app.models.course import CourseGetModel
@@ -23,20 +23,25 @@ def get_course(data: GenericIdModel):
 @validate_model_request(CourseCreateModel)
 def post_course(data: CourseCreateModel):
     user_id = g.current_user.id
-    posted = None if g.current_user.role == UserRole.user else datetime.utcnow()
-    return serialize_response(CourseGetModel, create_course(data.title, data.text_content, posted, user_id,
-                                                            data.category))
+    posted = None if g.current_user.role == UserRolesEnum.user else datetime.utcnow()
+    return serialize_response(
+        CourseGetModel,
+        create_course(
+            data.title,
+            data.text_content,
+            posted,
+            user_id,
+            data.category
+        )
+    )
 
 
 @course_route.route("/", methods=['PATCH'])
 @require_auth()
 @validate_model_params(CourseUpdateModel)
 def update_course(data: CourseUpdateModel):
-    course = get_course_by_id(data.id)
-    owner_or_editor_check(course)
-    args = data.dict()
-    del args['id']
-    update_course_by_id(data.id, **args)
+    owner_or_editor_check(get_course_by_id(data.id))
+    update_course_by_id(data.id, **data.dict(exclude={"id"}))
     return "", HTTPStatus.OK
 
 

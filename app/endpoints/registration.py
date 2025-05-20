@@ -5,7 +5,7 @@ from app.models.user import UserUsernameModel, UserUpdateModel
 from app.db.service.user_service import (create_user, get_username_is_original,
                                          get_email_is_valid)
 from app.exceptions import ConflictingDataError
-from app.constants import Errors
+from app.constants import ErrorsMsgEnum
 from app.security.security import generate_json_jwt
 
 registration_route = Blueprint('registration_route', __name__, url_prefix='/registration')
@@ -24,6 +24,6 @@ def register_user(data: UserUpdateModel):
 @validate_model_params(UserUsernameModel)
 def name_check(data: UserUsernameModel):
     if not get_username_is_original(data.username):
-        raise ConflictingDataError(Errors.ERR_USERNAME_ORIGINAL)
+        raise ConflictingDataError(ErrorsMsgEnum.ERR_USERNAME_ORIGINAL)
     else:
         return "", HTTPStatus.OK
