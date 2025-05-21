@@ -1,4 +1,4 @@
-from app.db.models.models import User
+from app.db.models.concrete import User
 from email_validator import validate_email, EmailNotValidError
 from flask import Response
 from app.security.hash import passwd_to_hash, verify_password
@@ -6,6 +6,7 @@ from app.exceptions import InvalidDataError, ConflictingDataError
 from app.constants import ErrorsMsgEnum
 from app.exceptions import AuthenticationError
 from app.constants import UserRolesEnum
+
 
 def is_valid_email(email: str):
     validate_email(email, check_deliverability=True)

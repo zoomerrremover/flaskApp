@@ -1,5 +1,6 @@
-from app.db.models.models import Course
+from app.db.models.concrete import Course
 import datetime
+
 
 def create_course(title: str, text_content: str, date_posted: datetime, user_id: int, category: str):
     return (

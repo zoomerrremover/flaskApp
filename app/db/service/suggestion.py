@@ -1,5 +1,6 @@
-from app.db.models.models import Suggestion, SuggestionReaction
+from app.db.models.concrete import Suggestion, SuggestionReaction
 from datetime import datetime
+
 
 def create_suggestion(title: str, text_content: str, date_posted: datetime, user_id: int, article_id: int):
     return (

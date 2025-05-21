@@ -1,32 +1,21 @@
+from enum import unique
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, Boolean
-from app.common import str_compare
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from datetime import datetime
-from app.db.models.abstract import IdDbModel, TextContentDbModel, LocalDbModel
+from app.db.models.abstract import IdDbModel, TextContentDbModel
 
 
 class User(IdDbModel):
     __tablename__: str = 'users'
     id: int = Column(Integer, primary_key=True)
-    username: str = Column(String,nullable=False)
-    role: str = Column(String,nullable=False)
-    email: str = Column(String,nullable=False)
-    password: str = Column(String,nullable=False)
+    username: str = Column(String, nullable=False, unique=True)
+    role: str = Column(String, nullable=False)
+    email: str = Column(String, nullable=False, unique=True)
+    password: str = Column(String, nullable=False)
     articles = relationship('Article', back_populates="author")
     courses = relationship('Course', back_populates="author")
-    suggestions = relationship('Suggestion', back_populates="article")
-
-    @classmethod
-    def search_users_by_username(cls, username: str) -> object:
-        return cls.get_filtered_all(str_compare(cls.username, username, 20))
-
-    @classmethod
-    def search_users_by_email(cls, email: str) -> object:
-        return cls.get_filtered_all(str_compare(cls.email, email, 80))
-
-    @classmethod
-    def search_users_by_role(cls, role: str) -> object:
-        return cls.get_filtered_all(cls.role == role)
+    suggestions = relationship('Suggestion', back_populates="author")
 
     @classmethod
     def get_user_by_name(cls, username: str) -> object:
@@ -40,7 +29,7 @@ class User(IdDbModel):
 class Course(TextContentDbModel):
     __tablename__ = "courses"
     id: int = Column(Integer, primary_key=True)
-    title: str = Column(String, nullable=False)
+    title: str = Column(String, nullable=False, unique=True)
     text_content: str = Column(String, nullable=False)
     date_posted: datetime = Column(TIMESTAMP)
     user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
@@ -56,16 +45,17 @@ class Course(TextContentDbModel):
 class Article(TextContentDbModel):
     __tablename__ = "articles"
     id: int = Column(Integer, primary_key=True)
-    title: str = Column(String, nullable=False)
+    title: str = Column(String, nullable=False, unique=True)
     text_content: str = Column(String, nullable=False)
     date_posted: datetime = Column(TIMESTAMP)
     user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
     author = relationship('User', back_populates="articles")
-    course_id: int  = Column(Integer, ForeignKey('courses.id'), nullable=False)
+    course_id: int = Column(Integer, ForeignKey('courses.id'), nullable=False)
     course = relationship('Course', back_populates="articles")
     next_article: int = Column(Integer, ForeignKey('articles.id'))
     previous_article: int = Column(Integer, ForeignKey('articles.id'))
     suggestions = relationship('Suggestion', back_populates="article")
+    search_vector = Column(TSVECTOR)
 
     @classmethod
     def search_by_course(cls, course_id: int):
@@ -80,7 +70,7 @@ class Suggestion(TextContentDbModel):
     date_posted: datetime = Column(TIMESTAMP)
     user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
     author = relationship('User', back_populates="suggestions")
-    article_id: int = Column(Integer, ForeignKey('article.id'), nullable=False)
+    article_id: int = Column(Integer, ForeignKey('articles.id'), nullable=False)
     article = relationship('Article', back_populates="suggestions")
 
     @classmethod
@@ -88,8 +78,9 @@ class Suggestion(TextContentDbModel):
         cls.get_filtered_all(cls.article_id == article_id)
 
 
-class SuggestionReaction(LocalDbModel):
+class SuggestionReaction(IdDbModel):
     __tablename__ = "suggestion_reactions"
+    id: int = Column(Integer, primary_key=True)
     like: bool = Column(Boolean, nullable=False)
     suggestion_id: int = Column(Integer, ForeignKey('suggestions.id'), nullable=False)
     user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
@@ -115,8 +106,8 @@ class SuggestionReaction(LocalDbModel):
         return cls.delete(cls.suggestion_id == suggestion_id and cls.user_id == user_id)
 
 
-class CommentSuggestion(IdDbModel):
-    id: int = Column(Integer, primary_key=True)
-    suggestion_id: int = Column(Integer, ForeignKey('suggestions.id'), nullable=False)
-    user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
-    comment_id: int = Column(Integer, ForeignKey('comment.id'), nullable=False)
+#class CommentSuggestion(IdDbModel):
+ #   id: int = Column(Integer, primary_key=True)
+#    suggestion_id: int = Column(Integer, ForeignKey('suggestions.id'), nullable=False)
+#    user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
+#    comment_id: int = Column(Integer, ForeignKey('comment.id'), nullable=False)

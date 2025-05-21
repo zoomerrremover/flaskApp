@@ -2,7 +2,7 @@ from flask import Blueprint, Response
 from http import HTTPStatus
 from app.decorators import validate_model_request, validate_model_params
 from app.models.user import UserUsernameModel, UserUpdateModel
-from app.db.service.user_service import (create_user, get_username_is_original,
+from app.db.service.user import (create_user, get_username_is_original,
                                          get_email_is_valid)
 from app.exceptions import ConflictingDataError
 from app.constants import ErrorsMsgEnum

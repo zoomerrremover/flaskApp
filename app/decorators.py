@@ -2,31 +2,8 @@ from flask import request, Response, jsonify, g
 from functools import wraps
 from pydantic.main import BaseModel
 from app.security.security import verify_jwt
-from app.settings import AUTH_HEADER
-from app.exceptions import AuthenticationError, AuthorizationError
-from app.constants import ErrorsMsgEnum, UserRolesEnum, CommonConstantsEnum
-from app.common import user_role_is_satisfactory
-from app.db.service.user_service import get_user_by_id
-
-
-def require_auth(role: UserRolesEnum = UserRolesEnum.user):
-    def decorator(f):
-        @wraps(f)
-        def wrapper(*args, **kwargs):
-            auth_header = request.headers.get(AUTH_HEADER)
-            if auth_header and auth_header.startswith(CommonConstantsEnum.AUTH_PREFIX):
-                token = auth_header.split(' ')[1]
-                user_token = verify_jwt(token)
-                user_db = get_user_by_id(user_token.id)
-                if get_user_by_id(user_token.id) and user_role_is_satisfactory(user_db.role, role):
-                    g.current_user = user_db
-                    return f(*args,**kwargs)
-                else:
-                    raise AuthorizationError(ErrorsMsgEnum.ERR_UNSATISFACTORY_ROLE)
-            else:
-                raise AuthenticationError(ErrorsMsgEnum.ERR_LOGIN_REQUIRED)
-        return wrapper
-    return decorator
+from flask import HTTPException
+from sqlalchemy.exc import IntegrityError
 
 
 def validate_model_request(model: type[BaseModel]):
@@ -45,5 +22,17 @@ def validate_model_params(model: type[BaseModel]):
         def wrapper(*args, **kwargs):
             data = model(**request.args)
             return f(data, *args, **kwargs)
+        return wrapper
+    return decorator
+
+
+def exception_to_http(catch_exception: Exception, http_exception: HTTPException):
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            try:
+                return f(*args, **kwargs)
+            except catch_exception as e:
+                raise http_exception(f"{e}")
         return wrapper
     return decorator

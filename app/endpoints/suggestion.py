@@ -14,7 +14,8 @@ from app.db.service.suggestion import (
         delete_suggestion_by_id
 )
 from app.models.common import GenericIdModel
-from app.decorators import require_auth, validate_model_params, validate_model_request
+from app.decorators import validate_model_params, validate_model_request
+from app.security.auth import require_auth
 from app.common import serialize_response, owner_or_editor_check
 from flask import Blueprint, render_template, Response, request, jsonify, g
 from datetime import datetime

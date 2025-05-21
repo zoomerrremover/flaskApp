@@ -23,7 +23,7 @@ class ArticleCreateModel(ValidationTextModel):
 
 class ArticleGetModel(ArticleCreateModel, GenericIdModel):
     user_id: int = Field()
-    date_posted: datetime = Field()
+    date_posted: Optional[datetime] = None
 
 
 class ArticleUpdateModel(ArticleCreateModel, GenericIdModel):

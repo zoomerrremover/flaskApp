@@ -1,10 +1,13 @@
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey
+from sqlalchemy.dialects.postgresql import TSVECTOR
 from app.db.engine import session
-from app.common import str_compare
 from datetime import datetime
+from sqlalchemy import func
+from sqlalchemy import event
 
 Base = declarative_base()
+
 
 class LocalDbModel(Base):
     __abstract__ = True
@@ -50,6 +53,15 @@ class LocalDbModel(Base):
         return session.query(cls).all()
 
     @classmethod
+    def get_filtered(cls, limit: int = 20, *args: object) -> object:
+        """
+        :param args:  cls.Column == Value
+        :param limit:
+        :return:
+        """
+        return session.query(cls).filter(*args).limit(limit).all()
+
+    @classmethod
     def get_filtered_all(cls, *args: object) -> object:
         """
         :param args:  cls.Column == Value
@@ -93,22 +105,35 @@ class IdDbModel(LocalDbModel):
         cls.delete(cls.id == id)
 
 
-class TextContentDbModel(IdDbModel):
+class SearchableDbModel(IdDbModel):
+    __abstract__ = True
+    search_vector = Column(TSVECTOR)
+
+    @classmethod
+    def search_by_vector(cls, text: str, limit: int = 20) -> object:
+        return cls.get_filtered(limit, cls.search_vector.op('@@')(func.websearch_to_tsquery('english', text)))
+
+    def update_search_vector(self):
+        pass
+
+
+@event.listens_for(SearchableDbModel, 'before_insert', propagate=True)
+@event.listens_for(SearchableDbModel, 'before_update', propagate=True)
+def update_search_vector(mapper, connection, target):
+    target.update_search_vector()
+
+
+class TextContentDbModel(SearchableDbModel):
     __abstract__ = True
     title: str = Column(String, nullable=False)
     text_content: str = Column(String, nullable=False)
     date_posted: datetime = Column(TIMESTAMP)
     user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
 
-    @classmethod
-    def search_by_content(cls, content: str):
-        return str_compare(cls.title, content,70) or str_compare(cls.text_content, content, 20)
+    def update_search_vector(self):
+        func.to_tsvector('english', self.title + ' ' + self.text_content)
 
     @classmethod
-    def search_by_user(cls, user_id: int):
+    def get_users_content(cls, user_id: int):
         return cls.get_filtered_all(cls.user_id == user_id)
 
-    @classmethod
-    def search_within_date_range(cls, start_date: datetime ,end_date: datetime):
-        filter_condition = (cls.created_at >= start_date) & (cls.created_at <= end_date)
-        return cls.get_filtered_all(filter_condition)

@@ -1,7 +1,8 @@
 import datetime
 from http import HTTPStatus
-from app.db.service.article_service import create_article, get_article_by_id, update_article_by_id, delete_article_by_id
-from app.decorators import validate_model_request, validate_model_params, require_auth
+from app.db.service.article import create_article, get_article_by_id, update_article_by_id, delete_article_by_id
+from app.decorators import validate_model_request, validate_model_params
+from app.security.auth import require_auth
 from flask import Blueprint, render_template, Response, request, jsonify, g
 from app.models.article import ArticleUpdateModel, ArticleCreateModel
 from app.models.common import GenericIdModel

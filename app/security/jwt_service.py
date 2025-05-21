@@ -1,10 +1,11 @@
 from app.settings import JWT_KEY, ALGORITHM, ACCESS_TOKEN_TIME
-from app.db.models.models import User
+from app.db.models.concrete import User
 from datetime import datetime, timedelta
 import jwt
 from flask import jsonify
 from app.exceptions import AuthenticationError
 from app.constants import ErrorsMsgEnum
+
 
 def generate_jwt(user: User):
     payload = \

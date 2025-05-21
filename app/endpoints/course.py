@@ -1,8 +1,9 @@
 from http import HTTPStatus
 from flask import Blueprint, render_template, Response, request, jsonify, g
-from app.decorators import validate_model_request, validate_model_params, require_auth
+from app.decorators import validate_model_request, validate_model_params
+from app.security.auth import require_auth
 from app.models.course import CourseCreateModel, CourseUpdateModel
-from app.db.service.course_service import get_course_by_id, create_course, update_course_by_id, delete_course_by_id
+from app.db.service.course import get_course_by_id, create_course, update_course_by_id, delete_course_by_id
 from app.models.common import GenericIdModel
 from app.constants import UserRolesEnum
 from datetime import datetime
