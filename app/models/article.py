@@ -3,7 +3,8 @@ from pydantic.fields import Field
 from pydantic.main import BaseModel
 from typing import Optional
 from datetime import datetime
-from app.models.common import  ValidationTextModel, GenericIdModel
+from app.models.common import ValidationTextModel, GenericIdModel
+
 
 class ArticleCreateModel(ValidationTextModel):
     title: str = Field(max_length=32)
@@ -28,12 +29,3 @@ class ArticleGetModel(ArticleCreateModel, GenericIdModel):
 
 class ArticleUpdateModel(ArticleCreateModel, GenericIdModel):
     pass
-
-
-class ArticleSearchModel(BaseModel):
-    id: Optional[int] = None
-    title: Optional[str] = None
-    author: Optional[int] = None
-    text_content: Optional[str] = None
-    date_posted: Optional[datetime] = None
-    course_id:  Optional[int] = None

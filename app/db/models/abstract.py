@@ -3,8 +3,7 @@ from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from app.db.engine import session
 from datetime import datetime
-from sqlalchemy import func
-from sqlalchemy import event
+from sqlalchemy import func, event
 
 Base = declarative_base()
 

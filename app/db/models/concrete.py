@@ -1,22 +1,25 @@
-from enum import unique
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, Boolean
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from datetime import datetime
-from app.db.models.abstract import IdDbModel, TextContentDbModel
-from sqlalchemy import UniqueConstraint
+from app.db.models.abstract import IdDbModel, TextContentDbModel, SearchableDbModel, LocalDbModel
+from sqlalchemy import UniqueConstraint, func
 
 
-class User(IdDbModel):
+class User(SearchableDbModel):
     __tablename__: str = 'users'
     id: int = Column(Integer, primary_key=True)
     username: str = Column(String, nullable=False, unique=True)
     role: str = Column(String, nullable=False)
+    date_registered: datetime = Column(TIMESTAMP)
     email: str = Column(String, nullable=False, unique=True)
     password: str = Column(String, nullable=False)
     articles = relationship('Article', back_populates="author")
     courses = relationship('Course', back_populates="author")
     suggestions = relationship('Suggestion', back_populates="author")
+
+    def update_search_vector(self):
+        func.to_tsvector('english', self.username + ' ' + self.email)
 
     @classmethod
     def get_user_by_name(cls, username: str) -> object:
@@ -32,11 +35,21 @@ class Course(TextContentDbModel):
     id: int = Column(Integer, primary_key=True)
     title: str = Column(String, nullable=False, unique=True)
     text_content: str = Column(String, nullable=False)
+    date_created: datetime = Column(TIMESTAMP)
     date_posted: datetime = Column(TIMESTAMP)
     user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
     author = relationship('User', back_populates="courses")
     category: str = Column(String, nullable=False)
     articles = relationship('Article', back_populates="course")
+
+    def update_search_vector(self):
+        func.to_tsvector(
+            'english',
+            self.title + ' ' +
+            self.text_content + ' ' +
+            self.category + ' ' +
+            self.author.username
+        )
 
     @classmethod
     def search_by_category(cls, category: str):
@@ -45,9 +58,11 @@ class Course(TextContentDbModel):
 
 class Article(TextContentDbModel):
     __tablename__ = "articles"
+    __table_args__ = (UniqueConstraint('course_id', 'title', name='unique_article_title_within_course'),)
     id: int = Column(Integer, primary_key=True)
     title: str = Column(String, nullable=False)
     text_content: str = Column(String, nullable=False)
+    date_created: datetime = Column(TIMESTAMP)
     date_posted: datetime = Column(TIMESTAMP)
     user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
     author = relationship('User', back_populates="articles")
@@ -56,7 +71,15 @@ class Article(TextContentDbModel):
     next_article: int = Column(Integer, ForeignKey('articles.id'))
     previous_article: int = Column(Integer, ForeignKey('articles.id'))
     suggestions = relationship('Suggestion', back_populates="article")
-    search_vector = Column(TSVECTOR)
+
+    def update_search_vector(self):
+        func.to_tsvector(
+            'english',
+            self.title + ' ' +
+            self.text_content + ' ' +
+            self.course.title + ' ' +
+            self.author.username
+        )
 
     @classmethod
     def search_by_course(cls, course_id: int):
@@ -65,6 +88,7 @@ class Article(TextContentDbModel):
 
 class Suggestion(TextContentDbModel):
     __tablename__ = "suggestions"
+    __table_args__ = (UniqueConstraint('article_id', 'title', name='unique_suggestion_title_within_article'),)
     id: int = Column(Integer, primary_key=True)
     title: str = Column(String, nullable=False)
     text_content: str = Column(String, nullable=False)
@@ -74,17 +98,25 @@ class Suggestion(TextContentDbModel):
     article_id: int = Column(Integer, ForeignKey('articles.id'), nullable=False)
     article = relationship('Article', back_populates="suggestions")
 
+    def update_search_vector(self):
+        func.to_tsvector(
+            'english',
+            self.title + ' ' +
+            self.text_content + ' ' +
+            self.article.title + ' ' +
+            self.author.username
+        )
+
     @classmethod
     def search_by_article(cls, article_id: int):
         cls.get_filtered_all(cls.article_id == article_id)
 
 
-class SuggestionReaction(IdDbModel):
+class SuggestionReaction(LocalDbModel):
     __tablename__ = "suggestion_reactions"
-    id: int = Column(Integer, primary_key=True)
     like: bool = Column(Boolean, nullable=False)
-    suggestion_id: int = Column(Integer, ForeignKey('suggestions.id'), nullable=False)
-    user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
+    suggestion_id: int = Column(Integer, ForeignKey('suggestions.id'), nullable=False, primary_key=True)
+    user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False, primary_key=True)
 
     @classmethod
     def get_reaction(cls, suggestion_id: int, user_id: int):
@@ -105,10 +137,3 @@ class SuggestionReaction(IdDbModel):
     @classmethod
     def delete_reaction(cls, suggestion_id: int, user_id: int):
         return cls.delete(cls.suggestion_id == suggestion_id and cls.user_id == user_id)
-
-
-#class CommentSuggestion(IdDbModel):
- #   id: int = Column(Integer, primary_key=True)
-#    suggestion_id: int = Column(Integer, ForeignKey('suggestions.id'), nullable=False)
-#    user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)
-#    comment_id: int = Column(Integer, ForeignKey('comment.id'), nullable=False)

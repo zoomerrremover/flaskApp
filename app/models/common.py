@@ -40,9 +40,13 @@ class ValidationRoleModel(BaseModel):
     def validate_role(value):
         try:
             UserRolesEnum(value)
-        except:
+        except ValueError:
             raise InvalidDataError(ErrorsMsgEnum.ERR_ROLES)
 
 
 class GenericIdModel(BaseModel):
     id: int = Field()
+
+
+class StringSearchModel(BaseModel):
+    search: str = Field()

@@ -3,7 +3,8 @@ from pydantic.fields import Field
 from pydantic.main import BaseModel
 from typing import Optional
 from datetime import datetime
-from app.models.common import  GenericIdModel, ValidationTextModel
+from app.models.common import GenericIdModel, ValidationTextModel
+
 
 class SuggestionCreateModel(ValidationTextModel):
     title: str = Field(max_length=32)
@@ -32,12 +33,3 @@ class SuggestionUpdateModel(SuggestionCreateModel, GenericIdModel):
 
 class SuggestionReactionModel(GenericIdModel):
     like: bool = Field()
-
-
-class SuggestionSearchModel(BaseModel):
-    id:  Optional[int] = None
-    title: Optional[str] = None
-    author: Optional[int] = None
-    text_content: Optional[str] = None
-    date_posted: Optional[datetime] = None
-    article: Optional[int] = None
