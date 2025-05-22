@@ -26,13 +26,13 @@ def validate_model_params(model: type[BaseModel]):
     return decorator
 
 
-def exception_to_http(catch_exception: Exception, http_exception: HTTPException):
+def handle_exception(catch_exception: Exception, http_exception: HTTPException):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
             try:
                 return f(*args, **kwargs)
-            except catch_exception as e:
-                raise http_exception(f"{e}")
+            except catch_exception:
+                raise http_exception
         return wrapper
     return decorator

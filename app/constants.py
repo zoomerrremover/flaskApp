@@ -40,6 +40,11 @@ class ErrorsMsgEnum(StrEnum):
     ERR_LOGIN_REQUIRED = "Login required"
     ERR_EMAIL_VALID = "The email is supposed to be valid"
     ERR_EMAIL_IS_ORIGINAL = "The email supposed to be original"
+    ERR_COURSE_UPDATE_CREATE = ""
+    ERR_ARTICLE_UPDATE_CREATE = ""
+    ERR_SUGGESTION_UPDATE_CREATE = ""
+    ERR_USER_UPDATE = ""
+    ERR_DELETE = ""
 
 
 class CommonConstantsEnum(StrEnum):

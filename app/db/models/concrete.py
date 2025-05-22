@@ -4,6 +4,7 @@ from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, Boolean
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from datetime import datetime
 from app.db.models.abstract import IdDbModel, TextContentDbModel
+from sqlalchemy import UniqueConstraint
 
 
 class User(IdDbModel):
@@ -45,7 +46,7 @@ class Course(TextContentDbModel):
 class Article(TextContentDbModel):
     __tablename__ = "articles"
     id: int = Column(Integer, primary_key=True)
-    title: str = Column(String, nullable=False, unique=True)
+    title: str = Column(String, nullable=False)
     text_content: str = Column(String, nullable=False)
     date_posted: datetime = Column(TIMESTAMP)
     user_id: int = Column(Integer, ForeignKey('users.id'), nullable=False)

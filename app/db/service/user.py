@@ -17,9 +17,7 @@ def create_user(username: str, password: str, email: str, role: UserRolesEnum = 
 
 
 def get_user_by_id(user_id: int) -> User:
-    data = User.get_by_id(user_id)
-    print(data)
-    return data
+    return User.get_by_id(user_id)
 
 
 def get_user_login(username: str, password: str) -> User:
@@ -38,21 +36,11 @@ def get_username_is_original(username: str) -> bool:
 
 
 def get_email_is_valid(email: str) -> bool:
-    user = User.get_user_by_email(email)
-    if user:
-        raise ConflictingDataError(ErrorsMsgEnum.ERR_EMAIL_IS_ORIGINAL)
     is_valid_email(email)
     return True
 
 
 def update_user_by_id(user_id: int, **kwargs):
-    user = User.get_by_id(user_id)
-    if kwargs.__contains__('email') and kwargs['email'] != user.email:
-        is_valid_email(kwargs['email'])
-    if kwargs.__contains__('username') and kwargs['username'] != user.username:
-        get_username_is_original(kwargs['username'])
-    if kwargs.__contains__('password') and not verify_password(kwargs['password'], user.password):
-        kwargs['password'] = passwd_to_hash(kwargs['password'])
     return User.update_by_id(user_id, **kwargs)
 
 
