@@ -3,15 +3,14 @@ from flask import Blueprint, render_template, Response, request, jsonify, g
 from app.decorators import validate_model_request, validate_model_params, handle_exception
 from app.security.auth import require_auth
 from app.models.course import CourseCreateModel, CourseUpdateModel
-from app.db.service.course import get_course_by_id, update_course_by_id, delete_course_by_id
-from app.db.service.course import create_course as create_course_db
+from app.db.service.course import CourseDbService
 from app.models.common import GenericIdModel
 from app.constants import UserRolesEnum, ErrorsMsgEnum
 from app.exceptions import InvalidDataError
 from datetime import datetime
 from app.common import serialize_response, owner_or_editor_check
 from app.models.course import CourseGetModel
-from sqlalchemy.exc import IntegnityError
+from sqlalchemy.exc import IntegrityError
 
 course_route = Blueprint('course_route', __name__, url_prefix='/course')
 
@@ -19,44 +18,37 @@ course_route = Blueprint('course_route', __name__, url_prefix='/course')
 @course_route.route("/", methods=['GET'])
 @validate_model_params(GenericIdModel)
 def get_course(data: GenericIdModel):
-    return serialize_response(CourseGetModel, get_course_by_id(data.id))
+    return serialize_response(CourseGetModel, CourseDbService.get_by_id(data.id))
 
 
 @course_route.route("/", methods=['POST'])
 @require_auth()
 @validate_model_request(CourseCreateModel)
-@handle_exception(IntegnityError, InvalidDataError(ErrorsMsgEnum.ERR_COURSE_UPDATE_CREATE))
+@handle_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_COURSE_UPDATE_CREATE))
 def create_course(data: CourseCreateModel):
-    user_id = g.current_user.id
-    posted = None if g.current_user.role == UserRolesEnum.user else datetime.utcnow()
-    return serialize_response(
-        CourseGetModel,
-        create_course_db(
-            data.title,
-            data.text_content,
-            posted,
-            user_id,
-            data.category
-        )
-    )
+    addon_data = {
+        "user_id": g.current_user.id,
+        "date_created": datetime.utcnow(),
+        "date_posted": None if g.current_user.role == UserRolesEnum.user else datetime.utcnow()
+    }
+    return serialize_response(CourseGetModel, CourseDbService.create(**data.dict(), **addon_data))
 
 
 @course_route.route("/", methods=['PATCH'])
 @require_auth()
 @validate_model_params(CourseUpdateModel)
-@handle_exception(IntegnityError, InvalidDataError(ErrorsMsgEnum.ERR_COURSE_UPDATE_CREATE))
+@handle_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_COURSE_UPDATE_CREATE))
 def update_course(data: CourseUpdateModel):
-    owner_or_editor_check(get_course_by_id(data.id))
-    update_course_by_id(data.id, **data.dict(exclude={"id"}))
+    owner_or_editor_check(CourseDbService.get_by_id(data.id))
+    CourseDbService.update(data.id, **data.dict(exclude={"id"}))
     return "", HTTPStatus.OK
 
 
 @course_route.route("/", methods=['DELETE'])
 @require_auth()
 @validate_model_params(GenericIdModel)
-@handle_exception(IntegnityError, InvalidDataError(ErrorsMsgEnum.ERR_DELETE))
+@handle_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_DELETE))
 def delete_course(data: GenericIdModel):
-    course = get_course_by_id(data.id)
-    owner_or_editor_check(course)
-    delete_course_by_id(data.id)
+    owner_or_editor_check(CourseDbService.get_by_id(data.id))
+    CourseDbService.delete(data.id)
     return "", HTTPStatus.OK

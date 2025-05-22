@@ -47,8 +47,7 @@ class Course(TextContentDbModel):
             'english',
             self.title + ' ' +
             self.text_content + ' ' +
-            self.category + ' ' +
-            self.author.username
+            self.category
         )
 
     @classmethod
@@ -76,9 +75,7 @@ class Article(TextContentDbModel):
         func.to_tsvector(
             'english',
             self.title + ' ' +
-            self.text_content + ' ' +
-            self.course.title + ' ' +
-            self.author.username
+            self.text_content
         )
 
     @classmethod
@@ -102,9 +99,7 @@ class Suggestion(TextContentDbModel):
         func.to_tsvector(
             'english',
             self.title + ' ' +
-            self.text_content + ' ' +
-            self.article.title + ' ' +
-            self.author.username
+            self.text_content
         )
 
     @classmethod

@@ -1,8 +1,7 @@
 from flask import request, Response, jsonify, g
 from functools import wraps
 from pydantic.main import BaseModel
-from app.security.security import verify_jwt
-from flask import HTTPException
+from werkzeug.exceptions import HTTPException
 from sqlalchemy.exc import IntegrityError
 
 

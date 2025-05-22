@@ -116,7 +116,7 @@ class SearchableDbModel(IdDbModel):
         pass
 
 
-@event.listens_for(SearchableDbModel, 'before_insert', propagate=True)
+@event.listens_for(SearchableDbModel, 'after_insert', propagate=True)
 @event.listens_for(SearchableDbModel, 'before_update', propagate=True)
 def update_search_vector(mapper, connection, target):
     target.update_search_vector()

@@ -10,12 +10,12 @@ class DbService:
         return cls.MODEL(**kwargs).save()
 
     @classmethod
-    def get(cls, model_id: int):
+    def get_by_id(cls, model_id: int):
         return cls.MODEL.get_by_id(model_id)
 
     @classmethod
     def update(cls, model_id: int, **kwargs):
-        return cls.MODEL.update(model_id, **kwargs)
+        return cls.MODEL.update_by_id(model_id, **kwargs)
 
     @classmethod
     def delete(cls, model_id: int):
