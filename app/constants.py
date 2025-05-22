@@ -45,6 +45,7 @@ class ErrorsMsgEnum(StrEnum):
     ERR_SUGGESTION_UPDATE_CREATE = ""
     ERR_USER_UPDATE = ""
     ERR_DELETE = ""
+    ERR_LIMIT = ""
 
 
 class CommonConstantsEnum(StrEnum):

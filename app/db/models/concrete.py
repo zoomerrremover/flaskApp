@@ -51,8 +51,8 @@ class Course(TextContentDbModel):
         )
 
     @classmethod
-    def search_by_category(cls, category: str):
-        cls.get_filtered_all(cls.category == category)
+    def search_by_category(cls,limit: int, category: str):
+        cls.get_filtered(limit, cls.category == category)
 
 
 class Article(TextContentDbModel):
@@ -79,8 +79,8 @@ class Article(TextContentDbModel):
         )
 
     @classmethod
-    def search_by_course(cls, course_id: int):
-        cls.get_filtered_all(cls.course_id == course_id)
+    def search_by_course(cls, limit: int, course_id: int):
+        cls.get_filtered_all(limit, cls.course_id == course_id)
 
 
 class Suggestion(TextContentDbModel):
@@ -103,8 +103,8 @@ class Suggestion(TextContentDbModel):
         )
 
     @classmethod
-    def search_by_article(cls, article_id: int):
-        cls.get_filtered_all(cls.article_id == article_id)
+    def search_by_article(cls, limit: int, article_id: int):
+        cls.get_filtered_all(limit, cls.article_id == article_id)
 
 
 class SuggestionReaction(LocalDbModel):

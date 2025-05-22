@@ -19,3 +19,12 @@ def register_user(data: UserUpdateModel):
     UserDbService.is_valid_email(data.email)
     user = UserDbService.create(**data.dict())
     return generate_json_jwt(user)
+
+
+@registration_route.route("/username_check", methods=['POST'])
+@validate_model_params(UserUsernameModel)
+def check_username(data: UserUsernameModel):
+    if UserDbService.get_exact_user_by_username(data.username):
+        return "", 200
+    else:
+        raise ConflictingDataError(ErrorsMsgEnum.ERR_USERNAME_ORIGINAL)

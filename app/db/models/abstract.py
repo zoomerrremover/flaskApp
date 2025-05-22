@@ -133,6 +133,5 @@ class TextContentDbModel(SearchableDbModel):
         func.to_tsvector('english', self.title + ' ' + self.text_content)
 
     @classmethod
-    def get_users_content(cls, user_id: int):
-        return cls.get_filtered_all(cls.user_id == user_id)
-
+    def search_by_user(cls, limit: int, user_id: int):
+        return cls.get_filtered(limit, cls.user_id == user_id)

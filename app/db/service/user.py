@@ -24,3 +24,7 @@ class UserDbService(DbService):
             return user
         else:
             raise AuthenticationError(ErrorsMsgEnum.ERR_AUTH)
+
+    @classmethod
+    def get_exact_user_by_username(cls, username: str):
+        cls.MODEL.get_user_by_name(username)

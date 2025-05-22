@@ -5,6 +5,7 @@ from app.settings import RE_USERNAME, RE_PASSWORD, RE_TEXT_CONTENT
 from app.constants import ErrorsMsgEnum, UserRolesEnum
 from flask import Response
 from app.exceptions import InvalidDataError
+from typing import Optional
 
 
 class ValidationTextModel(BaseModel):
@@ -46,7 +47,19 @@ class ValidationRoleModel(BaseModel):
 
 class GenericIdModel(BaseModel):
     id: int = Field()
+    limit: Optional[int] = 20
+
+    @validator("limit")
+    def model_validate_limit(cls, value):
+        if 0 > value or value < 100:
+            raise InvalidDataError(ErrorsMsgEnum.ERR_LIMIT)
 
 
 class StringSearchModel(BaseModel):
-    search: str = Field()
+    search: str = Field(max_length=40)
+    limit: Optional[int] = 20
+
+    @validator("limit")
+    def model_validate_limit(cls, value):
+        if 0 > value or value < 100:
+            raise InvalidDataError(ErrorsMsgEnum.ERR_LIMIT)
