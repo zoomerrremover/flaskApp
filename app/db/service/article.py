@@ -2,7 +2,7 @@ from app.db.models.concrete import Article
 from datetime import datetime
 
 
-def create_article(title: str, text_content: str, user_id: int,course_id: int, date_posted: datetime, next_article: int,
+def create_article(title: str, text_content: str, user_id: int, course_id: int, date_posted: datetime, next_article: int,
                    previous_article: int):
     return (
         Article(
