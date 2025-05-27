@@ -19,7 +19,10 @@ def user_role_is_satisfactory(role_input: str, role_required: UserRolesEnum) -> 
 
 def owner_or_editor_check(media: TextContentDbModel):
     author = g.current_user
-    if user_role_is_satisfactory(author.role, UserRolesEnum.editor) or media.user_id != author.id:
+    if (
+        user_role_is_satisfactory(author.role, UserRolesEnum.editor)
+        or media.user_id != author.id
+    ):
         raise AuthorizationError(ErrorsMsgEnum.ERR_UNSATISFACTORY_ROLE)
 
 

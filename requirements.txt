@@ -4,3 +4,6 @@ sqlalchemy
 fuzzywuzzy
 jwt
 email-validator
+dotenv
+psycopg2
+passlib
