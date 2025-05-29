@@ -1,6 +1,5 @@
 from app.app import app
-from app.db.engine import engine
-from app.db.models.abstract import Base
+from app.db import engine, Base
 
 Base.metadata.create_all(engine)
 

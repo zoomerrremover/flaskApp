@@ -2,9 +2,17 @@ from app.constants import UserRolesEnum
 from flask import jsonify, Response, g
 from pydantic.main import BaseModel
 from app.exceptions import NothingFoundError
-from app.db.models.abstract import TextContentDbModel
+from .db import TextContentDbModel
 from app.exceptions import AuthorizationError
 from app.constants import ErrorsMsgEnum
+from email_validator import validate_email, EmailNotValidError
+
+
+def is_valid_email(email: str):
+    try:
+        validate_email(email, check_deliverability=True)
+    except EmailNotValidError:
+        raise InvalidDataError(ErrorsMsgEnum.ERR_EMAIL_VALID)
 
 
 def user_role_is_satisfactory(role_input: str, role_required: UserRolesEnum) -> bool:
