@@ -1,6 +1,3 @@
-from app.db.models.abstract import TextContentDbModel, SearchableDbModel, TextContentDbModel
-
-
 class DbService:
     __abstract__ = True
     MODEL: SearchableDbModel
