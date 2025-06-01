@@ -30,4 +30,4 @@ class Article(TextContentDbModel):
 
     @classmethod
     def search_by_course(cls, limit: int, course_id: int):
-        cls.get_filtered_all(limit, cls.course_id == course_id)
+        cls._get_filtered_all(limit, cls.course_id == course_id)

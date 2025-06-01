@@ -21,7 +21,7 @@ def get_user():
 @user_route.route("/", methods=["PATCH"])
 @require_auth()
 @validate_model_params(UserUpdateModel)
-@handle_db_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_USER_UPDATE))
+@handle_db_exception(ErrorsMsgEnum.ERROR_USER_UPDATE)
 def update_user(data: UserUpdateModel):
     user_id = g.current_user.id
     User.update_by_id(user_id, **data.dict(exclude={'id'}))
@@ -30,7 +30,7 @@ def update_user(data: UserUpdateModel):
 
 @user_route.route("/", methods=["DELETE"])
 @require_auth()
-@handle_db_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_DELETE))
+@handle_db_exception(ErrorsMsgEnum.ERROR_DELETE)
 def delete_user():
     user_id = g.current_user.id
     User.delete_by_id(user_id)

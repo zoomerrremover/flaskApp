@@ -25,7 +25,7 @@ class Suggestion(TextContentDbModel):
 
     @classmethod
     def search_by_article(cls, limit: int, article_id: int):
-        cls.get_filtered_all(limit, cls.article_id == article_id)
+        cls._get_filtered_all(limit, cls.article_id == article_id)
 
 
 class SuggestionReaction(LocalDbModel):
@@ -40,25 +40,25 @@ class SuggestionReaction(LocalDbModel):
 
     @classmethod
     def get_reaction(cls, suggestion_id: int, user_id: int):
-        return cls.get_filtered_first(
+        return cls._get_filtered_first(
             cls.suggestion_id == suggestion_id and cls.user_id == user_id
         )
 
     @classmethod
     def get_reactions_by_user(cls, user_id: int):
-        return cls.get_filtered_all(cls.user_id == user_id)
+        return cls._get_filtered_all(cls.user_id == user_id)
 
     @classmethod
     def get_reactions_by_suggestion(cls, suggestion_id: int):
-        return cls.get_filtered_all(cls.suggestion_id == suggestion_id)
+        return cls._get_filtered_all(cls.suggestion_id == suggestion_id)
 
     @classmethod
     def update_reaction(cls, suggestion_id: int, user_id: int, like: bool):
-        return cls.update(
+        return cls._update(
             cls.suggestion_id == suggestion_id and cls.user_id == user_id,
             {"like": like},
         )
 
     @classmethod
     def delete_reaction(cls, suggestion_id: int, user_id: int):
-        return cls.delete(cls.suggestion_id == suggestion_id and cls.user_id == user_id)
+        return cls._delete(cls.suggestion_id == suggestion_id and cls.user_id == user_id)

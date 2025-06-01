@@ -26,7 +26,7 @@ class LocalDbModel(Base):
         return self
 
     @classmethod
-    def delete(cls, *args) -> None:
+    def _delete(cls, *args) -> None:
         """
         Save a model instance.
 
@@ -48,11 +48,11 @@ class LocalDbModel(Base):
         return "<%s %s(%s)>" % (obj_id, self.__class__.__name__, values)
 
     @classmethod
-    def get_list_all(cls):
+    def _get_list_all(cls):
         return session.query(cls).all()
 
     @classmethod
-    def get_filtered(cls, limit: int = 20, *args: object) -> object:
+    def _get_filtered(cls, limit: int = 20, *args: object) -> object:
         """
         :param args:  cls.Column == Value
         :param limit:
@@ -61,7 +61,7 @@ class LocalDbModel(Base):
         return session.query(cls).filter(*args).limit(limit).all()
 
     @classmethod
-    def get_filtered_all(cls, *args: object) -> object:
+    def _get_filtered_all(cls, *args: object) -> object:
         """
         :param args:  cls.Column == Value
         :return:
@@ -69,7 +69,7 @@ class LocalDbModel(Base):
         return session.query(cls).filter(*args).all()
 
     @classmethod
-    def get_filtered_first(cls, *args: object) -> object:
+    def _get_filtered_first(cls, *args: object) -> object:
         """
         :param args:  cls.Column == Value
         :return:
@@ -77,7 +77,7 @@ class LocalDbModel(Base):
         return session.query(cls).filter(*args).first()
 
     @classmethod
-    def update(cls, *args, **kwargs) -> int:
+    def _update(cls, *args, **kwargs) -> int:
         request = session.query(cls).where(*args).update(kwargs)
         session.commit()
         return request
@@ -89,19 +89,19 @@ class IdDbModel(LocalDbModel):
 
     @classmethod
     def get_all_models(cls):
-        return cls.get_list_all()
+        return cls._get_list_all()
 
     @classmethod
     def get_by_id(cls, id: int) -> object:
-        return cls.get_filtered_first(cls.id == id)
+        return cls._get_filtered_first(cls.id == id)
 
     @classmethod
     def update_by_id(cls, model_id: int, **kwargs) -> int:
-        return cls.update(cls.id == model_id, **kwargs)
+        return cls._update(cls.id == model_id, **kwargs)
 
     @classmethod
     def delete_by_id(cls, id: int):
-        cls.delete(cls.id == id)
+        cls._delete(cls.id == id)
 
 
 class SearchableDbModel(IdDbModel):
@@ -110,7 +110,7 @@ class SearchableDbModel(IdDbModel):
 
     @classmethod
     def search_by_vector(cls, text: str, limit: int = 20) -> object:
-        return cls.get_filtered(
+        return cls._get_filtered(
             limit,
             cls.search_vector.op("@@")(func.websearch_to_tsquery("english", text)),
         )
@@ -137,4 +137,4 @@ class TextContentDbModel(SearchableDbModel):
 
     @classmethod
     def search_by_user(cls, limit: int, user_id: int):
-        return cls.get_filtered(limit, cls.user_id == user_id)
+        return cls._get_filtered(limit, cls.user_id == user_id)

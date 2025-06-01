@@ -38,16 +38,16 @@ def validate_model_params(model: type[BaseModel]):
     return decorator
 
 
-def handle_db_exception(catch_exception: Exception, http_exception: HTTPException):
+def handle_db_exception(message: str):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
             try:
                 return f(*args, **kwargs)
-            except catch_exception as e:
+            except IntegrityError as e:
                 session.rollback()
                 print(e)
-                raise http_exception
+                raise InvalidDataError
 
         return wrapper
 

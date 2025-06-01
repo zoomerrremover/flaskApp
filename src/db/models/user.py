@@ -21,8 +21,8 @@ class User(SearchableDbModel):
 
     @classmethod
     def get_user_by_name(cls, username: str) -> object:
-        return cls.get_filtered_first(cls.username == username)
+        return cls._get_filtered_first(cls.username == username)
 
     @classmethod
     def get_user_by_email(cls, email: str) -> object:
-        return cls.get_filtered_first(cls.email == email)
+        return cls._get_filtered_first(cls.email == email)

@@ -31,9 +31,7 @@ def get_suggestion(data: GenericIdModel):
 @suggestion_route.route("/", methods=["POST"])
 @require_auth()
 @validate_model_request(SuggestionCreateModel)
-@handle_db_exception(
-    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_SUGGESTION_UPDATE_CREATE)
-)
+@handle_db_exception(ErrorsMsgEnum.ERROR_SUGGESTION_UPDATE_CREATE)
 def create_suggestion(data: SuggestionCreateModel):
     addon_data = {"user_id": g.current_user.id, "posted": datetime.utcnow()}
     return serialize_response(
@@ -44,9 +42,7 @@ def create_suggestion(data: SuggestionCreateModel):
 @suggestion_route.route("/", methods=["PATCH"])
 @require_auth()
 @validate_model_params(SuggestionUpdateModel)
-@handle_db_exception(
-    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_SUGGESTION_UPDATE_CREATE)
-)
+@handle_db_exception(ErrorsMsgEnum.ERROR_SUGGESTION_UPDATE_CREATE)
 def update_suggestion(data: SuggestionUpdateModel):
     owner_or_editor_check(Suggestion.get_by_id(data.id))
     Suggestion.update_by_id(data.id, **data.dict(exclude={"id"}))
@@ -56,7 +52,7 @@ def update_suggestion(data: SuggestionUpdateModel):
 @suggestion_route.route("/", methods=["DELETE"])
 @require_auth()
 @validate_model_params(GenericIdModel)
-@handle_db_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_DELETE))
+@handle_db_exception(ErrorsMsgEnum.ERROR_DELETE)
 def delete_suggestion(data: GenericIdModel):
     course = Suggestion.get_by_id(data.id)
     owner_or_editor_check(course)

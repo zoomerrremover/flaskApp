@@ -24,4 +24,4 @@ class Course(TextContentDbModel):
 
     @classmethod
     def search_by_category(cls, limit: int, category: str):
-        cls.get_filtered(limit, cls.category == category)
+        cls._get_filtered(limit, cls.category == category)
