@@ -1,5 +1,4 @@
-from app.app import app
-from app.db import engine, Base
+from src import app, Base, engine
 
 Base.metadata.create_all(engine)
 
