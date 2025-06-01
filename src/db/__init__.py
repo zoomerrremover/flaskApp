@@ -1,4 +1,4 @@
-from .engine import engine
+from .engine import engine, session
 from .models.article import Article
 from .models.course import Course
 from .models.suggestion import Suggestion

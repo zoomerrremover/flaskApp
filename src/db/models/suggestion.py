@@ -1,7 +1,6 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, Boolean
+from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, Boolean, UniqueConstraint, func
 from datetime import datetime
-from sqlalchemy import UniqueConstraint, func
 from .common import TextContentDbModel, LocalDbModel
 
 

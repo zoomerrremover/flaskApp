@@ -12,7 +12,7 @@ def is_valid_email(email: str):
     try:
         validate_email(email, check_deliverability=True)
     except EmailNotValidError:
-        raise InvalidDataError(ErrorsMsgEnum.ERR_EMAIL_VALID)
+        raise InvalidDataError(ErrorsMsgEnum.ERROR_EMAIL_VALID)
 
 
 def user_role_is_satisfactory(role_input: str, role_required: UserRolesEnum) -> bool:
@@ -31,7 +31,7 @@ def owner_or_editor_check(media: TextContentDbModel):
         user_role_is_satisfactory(author.role, UserRolesEnum.editor)
         or media.user_id != author.id
     ):
-        raise AuthorizationError(ErrorsMsgEnum.ERR_UNSATISFACTORY_ROLE)
+        raise AuthorizationError(ErrorsMsgEnum.ERRO_rUNSATISFACTORY_ROLE)
 
 
 def serialize_response(model: type[BaseModel], content):

@@ -32,5 +32,5 @@ def verify_jwt(token):
         payload = jwt.decode(token, JWT_KEY, algorithms=[ALGORITHM])
         result = User(id=payload["user_id"])
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
-        raise AuthenticationError(ErrorsMsgEnum.ERR_JWT)
+        raise AuthenticationError(ErrorsMsgEnum.ERROR_JWT)
     return result

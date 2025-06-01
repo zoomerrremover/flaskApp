@@ -5,7 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from ..decorators import (
     validate_model_request,
     validate_model_params,
-    handle_exception,
+    handle_db_exception,
     require_auth,
 )
 from ..models import (
@@ -31,8 +31,8 @@ def get_course(data: GenericIdModel):
 @course_route.route("/", methods=["POST"])
 @require_auth()
 @validate_model_request(CourseCreateModel)
-@handle_exception(
-    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_COURSE_UPDATE_CREATE)
+@handle_db_exception(
+    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_COURSE_UPDATE_CREATE)
 )
 def create_course(data: CourseCreateModel):
     addon_data = {
@@ -43,27 +43,27 @@ def create_course(data: CourseCreateModel):
         ),
     }
     return serialize_response(
-        CourseGetModel, Course.create(**data.dict(), **addon_data)
+        CourseGetModel, Course(**data.dict(), **addon_data).save()
     )
 
 
 @course_route.route("/", methods=["PATCH"])
 @require_auth()
 @validate_model_params(CourseUpdateModel)
-@handle_exception(
-    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_COURSE_UPDATE_CREATE)
+@handle_db_exception(
+    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_COURSE_UPDATE_CREATE)
 )
 def update_course(data: CourseUpdateModel):
     owner_or_editor_check(Course.get_by_id(data.id))
-    Course.update(data.id, **data.dict(exclude={"id"}))
+    Course.update_by_id(data.id, **data.dict(exclude={"id"}))
     return "", HTTPStatus.OK
 
 
 @course_route.route("/", methods=["DELETE"])
 @require_auth()
 @validate_model_params(GenericIdModel)
-@handle_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_DELETE))
+@handle_db_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_DELETE))
 def delete_course(data: GenericIdModel):
     owner_or_editor_check(Course.get_by_id(data.id))
-    Course.delete(data.id)
+    Course.delete_by_id(data.id)
     return "", HTTPStatus.OK

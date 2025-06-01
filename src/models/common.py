@@ -13,7 +13,7 @@ class ValidationTextModel(BaseModel):
     @staticmethod
     def validate_text_content(value):
         if not RE_TEXT_CONTENT.match(value):
-            raise InvalidDataError(ErrorsMsgEnum.ERR_TEXT_CONTENT)
+            raise InvalidDataError(ErrorsMsgEnum.ERROR_TEXT_CONTENT)
         return value
 
 
@@ -22,7 +22,7 @@ class ValidationPasswordModel(BaseModel):
     @staticmethod
     def validate_password(value):
         if not RE_PASSWORD.match(value):
-            raise InvalidDataError(ErrorsMsgEnum.ERR_PASSWORD)
+            raise InvalidDataError(ErrorsMsgEnum.ERROR_PASSWORD)
         return value
 
 
@@ -31,7 +31,7 @@ class ValidationUserNameModel(BaseModel):
     @staticmethod
     def validate_username(value):
         if not RE_USERNAME.match(value):
-            raise InvalidDataError(ErrorsMsgEnum.ERR_USERNAME_VALIDITY)
+            raise InvalidDataError(ErrorsMsgEnum.ERROR_USERNAME_VALIDITY)
         return value
 
 
@@ -42,24 +42,18 @@ class ValidationRoleModel(BaseModel):
         try:
             UserRolesEnum(value)
         except ValueError:
-            raise InvalidDataError(ErrorsMsgEnum.ERR_ROLES)
+            raise InvalidDataError(ErrorsMsgEnum.ERROR_ROLES)
 
 
 class GenericIdModel(BaseModel):
     id: int = Field()
-    limit: Optional[int] = 20
-
-    @validator("limit")
-    def model_validate_limit(cls, value):
-        if 0 > value or value < 100:
-            raise InvalidDataError(ErrorsMsgEnum.ERR_LIMIT)
 
 
-class StringSearchModel(BaseModel):
-    search: str = Field(max_length=40)
-    limit: Optional[int] = 20
+# class StringSearchModel(BaseModel):
+#     search: str = Field(max_length=40)
+#     limit: Optional[int] = 20
 
-    @validator("limit")
-    def model_validate_limit(cls, value):
-        if 0 > value or value < 100:
-            raise InvalidDataError(ErrorsMsgEnum.ERR_LIMIT)
+#     @validator("limit")
+#     def model_validate_limit(cls, value):
+#         if 0 > value or value < 100:
+#             raise InvalidDataError(ErrorsMsgEnum.ERROR_LIMIT)

@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, abort, Response, jsonify
+from ..constants import ErrorsMsgEnum
 from ..decorators import validate_model_params
+from ..exceptions import AuthenticationError
 from ..db import User
 from ..security import generate_json_jwt, verify_password
 from ..models import UserLogInModel
@@ -8,7 +10,7 @@ login_route = Blueprint("login_route", __name__, url_prefix="/login")
 from ..decorators import (
     validate_model_request,
     validate_model_params,
-    handle_exception,
+    handle_db_exception,
 )
 
 
@@ -19,4 +21,4 @@ def route_login(model: UserLogInModel):
     if user and verify_password(model.password, user.password):
         return generate_json_jwt(user)
     else:
-        raise AuthenticationError(ErrorsMsgEnum.ERR_AUTH)
+        raise AuthenticationError(ErrorsMsgEnum.ERROR_AUTH)

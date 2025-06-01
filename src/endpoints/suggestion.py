@@ -12,7 +12,7 @@ from ..db import Suggestion
 from ..decorators import (
     validate_model_params,
     validate_model_request,
-    handle_exception,
+    handle_db_exception,
     require_auth,
 )
 from ..common import serialize_response, owner_or_editor_check
@@ -31,8 +31,8 @@ def get_suggestion(data: GenericIdModel):
 @suggestion_route.route("/", methods=["POST"])
 @require_auth()
 @validate_model_request(SuggestionCreateModel)
-@handle_exception(
-    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_SUGGESTION_UPDATE_CREATE)
+@handle_db_exception(
+    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_SUGGESTION_UPDATE_CREATE)
 )
 def create_suggestion(data: SuggestionCreateModel):
     addon_data = {"user_id": g.current_user.id, "posted": datetime.utcnow()}
@@ -44,21 +44,21 @@ def create_suggestion(data: SuggestionCreateModel):
 @suggestion_route.route("/", methods=["PATCH"])
 @require_auth()
 @validate_model_params(SuggestionUpdateModel)
-@handle_exception(
-    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_SUGGESTION_UPDATE_CREATE)
+@handle_db_exception(
+    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_SUGGESTION_UPDATE_CREATE)
 )
 def update_suggestion(data: SuggestionUpdateModel):
     owner_or_editor_check(Suggestion.get_by_id(data.id))
-    Suggestion.update(data.id, **data.dict(exclude={"id"}))
+    Suggestion.update_by_id(data.id, **data.dict(exclude={"id"}))
     return "", HTTPStatus.OK
 
 
 @suggestion_route.route("/", methods=["DELETE"])
 @require_auth()
 @validate_model_params(GenericIdModel)
-@handle_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_DELETE))
+@handle_db_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_DELETE))
 def delete_suggestion(data: GenericIdModel):
     course = Suggestion.get_by_id(data.id)
     owner_or_editor_check(course)
-    Suggestion.delete(data.id)
+    Suggestion.delete_by_id(data.id)
     return "", HTTPStatus.OK

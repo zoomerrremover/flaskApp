@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from flask import Blueprint, render_template, Response, request, jsonify, g
 from sqlalchemy.exc import IntegrityError
-from ..decorators import validate_model_params, handle_exception, require_auth
+from ..decorators import validate_model_params, handle_db_exception, require_auth
 from ..models import UserUpdateModel, UserGetModel
 from ..db import User
 from ..common import serialize_response
@@ -21,17 +21,17 @@ def get_user():
 @user_route.route("/", methods=["PATCH"])
 @require_auth()
 @validate_model_params(UserUpdateModel)
-@handle_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_USER_UPDATE))
+@handle_db_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_USER_UPDATE))
 def update_user(data: UserUpdateModel):
     user_id = g.current_user.id
-    User.update(user_id, **data.dict())
+    User.update_by_id(user_id, **data.dict(exclude={'id'}))
     return "", HTTPStatus.OK
 
 
 @user_route.route("/", methods=["DELETE"])
 @require_auth()
-@handle_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_DELETE))
+@handle_db_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_DELETE))
 def delete_user():
     user_id = g.current_user.id
-    User.delete(user_id)
+    User.delete_by_id(user_id)
     return "", HTTPStatus.OK

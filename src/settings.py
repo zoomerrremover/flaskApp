@@ -13,7 +13,7 @@ DB_STRING =  f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
 JWT_KEY = getenv('JWT_KEY', default='SECRET')
 ACCESS_TOKEN_TIME = 30
-PASSWORD_KEY = getenv('PASSWORD_KEY')
+PASSWORD_KEY = getenv('PASSWORD_KEY', default='SECRET')
 ALGORITHM = 'HS256'
 AUTH_HEADER = 'Authorization'
 

@@ -1,9 +1,10 @@
 flask
 pydantic
 sqlalchemy
-fuzzywuzzy
 jwt
 email-validator
 dotenv
 psycopg2
 passlib
+PyJWT
+bcrypt

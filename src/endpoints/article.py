@@ -7,7 +7,7 @@ from ..db import Article
 from ..decorators import (
     validate_model_request,
     validate_model_params,
-    handle_exception,
+    handle_db_exception,
     require_auth,
 )
 from ..models import (
@@ -32,8 +32,8 @@ def get_article(data: GenericIdModel):
 @article_route.route("/", methods=["POST"])
 @require_auth()
 @validate_model_request(ArticleCreateModel)
-@handle_exception(
-    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_ARTICLE_UPDATE_CREATE)
+@handle_db_exception(
+    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_CREATE)
 )
 def create_article(data: ArticleCreateModel):
     addon_data = {
@@ -44,27 +44,27 @@ def create_article(data: ArticleCreateModel):
         ),
     }
     return serialize_response(
-        ArticleGetModel, Article.create(**data.dict(), **addon_data).save()
+        ArticleGetModel, Article(**data.dict(), **addon_data).save()
     )
 
 
 @article_route.route("/", methods=["PATCH"])
 @require_auth(UserRolesEnum.editor)
 @validate_model_params(ArticleUpdateModel)
-@handle_exception(
-    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_ARTICLE_UPDATE_CREATE)
+@handle_db_exception(
+    IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_CREATE)
 )
 def update_article(data: ArticleUpdateModel):
     owner_or_editor_check(Article.get_by_id(data.id))
-    Article.update(data.id, **data.dict(exclude={"id"}))
+    Article.update_by_id(data.id, **data.dict(exclude={"id"}))
     return "", HTTPStatus.OK
 
 
 @article_route.route("/", methods=["DELETE"])
 @require_auth(UserRolesEnum.editor)
 @validate_model_params(GenericIdModel)
-@handle_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERR_DELETE))
+@handle_db_exception(IntegrityError, InvalidDataError(ErrorsMsgEnum.ERROR_DELETE))
 def delete_article(data: GenericIdModel):
     owner_or_editor_check(Article.get_by_id(data.id))
-    Article.delete(data.id)
+    Article.delete_by_id(data.id)
     return "", HTTPStatus.OK
