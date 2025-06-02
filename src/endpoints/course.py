@@ -31,7 +31,7 @@ def get_course(data: GenericIdModel):
 @course_route.route("/", methods=["POST"])
 @require_auth()
 @validate_model_request(CourseCreateModel)
-@handle_db_exception(ErrorsMsgEnum.ERROR_COURSE_UPDATE_CREATE)
+@handle_db_exception(ErrorsMsgEnum.ERROR_COURSE_UPDATE_FAILED)
 def create_course(data: CourseCreateModel):
     addon_data = {
         "user_id": g.current_user.id,
@@ -48,7 +48,7 @@ def create_course(data: CourseCreateModel):
 @course_route.route("/", methods=["PATCH"])
 @require_auth()
 @validate_model_params(CourseUpdateModel)
-@handle_db_exception(ErrorsMsgEnum.ERROR_COURSE_UPDATE_CREATE)
+@handle_db_exception(ErrorsMsgEnum.ERROR_COURSE_UPDATE_FAILED)
 def update_course(data: CourseUpdateModel):
     owner_or_editor_check(Course.get_by_id(data.id))
     Course.update_by_id(data.id, **data.dict(exclude={"id"}))
@@ -58,7 +58,7 @@ def update_course(data: CourseUpdateModel):
 @course_route.route("/", methods=["DELETE"])
 @require_auth()
 @validate_model_params(GenericIdModel)
-@handle_db_exception(ErrorsMsgEnum.ERROR_DELETE)
+@handle_db_exception(ErrorsMsgEnum.ERROR_DELETE_FAILED)
 def delete_course(data: GenericIdModel):
     owner_or_editor_check(Course.get_by_id(data.id))
     Course.delete_by_id(data.id)

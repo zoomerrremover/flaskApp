@@ -30,7 +30,7 @@ class UserRolesEnum(StrEnum):
 
 class ErrorsMsgEnum(StrEnum):
     ERROR_USERNAME_INVALID = "Username must be 3-20 characters, without spaces."
-    ERROR_USERNAME_EXISTS = "Username already exists."
+    ERROR_USERNAME_NOT_ORIGINAL = "Username already exists."
     ERROR_PASSWORD_WEAK = "Password must contain at least one letter."
     ERROR_ROLE_INVALID = "Invalid role."
     ERROR_TEXT_TOO_SHORT = "Text must be at least 3 characters."

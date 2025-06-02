@@ -1,6 +1,6 @@
 from flask import Response
 from pydantic.main import BaseModel
-from pydantic import validator
+from pydantic import field_validator
 from pydantic.fields import Field
 from typing import Optional
 from ..settings import RE_USERNAME, RE_PASSWORD, RE_TEXT_CONTENT

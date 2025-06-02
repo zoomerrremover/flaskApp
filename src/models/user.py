@@ -1,4 +1,4 @@
-from pydantic import validator, EmailStr
+from pydantic import field_validator, EmailStr
 from pydantic.fields import Field
 from pydantic.main import BaseModel
 from typing import Optional
@@ -14,7 +14,7 @@ from .common import (
 class UserUsernameModel(ValidationUserNameModel):
     username: str = Field(max_length=24)
 
-    @validator("username")
+    @field_validator("username")
     def model_validate_username(cls, value):
         return cls.validate_username(value)
 
@@ -22,7 +22,7 @@ class UserUsernameModel(ValidationUserNameModel):
 class UserRoleModel(ValidationRoleModel):
     role: str = Field(max_length=10)
 
-    @validator("role")
+    @field_validator("role")
     def model_validate_role(cls, value):
         return cls.validate_role(value)
 
@@ -30,7 +30,7 @@ class UserRoleModel(ValidationRoleModel):
 class UserPasswordModel(ValidationPasswordModel):
     password: str = Field(max_length=32)
 
-    @validator("password")
+    @field_validator("password")
     def model_validate_password(cls, value):
         return cls.validate_password(value)
 

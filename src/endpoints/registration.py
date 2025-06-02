@@ -21,7 +21,7 @@ registration_route = Blueprint(
 
 @registration_route.route("/", methods=["POST"])
 @validate_model_request(UserUpdateModel)
-@handle_db_exception(ErrorsMsgEnum.ERROR_USERNAME_ORIGINAL)
+@handle_db_exception(ErrorsMsgEnum.ERROR_USERNAME_NOT_ORIGINAL)
 def register_user(data: UserUpdateModel):
     is_valid_email(data.email)
     db_entry = data.dict()

@@ -15,7 +15,7 @@ def validate_model_request(model: type[BaseModel]):
             try:
                 data = model(**request.get_json())
             except ValueError:
-                raise InvalidDataError(ErrorsMsgEnum.ERROR_FIELD_MISSING)
+                raise InvalidDataError(ErrorsMsgEnum.ERROR_FIELD_REQUIRED)
             return f(data, *args, **kwargs)
 
         return wrapper
@@ -30,7 +30,7 @@ def validate_model_params(model: type[BaseModel]):
             try:
                 data = model(**request.args)
             except ValueError:
-                raise InvalidDataError(ErrorsMsgEnum.ERROR_FIELD_MISSING)
+                raise InvalidDataError(ErrorsMsgEnum.ERROR_FIELD_REQUIRED)
             return f(data, *args, **kwargs)
 
         return wrapper
@@ -47,7 +47,7 @@ def handle_db_exception(message: str):
             except IntegrityError as e:
                 session.rollback()
                 print(e)
-                raise InvalidDataError
+                raise InvalidDataError(message)
 
         return wrapper
 

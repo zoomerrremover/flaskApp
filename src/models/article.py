@@ -1,4 +1,4 @@
-from pydantic import validator, EmailStr
+from pydantic import field_validator, EmailStr
 from pydantic.fields import Field
 from pydantic.main import BaseModel
 from typing import Optional
@@ -13,11 +13,11 @@ class ArticleCreateModel(ValidationTextModel):
     next_article: Optional[int] = None
     previous_article: Optional[int] = None
 
-    @validator("title")
+    @field_validator("title")
     def model_validate_title(cls, value):
         return cls.validate_text_content(value)
 
-    @validator("text_content")
+    @field_validator("text_content")
     def model_validate_text_content(cls, value):
         return cls.validate_text_content(value)
 

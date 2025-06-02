@@ -32,7 +32,7 @@ def get_article(data: GenericIdModel):
 @article_route.route("/", methods=["POST"])
 @require_auth()
 @validate_model_request(ArticleCreateModel)
-@handle_db_exception(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_CREATE)
+@handle_db_exception(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_FAILED)
 def create_article(data: ArticleCreateModel):
     addon_data = {
         "user_id": g.current_user.id,
@@ -49,7 +49,7 @@ def create_article(data: ArticleCreateModel):
 @article_route.route("/", methods=["PATCH"])
 @require_auth(UserRolesEnum.editor)
 @validate_model_params(ArticleUpdateModel)
-@handle_db_exception(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_CREATE)
+@handle_db_exception(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_FAILED)
 def update_article(data: ArticleUpdateModel):
     owner_or_editor_check(Article.get_by_id(data.id))
     Article.update_by_id(data.id, **data.dict(exclude={"id"}))
@@ -59,7 +59,7 @@ def update_article(data: ArticleUpdateModel):
 @article_route.route("/", methods=["DELETE"])
 @require_auth(UserRolesEnum.editor)
 @validate_model_params(GenericIdModel)
-@handle_db_exception(ErrorsMsgEnum.ERROR_DELETE)
+@handle_db_exception(ErrorsMsgEnum.ERROR_DELETE_FAILED)
 def delete_article(data: GenericIdModel):
     owner_or_editor_check(Article.get_by_id(data.id))
     Article.delete_by_id(data.id)
