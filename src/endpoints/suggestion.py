@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, Response, request, jsonify, g
-from datetime import datetime
+from datetime import datetime, timezone
 from http import HTTPStatus
 from sqlalchemy.exc import IntegrityError
 from ..models import (
@@ -35,7 +35,7 @@ def get_suggestion(data: GenericIdModel):
 def create_suggestion(data: SuggestionCreateModel):
     addon_data = {
         "user_id": g.current_user.id,
-        "posted": datetime.now(datetime.timezone.utc),
+        "posted": datetime.now(timezone.utc),
     }
     return serialize_response(
         SuggestionGetModel, Suggestion.create(**data.dict(), **addon_data).save()

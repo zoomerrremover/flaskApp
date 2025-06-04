@@ -2,7 +2,7 @@ import datetime
 from http import HTTPStatus
 from flask import Blueprint, render_template, Response, request, jsonify, g
 from sqlalchemy.exc import IntegrityError
-from datetime import datetime
+from datetime import datetime, timezone
 from ..db import Article
 from ..decorators import (
     validate_model_request,
@@ -36,11 +36,11 @@ def get_article(data: GenericIdModel):
 def create_article(data: ArticleCreateModel):
     addon_data = {
         "user_id": g.current_user.id,
-        "date_created": datetime.now(datetime.timezone.utc),
+        "date_created": datetime.now(timezone.utc),
         "date_posted": (
             None
             if g.current_user.role == UserRolesEnum.user
-            else datetime.now(datetime.timezone.utc)
+            else datetime.now(timezone.utc)
         ),
     }
     return serialize_response(
