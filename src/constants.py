@@ -48,6 +48,7 @@ class ErrorsMsgEnum(StrEnum):
     ERROR_DELETE_FAILED = "Failed to delete resource."
     ERROR_RATE_LIMITED = "Rate limit exceeded."
     ERROR_USER_NOT_FOUND = "User does not exist."
+    ERROR_TEXT_CONTENT = "Text content is invalid"
 
 
 class CommonConstantsEnum(StrEnum):

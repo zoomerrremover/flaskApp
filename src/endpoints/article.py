@@ -36,9 +36,11 @@ def get_article(data: GenericIdModel):
 def create_article(data: ArticleCreateModel):
     addon_data = {
         "user_id": g.current_user.id,
-        "date_created": datetime.utcnow(),
+        "date_created": datetime.now(datetime.timezone.utc),
         "date_posted": (
-            None if g.current_user.role == UserRolesEnum.user else datetime.utcnow()
+            None
+            if g.current_user.role == UserRolesEnum.user
+            else datetime.now(datetime.timezone.utc)
         ),
     }
     return serialize_response(

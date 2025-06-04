@@ -33,7 +33,10 @@ def get_suggestion(data: GenericIdModel):
 @validate_model_request(SuggestionCreateModel)
 @handle_db_exception(ErrorsMsgEnum.ERROR_SUGGESTION_UPDATE_FAILED)
 def create_suggestion(data: SuggestionCreateModel):
-    addon_data = {"user_id": g.current_user.id, "posted": datetime.utcnow()}
+    addon_data = {
+        "user_id": g.current_user.id,
+        "posted": datetime.now(datetime.timezone.utc),
+    }
     return serialize_response(
         SuggestionGetModel, Suggestion.create(**data.dict(), **addon_data).save()
     )

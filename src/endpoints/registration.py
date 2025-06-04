@@ -25,8 +25,14 @@ registration_route = Blueprint(
 def register_user(data: UserUpdateModel):
     is_valid_email(data.email)
     db_entry = data.dict()
-    db_entry['password'] = passwd_to_hash(data.password)
-    user = User(**db_entry, **{'role': UserRolesEnum.user, 'date_registered': datetime.utcnow()}).save()
+    db_entry["password"] = passwd_to_hash(data.password)
+    user = User(
+        **db_entry,
+        **{
+            "role": UserRolesEnum.user,
+            "date_registered": datetime.now(datetime.timezone.utc),
+        }
+    ).save()
     return generate_json_jwt(user)
 
 

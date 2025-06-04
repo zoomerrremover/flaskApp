@@ -22,7 +22,7 @@ class ValidationPasswordModel(BaseModel):
     @staticmethod
     def validate_password(value):
         if not RE_PASSWORD.match(value):
-            raise InvalidDataError(ErrorsMsgEnum.ERROR_PASSWORD)
+            raise InvalidDataError(ErrorsMsgEnum.ERROR_PASSWORD_WEAK)
         return value
 
 
@@ -31,7 +31,7 @@ class ValidationUserNameModel(BaseModel):
     @staticmethod
     def validate_username(value):
         if not RE_USERNAME.match(value):
-            raise InvalidDataError(ErrorsMsgEnum.ERROR_USERNAME_VALIDITY)
+            raise InvalidDataError(ErrorsMsgEnum.ERROR_USERNAME_INVALID)
         return value
 
 
@@ -41,8 +41,9 @@ class ValidationRoleModel(BaseModel):
     def validate_role(value):
         try:
             UserRolesEnum(value)
+            return value
         except ValueError:
-            raise InvalidDataError(ErrorsMsgEnum.ERROR_ROLES)
+            raise InvalidDataError(ErrorsMsgEnum.ERROR_ROLE_INVALID)
 
 
 class GenericIdModel(BaseModel):
