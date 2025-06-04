@@ -8,3 +8,5 @@ psycopg2
 passlib
 PyJWT
 bcrypt
+pytest
+pytest-mock
