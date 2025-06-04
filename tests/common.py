@@ -1,5 +1,6 @@
 import subprocess
 import os
+import time
 
 
 def start_docker_compose(docker_compose_path, detached=True):
@@ -12,6 +13,7 @@ def start_docker_compose(docker_compose_path, detached=True):
         print("Docker Compose started successfully.")
         if result.stdout:
             print(result.stdout)
+        time.sleep(2)
         return True
     except subprocess.CalledProcessError as e:
         print(f"Error starting Docker Compose (exit code: {e.returncode}):")
@@ -35,6 +37,7 @@ def down_docker_compose(docker_compose_path, timeout=None):
         print("Docker Compose stopped successfully.")
         if result.stdout:
             print(result.stdout)
+        time.sleep(2)
         return True
     except subprocess.CalledProcessError as e:
         print(f"Error stopping Docker Compose (exit code: {e.returncode}):")
@@ -49,7 +52,7 @@ def down_docker_compose(docker_compose_path, timeout=None):
 
 
 if __name__ == "__main__":
-    compose_file = os.path.abspath("./docker-compose.yml")  # Adjust path if needed
+    compose_file = os.path.abspath("../docker-compose.yml")  # Adjust path if needed
 
     print("Starting Docker Compose...")
     if start_docker_compose(compose_file):
