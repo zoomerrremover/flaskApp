@@ -1,12 +1,17 @@
 from flask import Blueprint, render_template, Response, request, jsonify
 from http import HTTPStatus
 from sqlalchemy.exc import IntegrityError
-from ..db import User
-from ..decorators import validate_model_request, handle_db_exception, require_auth
-from ..models import UserRoleUpdateModel, UserEmailModel, UserRoleModel, GenericIdModel
-from ..constants import UserRolesEnum
-from ..exceptions import InvalidDataError
-from ..constants import ErrorsMsgEnum
+from src.db import User
+from src.decorators import validate_model_request, handle_db_exception, require_auth
+from src.models import (
+    UserRoleUpdateModel,
+    UserEmailModel,
+    UserRoleModel,
+    GenericIdModel,
+)
+from src.constants import UserRolesEnum
+from src.exceptions import InvalidDataError
+from src.constants import ErrorsMsgEnum
 
 admin_route = Blueprint("admin_route", __name__, url_prefix="/admin")
 

@@ -2,22 +2,22 @@ from flask import Blueprint, render_template, Response, request, jsonify, g
 from datetime import datetime, timezone
 from http import HTTPStatus
 from sqlalchemy.exc import IntegrityError
-from ..models import (
+from src.models import (
     SuggestionGetModel,
     SuggestionCreateModel,
     SuggestionUpdateModel,
     GenericIdModel,
 )
-from ..db import Suggestion
-from ..decorators import (
+from src.db import Suggestion
+from src.decorators import (
     validate_model_params,
     validate_model_request,
     handle_db_exception,
     require_auth,
 )
-from ..common import serialize_response, owner_or_editor_check
-from ..exceptions import InvalidDataError
-from ..constants import ErrorsMsgEnum
+from src.common import serialize_response, owner_or_editor_check
+from src.exceptions import InvalidDataError
+from src.constants import ErrorsMsgEnum
 
 suggestion_route = Blueprint("suggestion_route", __name__, url_prefix="/suggestion")
 

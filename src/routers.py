@@ -1,5 +1,5 @@
 from flask import Flask
-from .endpoints import (
+from src.endpoints import (
     admin_route,
     article_route,
     course_route,

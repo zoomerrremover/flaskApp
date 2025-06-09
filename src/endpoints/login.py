@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, abort, Response, jsonify
-from ..constants import ErrorsMsgEnum
-from ..decorators import validate_model_params
-from ..exceptions import AuthenticationError
-from ..db import User
-from ..security import generate_json_jwt, verify_password
-from ..models import UserLogInModel
+from src.constants import ErrorsMsgEnum
+from src.decorators import validate_model_params
+from src.exceptions import AuthenticationError
+from src.db import User
+from src.security import generate_json_jwt, verify_password
+from src.models import UserLogInModel
 
 login_route = Blueprint("login_route", __name__, url_prefix="/login")
 from ..decorators import (

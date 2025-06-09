@@ -1,7 +1,15 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, TIMESTAMP, UniqueConstraint, func
+from sqlalchemy import (
+    Column,
+    String,
+    Integer,
+    ForeignKey,
+    TIMESTAMP,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from .common import SearchableDbModel
+from src.db.models.common import SearchableDbModel
 
 
 class User(SearchableDbModel):

@@ -3,9 +3,9 @@ from functools import wraps
 from pydantic.main import BaseModel
 from werkzeug.exceptions import HTTPException
 from sqlalchemy.exc import IntegrityError
-from ..exceptions import InvalidDataError
-from ..db import session
-from ..constants import ErrorsMsgEnum
+from src.exceptions import InvalidDataError
+from src.db import session
+from src.constants import ErrorsMsgEnum
 
 
 def validate_model_request(model: type[BaseModel]):

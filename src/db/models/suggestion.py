@@ -1,7 +1,16 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey, Boolean, UniqueConstraint, func
+from sqlalchemy import (
+    Column,
+    String,
+    Integer,
+    TIMESTAMP,
+    ForeignKey,
+    Boolean,
+    UniqueConstraint,
+    func,
+)
 from datetime import datetime
-from .common import TextContentDbModel, LocalDbModel
+from src.db.models.common import TextContentDbModel, LocalDbModel
 
 
 class Suggestion(TextContentDbModel):
@@ -61,4 +70,6 @@ class SuggestionReaction(LocalDbModel):
 
     @classmethod
     def delete_reaction(cls, suggestion_id: int, user_id: int):
-        return cls._delete(cls.suggestion_id == suggestion_id and cls.user_id == user_id)
+        return cls._delete(
+            cls.suggestion_id == suggestion_id and cls.user_id == user_id
+        )

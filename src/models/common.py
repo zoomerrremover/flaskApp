@@ -3,9 +3,9 @@ from pydantic.main import BaseModel
 from pydantic import field_validator
 from pydantic.fields import Field
 from typing import Optional
-from ..settings import RE_USERNAME, RE_PASSWORD, RE_TEXT_CONTENT
-from ..constants import ErrorsMsgEnum, UserRolesEnum
-from ..exceptions import InvalidDataError
+from src.settings import RE_USERNAME, RE_PASSWORD, RE_TEXT_CONTENT
+from src.constants import ErrorsMsgEnum, UserRolesEnum
+from src.exceptions import InvalidDataError
 
 
 class ValidationTextModel(BaseModel):

@@ -3,7 +3,7 @@ from pydantic.fields import Field
 from pydantic.main import BaseModel
 from typing import Optional
 from datetime import datetime
-from .common import ValidationTextModel, GenericIdModel
+from src.models.common import ValidationTextModel, GenericIdModel
 
 
 class ArticleCreateModel(ValidationTextModel):

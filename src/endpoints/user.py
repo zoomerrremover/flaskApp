@@ -1,12 +1,12 @@
 from http import HTTPStatus
 from flask import Blueprint, render_template, Response, request, jsonify, g
 from sqlalchemy.exc import IntegrityError
-from ..decorators import validate_model_params, handle_db_exception, require_auth
-from ..models import UserUpdateModel, UserGetModel
-from ..db import User
-from ..common import serialize_response
-from ..constants import ErrorsMsgEnum
-from ..exceptions import InvalidDataError
+from src.decorators import validate_model_params, handle_db_exception, require_auth
+from src.models import UserUpdateModel, UserGetModel
+from src.db import User
+from src.common import serialize_response
+from src.constants import ErrorsMsgEnum
+from src.exceptions import InvalidDataError
 
 user_route = Blueprint("user_route", __name__, url_prefix="/user")
 
@@ -24,7 +24,7 @@ def get_user():
 @handle_db_exception(ErrorsMsgEnum.ERROR_USER_UPDATE_FAILED)
 def update_user(data: UserUpdateModel):
     user_id = g.current_user.id
-    User.update_by_id(user_id, **data.dict(exclude={'id'}))
+    User.update_by_id(user_id, **data.dict(exclude={"id"}))
     return "", HTTPStatus.OK
 
 

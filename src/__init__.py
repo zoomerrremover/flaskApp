@@ -1,2 +1,2 @@
-from .app import app
-from .db import Base, engine
+from src.app import app
+from src.db import Base, engine

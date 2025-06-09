@@ -1,11 +1,11 @@
 from flask import jsonify, Response, g
 from pydantic.main import BaseModel
 from email_validator import validate_email, EmailNotValidError
-from .constants import UserRolesEnum
-from .exceptions import NothingFoundError
-from .db import TextContentDbModel
-from .exceptions import AuthorizationError
-from .constants import ErrorsMsgEnum
+from src.constants import UserRolesEnum
+from src.exceptions import NothingFoundError
+from src.db import TextContentDbModel
+from src.exceptions import AuthorizationError
+from src.constants import ErrorsMsgEnum
 
 
 def is_valid_email(email: str):

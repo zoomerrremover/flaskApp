@@ -1,18 +1,18 @@
 from flask import Blueprint, Response
 from http import HTTPStatus
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.exc import IntegrityError
-from ..decorators import (
+from src.decorators import (
     validate_model_request,
     validate_model_params,
     handle_db_exception,
 )
-from ..models import UserUsernameModel, UserUpdateModel
-from ..db import User
-from ..exceptions import ConflictingDataError
-from ..constants import ErrorsMsgEnum, UserRolesEnum
-from ..security import generate_json_jwt, passwd_to_hash
-from ..common import is_valid_email
+from src.models import UserUsernameModel, UserUpdateModel
+from src.db import User
+from src.exceptions import ConflictingDataError
+from src.constants import ErrorsMsgEnum, UserRolesEnum
+from src.security import generate_json_jwt, passwd_to_hash
+from src.common import is_valid_email
 
 registration_route = Blueprint(
     "registration_route", __name__, url_prefix="/registration"
@@ -30,7 +30,7 @@ def register_user(data: UserUpdateModel):
         **db_entry,
         **{
             "role": UserRolesEnum.user,
-            "date_registered": datetime.now(datetime.timezone.utc),
+            "date_registered": datetime.now(timezone.utc),
         }
     ).save()
     return generate_json_jwt(user)

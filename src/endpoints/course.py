@@ -1,23 +1,23 @@
 from http import HTTPStatus
 from flask import Blueprint, render_template, Response, request, jsonify, g
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.exc import IntegrityError
-from ..decorators import (
+from src.decorators import (
     validate_model_request,
     validate_model_params,
     handle_db_exception,
     require_auth,
 )
-from ..models import (
+from src.models import (
     CourseCreateModel,
     CourseUpdateModel,
     GenericIdModel,
     CourseGetModel,
 )
-from ..db import Course
-from ..constants import UserRolesEnum, ErrorsMsgEnum
-from ..exceptions import InvalidDataError
-from ..common import serialize_response, owner_or_editor_check
+from src.db import Course
+from src.constants import UserRolesEnum, ErrorsMsgEnum
+from src.exceptions import InvalidDataError
+from src.common import serialize_response, owner_or_editor_check
 
 course_route = Blueprint("course_route", __name__, url_prefix="/course")
 
@@ -35,11 +35,11 @@ def get_course(data: GenericIdModel):
 def create_course(data: CourseCreateModel):
     addon_data = {
         "user_id": g.current_user.id,
-        "date_created": datetime.now(datetime.timezone.utc),
+        "date_created": datetime.now(timezone.utc),
         "date_posted": (
             None
             if g.current_user.role == UserRolesEnum.user
-            else datetime.now(datetime.timezone.utc)
+            else datetime.now(timezone.utc)
         ),
     }
     return serialize_response(

@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy import UniqueConstraint, func
-from .common import TextContentDbModel
+from src.db.models.common import TextContentDbModel
 
 
 class Course(TextContentDbModel):
