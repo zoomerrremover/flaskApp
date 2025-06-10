@@ -3,7 +3,7 @@ from pydantic.fields import Field
 from pydantic.main import BaseModel
 from typing import Optional
 from datetime import datetime
-from src.models.common import ValidationTextModel, GenericIdModel
+from src.models.common import ValidationTextModel, GenericIdModel, StringSearchModel
 
 
 class ArticleCreateModel(ValidationTextModel):
@@ -29,3 +29,7 @@ class ArticleGetModel(ArticleCreateModel, GenericIdModel):
 
 class ArticleUpdateModel(ArticleCreateModel, GenericIdModel):
     pass
+
+
+class ArticleSearchModel(StringSearchModel):
+    course_id: int = Field()

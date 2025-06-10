@@ -3,7 +3,7 @@ from pydantic.fields import Field
 from pydantic.main import BaseModel
 from typing import Optional
 from datetime import datetime
-from src.models.common import GenericIdModel, ValidationTextModel
+from src.models.common import GenericIdModel, ValidationTextModel, StringSearchModel
 
 
 class SuggestionCreateModel(ValidationTextModel):
@@ -29,6 +29,10 @@ class SuggestionGetModel(SuggestionCreateModel, GenericIdModel):
 
 class SuggestionUpdateModel(SuggestionCreateModel, GenericIdModel):
     pass
+
+
+class SuggestionSearchModel(StringSearchModel):
+    article_id: int = Field()
 
 
 class SuggestionReactionModel(GenericIdModel):

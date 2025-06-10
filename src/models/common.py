@@ -50,11 +50,11 @@ class GenericIdModel(BaseModel):
     id: int = Field()
 
 
-# class StringSearchModel(BaseModel):
-#     search: str = Field(max_length=40)
-#     limit: Optional[int] = 20
+class StringSearchModel(BaseModel):
+    search: str = Field(max_length=40)
+    limit: Optional[int] = 20
 
-#     @validator("limit")
-#     def model_validate_limit(cls, value):
-#         if 0 > value or value < 100:
-#             raise InvalidDataError(ErrorsMsgEnum.ERROR_LIMIT)
+    @validator("limit")
+    def model_validate_limit(cls, value):
+        if not 0 < value <= 100:
+            raise InvalidDataError(ErrorsMsgEnum.ERROR_LIMIT)
