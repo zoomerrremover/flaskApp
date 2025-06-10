@@ -29,6 +29,20 @@ def get_article(data: GenericIdModel):
     return serialize_response(ArticleGetModel, Article.get_by_id(data.id))
 
 
+@article_route.route("/by_user", methods=["GET"])
+@validate_model_params(GenericIdModel)
+def get_article_by_user(data: GenericIdModel):
+    return serialize_response(ArticleGetModel, Article.get_by_user(data.id, data.limit))
+
+
+@article_route.route("/by_course", methods=["GET"])
+@validate_model_params(GenericIdModel)
+def get_article_by_course(data: GenericIdModel):
+    return serialize_response(
+        ArticleGetModel, Article.search_by_course(data.id, data.limit)
+    )
+
+
 @article_route.route("/", methods=["POST"])
 @require_auth()
 @validate_model_request(ArticleCreateModel)

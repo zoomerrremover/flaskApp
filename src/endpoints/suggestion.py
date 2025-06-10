@@ -28,6 +28,22 @@ def get_suggestion(data: GenericIdModel):
     return serialize_response(SuggestionGetModel, Suggestion.get_by_id(data.id))
 
 
+@suggestion_route.route("/suggestion_by_user", methods=["GET"])
+@validate_model_params(GenericIdModel)
+def get_suggestion_by_user(data: GenericIdModel):
+    return serialize_response(
+        SuggestionGetModel, Suggestion.get_by_user(data.id, data.limit)
+    )
+
+
+@suggestion_route.route("/suggestion_by_article", methods=["GET"])
+@validate_model_params(GenericIdModel)
+def get_suggestion_by_article(data: GenericIdModel):
+    return serialize_response(
+        SuggestionGetModel, Suggestion.get_by_article(data.id, data.limit)
+    )
+
+
 @suggestion_route.route("/", methods=["POST"])
 @require_auth()
 @validate_model_request(SuggestionCreateModel)

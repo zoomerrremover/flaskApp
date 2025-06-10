@@ -54,7 +54,7 @@ class StringSearchModel(BaseModel):
     search: str = Field(max_length=40)
     limit: Optional[int] = 20
 
-    @validator("limit")
+    @field_validator("limit")
     def model_validate_limit(cls, value):
         if not 0 < value <= 100:
             raise InvalidDataError(ErrorsMsgEnum.ERROR_LIMIT)

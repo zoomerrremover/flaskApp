@@ -1,10 +1,16 @@
-from src.models.article import ArticleCreateModel, ArticleGetModel, ArticleUpdateModel
-from src.models.common import GenericIdModel
+from src.models.article import (
+    ArticleCreateModel,
+    ArticleGetModel,
+    ArticleUpdateModel,
+    ArticleSearchModel,
+)
+from src.models.common import GenericIdModel, StringSearchModel
 from src.models.course import CourseCreateModel, CourseGetModel, CourseUpdateModel
 from src.models.suggestion import (
     SuggestionCreateModel,
     SuggestionGetModel,
     SuggestionUpdateModel,
+    SuggestionSearchModel,
 )
 from src.models.user import (
     UserAdminGetModel,

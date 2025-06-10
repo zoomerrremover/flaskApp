@@ -3,5 +3,6 @@ from src.endpoints.article import article_route
 from src.endpoints.course import course_route
 from src.endpoints.login import login_route
 from src.endpoints.registration import registration_route
+from src.endpoints.search import search_route
 from src.endpoints.suggestion import suggestion_route
 from src.endpoints.user import user_route

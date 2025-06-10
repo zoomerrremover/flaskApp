@@ -13,6 +13,7 @@ from src.models import (
     CourseUpdateModel,
     GenericIdModel,
     CourseGetModel,
+    StringSearchModel,
 )
 from src.db import Course
 from src.constants import UserRolesEnum, ErrorsMsgEnum
@@ -26,6 +27,20 @@ course_route = Blueprint("course_route", __name__, url_prefix="/course")
 @validate_model_params(GenericIdModel)
 def get_course(data: GenericIdModel):
     return serialize_response(CourseGetModel, Course.get_by_id(data.id).save())
+
+
+@course_route.route("/by_user", methods=["GET"])
+@validate_model_params(GenericIdModel)
+def get_course_by_user(data: GenericIdModel):
+    return serialize_response(CourseGetModel, Course.get_by_user(data.id, data.limit))
+
+
+@course_route.route("/by_category", methods=["GET"])
+@validate_model_params(StringSearchModel)
+def get_course_by_category(data: StringSearchModel):
+    return serialize_response(
+        CourseGetModel, Course.get_by_category(data.search, data.limit)
+    )
 
 
 @course_route.route("/", methods=["POST"])
