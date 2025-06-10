@@ -115,9 +115,15 @@ class SearchableDbModel(IdDbModel):
     def update_search_vector(self):
         pass
 
+    @classmethod
+    def update_by_id(cls, model_id: int, **kwargs) -> int:
+        model = cls.get_by_id(model_id)
+        model.update_search_vector()
+        return super().update_by_id(model_id, **kwargs)
+
 
 @event.listens_for(SearchableDbModel, "before_insert", propagate=True)
-def update_search_vector(mapper, connection, target):
+def trigger_search_vector_update(mapper, connection, target):
     target.update_search_vector()
 
 
@@ -134,5 +140,5 @@ class TextContentDbModel(SearchableDbModel):
         )
 
     @classmethod
-    def get_by_user(cls, limit: int, user_id: int):
+    def get_by_user(cls, user_id: int, limit: int):
         return cls._get_filtered(limit, cls.user_id == user_id)

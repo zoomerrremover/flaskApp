@@ -30,8 +30,8 @@ class Suggestion(TextContentDbModel):
     article = relationship("Article", back_populates="suggestions")
 
     @classmethod
-    def get_by_article(cls, article_id: int):
-        return cls._get_filtered_all(cls.article_id == article_id)
+    def get_by_article(cls, article_id: int, limit: int):
+        return cls._get_filtered(limit, cls.article_id == article_id)
 
     @classmethod
     def search(cls, search_query: str, article_id: int, limit: int):

@@ -7,6 +7,7 @@ from src.models import (
     SuggestionCreateModel,
     SuggestionUpdateModel,
     GenericIdModel,
+    IdSearchModel,
 )
 from src.db import Suggestion
 from src.decorators import (
@@ -28,17 +29,17 @@ def get_suggestion(data: GenericIdModel):
     return serialize_response(SuggestionGetModel, Suggestion.get_by_id(data.id))
 
 
-@suggestion_route.route("/suggestion_by_user", methods=["GET"])
-@validate_model_params(GenericIdModel)
-def get_suggestion_by_user(data: GenericIdModel):
+@suggestion_route.route("/by_user", methods=["GET"])
+@validate_model_params(IdSearchModel)
+def get_suggestion_by_user(data: IdSearchModel):
     return serialize_response(
         SuggestionGetModel, Suggestion.get_by_user(data.id, data.limit)
     )
 
 
-@suggestion_route.route("/suggestion_by_article", methods=["GET"])
-@validate_model_params(GenericIdModel)
-def get_suggestion_by_article(data: GenericIdModel):
+@suggestion_route.route("/by_article", methods=["GET"])
+@validate_model_params(IdSearchModel)
+def get_suggestion_by_article(data: IdSearchModel):
     return serialize_response(
         SuggestionGetModel, Suggestion.get_by_article(data.id, data.limit)
     )
@@ -51,10 +52,10 @@ def get_suggestion_by_article(data: GenericIdModel):
 def create_suggestion(data: SuggestionCreateModel):
     addon_data = {
         "user_id": g.current_user.id,
-        "posted": datetime.now(timezone.utc),
+        "date_posted": datetime.now(timezone.utc),
     }
     return serialize_response(
-        SuggestionGetModel, Suggestion.create(**data.dict(), **addon_data).save()
+        SuggestionGetModel, Suggestion(**data.dict(), **addon_data).save()
     )
 
 
