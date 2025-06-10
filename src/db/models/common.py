@@ -109,11 +109,8 @@ class SearchableDbModel(IdDbModel):
     search_vector = Column(TSVECTOR)
 
     @classmethod
-    def search_by_vector(cls, text: str, limit: int = 20) -> object:
-        return cls._get_filtered(
-            limit,
-            cls.search_vector.op("@@")(func.websearch_to_tsquery("english", text)),
-        )
+    def _search_vector_predicate(cls, text: str) -> object:
+        return cls.search_vector.op("@@")(func.websearch_to_tsquery("english", text))
 
     def update_search_vector(self):
         pass

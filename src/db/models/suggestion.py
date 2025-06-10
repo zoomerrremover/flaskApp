@@ -33,13 +33,19 @@ class Suggestion(TextContentDbModel):
         func.to_tsvector("english", self.title + " " + self.text_content)
 
     @classmethod
-    def search_by_article(cls, limit: int, article_id: int):
-        cls._get_filtered_all(limit, cls.article_id == article_id)
+    def get_by_article(cls, article_id: int):
+        cls._get_filtered_all(cls.article_id == article_id)
+
+    @classmethod
+    def search(cls, search_query: str, article_id: int, limit: int):
+        return cls._get_filtered(
+            limit,
+            cls.article_id == article_id and cls._search_vector_predicate(search_query),
+        )
 
 
 class SuggestionReaction(LocalDbModel):
     __tablename__ = "suggestion_reactions"
-    like: bool = Column(Boolean, nullable=False)
     suggestion_id: int = Column(
         Integer, ForeignKey("suggestions.id"), nullable=False, primary_key=True
     )
@@ -60,13 +66,6 @@ class SuggestionReaction(LocalDbModel):
     @classmethod
     def get_reactions_by_suggestion(cls, suggestion_id: int):
         return cls._get_filtered_all(cls.suggestion_id == suggestion_id)
-
-    @classmethod
-    def update_reaction(cls, suggestion_id: int, user_id: int, like: bool):
-        return cls._update(
-            cls.suggestion_id == suggestion_id and cls.user_id == user_id,
-            {"like": like},
-        )
 
     @classmethod
     def delete_reaction(cls, suggestion_id: int, user_id: int):

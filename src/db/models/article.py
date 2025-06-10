@@ -29,5 +29,12 @@ class Article(TextContentDbModel):
         func.to_tsvector("english", self.title + " " + self.text_content)
 
     @classmethod
-    def search_by_course(cls, limit: int, course_id: int):
-        cls._get_filtered_all(limit, cls.course_id == course_id)
+    def get_by_course(cls, limit: int, course_id: int):
+        cls._get_filtered_all(cls.course_id == course_id)
+
+    @classmethod
+    def search(cls, course_id: int, search_string: str, limit: int):
+        cls._get_filtered(
+            limit,
+            cls.course_id == course_id and cls._search_vector_predicate(search_string),
+        )

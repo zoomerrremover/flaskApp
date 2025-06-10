@@ -34,3 +34,7 @@ class User(SearchableDbModel):
     @classmethod
     def get_user_by_email(cls, email: str) -> object:
         return cls._get_filtered_first(cls.email == email)
+
+    @classmethod
+    def search(cls, search_query: str, limit: int):
+        return cls._get_filtered(limit, cls._search_vector_predicate(search_query))
