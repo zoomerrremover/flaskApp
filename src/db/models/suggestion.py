@@ -29,18 +29,16 @@ class Suggestion(TextContentDbModel):
     article_id: int = Column(Integer, ForeignKey("articles.id"), nullable=False)
     article = relationship("Article", back_populates="suggestions")
 
-    def update_search_vector(self):
-        func.to_tsvector("english", self.title + " " + self.text_content)
-
     @classmethod
     def get_by_article(cls, article_id: int):
-        cls._get_filtered_all(cls.article_id == article_id)
+        return cls._get_filtered_all(cls.article_id == article_id)
 
     @classmethod
     def search(cls, search_query: str, article_id: int, limit: int):
         return cls._get_filtered(
             limit,
-            cls.article_id == article_id and cls._search_vector_predicate(search_query),
+            cls.article_id == article_id,
+            cls._search_vector_predicate(search_query),
         )
 
 
@@ -56,7 +54,7 @@ class SuggestionReaction(LocalDbModel):
     @classmethod
     def get_reaction(cls, suggestion_id: int, user_id: int):
         return cls._get_filtered_first(
-            cls.suggestion_id == suggestion_id and cls.user_id == user_id
+            cls.suggestion_id == suggestion_id, cls.user_id == user_id
         )
 
     @classmethod
@@ -69,6 +67,4 @@ class SuggestionReaction(LocalDbModel):
 
     @classmethod
     def delete_reaction(cls, suggestion_id: int, user_id: int):
-        return cls._delete(
-            cls.suggestion_id == suggestion_id and cls.user_id == user_id
-        )
+        return cls._delete(cls.suggestion_id == suggestion_id, cls.user_id == user_id)

@@ -4,7 +4,7 @@ from src.models.article import (
     ArticleUpdateModel,
     ArticleSearchModel,
 )
-from src.models.common import GenericIdModel, StringSearchModel
+from src.models.common import GenericIdModel, StringSearchModel, IdSearchModel
 from src.models.course import CourseCreateModel, CourseGetModel, CourseUpdateModel
 from src.models.suggestion import (
     SuggestionCreateModel,

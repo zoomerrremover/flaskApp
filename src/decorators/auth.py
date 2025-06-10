@@ -23,9 +23,7 @@ def require_auth(role: UserRolesEnum = UserRolesEnum.user):
             if not user_db:
                 raise AuthorizationError(ErrorsMsgEnum.ERROR_USER_DOES_NOT_EXIST)
             if not user_role_is_satisfactory(user_db.role, role):
-                raise AuthorizationErrorAuthorizationError(
-                    ErrorsMsgEnum.ERROR_UNSATISFACTORY_ROLE
-                )
+                raise AuthorizationError(ErrorsMsgEnum.ERROR_UNAUTHORIZED_ROLE)
             g.current_user = user_db
             return f(*args, **kwargs)
 

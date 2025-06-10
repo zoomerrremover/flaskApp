@@ -25,7 +25,9 @@ class User(SearchableDbModel):
     suggestions = relationship("Suggestion", back_populates="author")
 
     def update_search_vector(self):
-        func.to_tsvector("english", self.username + " " + self.email)
+        self.search_vector = func.to_tsvector(
+            "english", self.username + " " + self.email
+        )
 
     @classmethod
     def get_user_by_name(cls, username: str) -> object:

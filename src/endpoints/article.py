@@ -15,6 +15,7 @@ from src.models import (
     ArticleCreateModel,
     GenericIdModel,
     ArticleGetModel,
+    IdSearchModel,
 )
 from src.constants import UserRolesEnum, ErrorsMsgEnum
 from src.common import serialize_response, owner_or_editor_check
@@ -30,16 +31,16 @@ def get_article(data: GenericIdModel):
 
 
 @article_route.route("/by_user", methods=["GET"])
-@validate_model_params(GenericIdModel)
-def get_article_by_user(data: GenericIdModel):
+@validate_model_params(IdSearchModel)
+def get_article_by_user(data: IdSearchModel):
     return serialize_response(ArticleGetModel, Article.get_by_user(data.id, data.limit))
 
 
 @article_route.route("/by_course", methods=["GET"])
-@validate_model_params(GenericIdModel)
-def get_article_by_course(data: GenericIdModel):
+@validate_model_params(IdSearchModel)
+def get_article_by_course(data: IdSearchModel):
     return serialize_response(
-        ArticleGetModel, Article.search_by_course(data.id, data.limit)
+        ArticleGetModel, Article.get_by_course(data.id, data.limit)
     )
 
 
@@ -63,7 +64,7 @@ def create_article(data: ArticleCreateModel):
 
 
 @article_route.route("/", methods=["PATCH"])
-@require_auth(UserRolesEnum.editor)
+@require_auth()
 @validate_model_params(ArticleUpdateModel)
 @handle_db_exception(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_FAILED)
 def update_article(data: ArticleUpdateModel):
@@ -73,7 +74,7 @@ def update_article(data: ArticleUpdateModel):
 
 
 @article_route.route("/", methods=["DELETE"])
-@require_auth(UserRolesEnum.editor)
+@require_auth()
 @validate_model_params(GenericIdModel)
 @handle_db_exception(ErrorsMsgEnum.ERROR_DELETE_FAILED)
 def delete_article(data: GenericIdModel):

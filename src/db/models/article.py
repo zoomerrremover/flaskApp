@@ -25,16 +25,14 @@ class Article(TextContentDbModel):
     previous_article: int = Column(Integer, ForeignKey("articles.id"))
     suggestions = relationship("Suggestion", back_populates="article")
 
-    def update_search_vector(self):
-        func.to_tsvector("english", self.title + " " + self.text_content)
-
     @classmethod
-    def get_by_course(cls, limit: int, course_id: int):
-        cls._get_filtered_all(cls.course_id == course_id)
+    def get_by_course(cls, course_id: int, limit: int):
+        return cls._get_filtered(limit, cls.course_id == course_id)
 
     @classmethod
     def search(cls, course_id: int, search_string: str, limit: int):
-        cls._get_filtered(
+        return cls._get_filtered(
             limit,
-            cls.course_id == course_id and cls._search_vector_predicate(search_string),
+            cls.course_id == course_id,
+            cls._search_vector_predicate(search_string),
         )

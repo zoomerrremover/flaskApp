@@ -23,7 +23,7 @@ search_route = Blueprint("search_route", __name__, url_prefix="/search")
 def get_article_string(data: ArticleSearchModel):
     return serialize_response(
         ArticleGetModel,
-        Article.search(data.course_id, data.search, data.limit),
+        Article.search(data.course_id, data.search_query, data.limit),
     )
 
 
@@ -31,7 +31,7 @@ def get_article_string(data: ArticleSearchModel):
 @validate_model_params(StringSearchModel)
 def get_course_string(data: StringSearchModel):
     return serialize_response(
-        CourseGetModel, Course.search_by_query(data.search, data.limit)
+        CourseGetModel, Course.search_by_query(data.search_query, data.limit)
     )
 
 
@@ -40,7 +40,7 @@ def get_course_string(data: StringSearchModel):
 def get_suggestion_string(data: SuggestionSearchModel):
     return serialize_response(
         SuggestionGetModel,
-        Suggestion.search_by_query(data.article_id, data.search, data.limit),
+        Suggestion.search_by_query(data.article_id, data.search_query, data.limit),
     )
 
 
@@ -53,5 +53,5 @@ def get_user_string(data: StringSearchModel):
             if g.current_user.role == UserRolesEnum.admin
             else UserGetModel
         ),
-        User.search_by_query(data.search, data.limit),
+        User.search_by_query(data.search_query, data.limit),
     )

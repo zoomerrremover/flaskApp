@@ -21,4 +21,4 @@ def route_login(model: UserLogInModel):
     if user and verify_password(model.password, user.password):
         return generate_json_jwt(user)
     else:
-        raise AuthenticationError(ErrorsMsgEnum.ERROR_AUTH)
+        raise AuthenticationError(ErrorsMsgEnum.ERROR_AUTH_FAILED)

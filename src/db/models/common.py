@@ -116,8 +116,7 @@ class SearchableDbModel(IdDbModel):
         pass
 
 
-@event.listens_for(SearchableDbModel, "after_insert", propagate=True)
-@event.listens_for(SearchableDbModel, "before_update", propagate=True)
+@event.listens_for(SearchableDbModel, "before_insert", propagate=True)
 def update_search_vector(mapper, connection, target):
     target.update_search_vector()
 
@@ -130,7 +129,9 @@ class TextContentDbModel(SearchableDbModel):
     user_id: int = Column(Integer, ForeignKey("users.id"), nullable=False)
 
     def update_search_vector(self):
-        func.to_tsvector("english", self.title + " " + self.text_content)
+        self.search_vector = func.to_tsvector(
+            "english", self.title + " " + self.text_content
+        )
 
     @classmethod
     def get_by_user(cls, limit: int, user_id: int):

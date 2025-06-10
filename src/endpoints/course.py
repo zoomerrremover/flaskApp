@@ -39,7 +39,7 @@ def get_course_by_user(data: GenericIdModel):
 @validate_model_params(StringSearchModel)
 def get_course_by_category(data: StringSearchModel):
     return serialize_response(
-        CourseGetModel, Course.get_by_category(data.search, data.limit)
+        CourseGetModel, Course.get_by_category(data.search_query, data.limit)
     )
 
 

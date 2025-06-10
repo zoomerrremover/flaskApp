@@ -18,13 +18,13 @@ class Course(TextContentDbModel):
     articles = relationship("Article", back_populates="course")
 
     def update_search_vector(self):
-        func.to_tsvector(
+        self.search_vector = func.to_tsvector(
             "english", self.title + " " + self.text_content + " " + self.category
         )
 
     @classmethod
     def get_by_category(cls, category: str):
-        cls._get_filtered_all(cls.category == category)
+        return cls._get_filtered_all(cls.category == category)
 
     @classmethod
     def search(cls, search_query: str, limit: int):
