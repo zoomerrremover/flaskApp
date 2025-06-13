@@ -31,7 +31,7 @@ def get_article_string(data: ArticleSearchModel):
 @validate_model_params(StringSearchModel)
 def get_course_string(data: StringSearchModel):
     return serialize_response(
-        CourseGetModel, Course.search_by_query(data.search_query, data.limit)
+        CourseGetModel, Course.search(data.search_query, data.limit)
     )
 
 
@@ -40,7 +40,7 @@ def get_course_string(data: StringSearchModel):
 def get_suggestion_string(data: SuggestionSearchModel):
     return serialize_response(
         SuggestionGetModel,
-        Suggestion.search_by_query(data.article_id, data.search_query, data.limit),
+        Suggestion.search(data.search_query, data.article_id, data.limit),
     )
 
 
@@ -48,10 +48,6 @@ def get_suggestion_string(data: SuggestionSearchModel):
 @validate_model_params(StringSearchModel)
 def get_user_string(data: StringSearchModel):
     return serialize_response(
-        (
-            UserAdminGetModel
-            if g.current_user.role == UserRolesEnum.admin
-            else UserGetModel
-        ),
-        User.search_by_query(data.search_query, data.limit),
+        UserGetModel,
+        User.search(data.search_query, data.limit),
     )
