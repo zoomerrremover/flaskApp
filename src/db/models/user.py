@@ -23,6 +23,7 @@ class User(SearchableDbModel):
     articles = relationship("Article", back_populates="author")
     courses = relationship("Course", back_populates="author")
     suggestions = relationship("Suggestion", back_populates="author")
+    reactions = relationship("SuggestionReaction", back_populates="user")
 
     def update_search_vector(self):
         self.search_vector = func.to_tsvector(

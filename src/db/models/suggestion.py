@@ -9,6 +9,7 @@ from sqlalchemy import (
     UniqueConstraint,
     func,
 )
+from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime
 from src.db.models.common import TextContentDbModel, LocalDbModel
 
@@ -28,6 +29,7 @@ class Suggestion(TextContentDbModel):
     author = relationship("User", back_populates="suggestions")
     article_id: int = Column(Integer, ForeignKey("articles.id"), nullable=False)
     article = relationship("Article", back_populates="suggestions")
+    reactions = relationship("SuggestionReaction", back_populates="suggestion")
 
     @classmethod
     def get_by_article(cls, article_id: int, limit: int):
@@ -41,6 +43,32 @@ class Suggestion(TextContentDbModel):
             cls._search_vector_predicate(search_query),
         )
 
+    @hybrid_property
+    def likes_count(self):
+        """
+        Python-side access: Returns the number of likes for this post.
+        This iterates over the 'likes' collection (list of Like objects).
+        """
+        return len(self.likes)
+
+    @likes_count.expression
+    def likes_count(cls):
+        """
+        SQL-side access: Returns the number of likes for this post using a SQL COUNT.
+        This now queries the 'Like' class directly, which maps to the 'likes' table.
+        """
+        from sqlalchemy import select  # Import select for modern SQLAlchemy queries
+
+        return (
+            select(
+                func.count(SuggestionReaction.user_id)
+            )  # COUNT user_id from the Like table
+            .where(
+                SuggestionReaction.suggestion_id == cls.id
+            )  # Filter by this Post's ID
+            .scalar_subquery()  # Makes it a scalar subquery for use in SELECT list
+        )
+
 
 class SuggestionReaction(LocalDbModel):
     __tablename__ = "suggestion_reactions"
@@ -50,6 +78,9 @@ class SuggestionReaction(LocalDbModel):
     user_id: int = Column(
         Integer, ForeignKey("users.id"), nullable=False, primary_key=True
     )
+
+    user = relationship("User", back_populates="reactions")
+    suggestion = relationship("Suggestion", back_populates="reactions")
 
     @classmethod
     def get_reaction(cls, suggestion_id: int, user_id: int):
