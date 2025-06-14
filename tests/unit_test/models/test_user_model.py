@@ -23,18 +23,16 @@ def test_user_username_model_valid(valid_username_data):
 
 
 def test_user_username_model_too_long(valid_username_data):
-    invalid_data = valid_username_data.copy()
-    invalid_data["username"] = "a" * 25  # Exceeds max_length
+    valid_username_data["username"] = "a" * 25  # Exceeds max_length
     with pytest.raises(ValidationError) as exc_info:
-        UserUsernameModel(**invalid_data)
+        UserUsernameModel(**valid_username_data)
     assert "username" in str(exc_info.value)
 
 
 def test_user_username_model_invalid_format(valid_username_data):
-    invalid_data = valid_username_data.copy()
-    invalid_data["username"] = "user name with space"  # Invalid by RE_USERNAME
+    valid_username_data["username"] = "user name with space"  # Invalid by RE_USERNAME
     with pytest.raises(InvalidDataError) as exc_info:
-        UserUsernameModel(**invalid_data)
+        UserUsernameModel(**valid_username_data)
     assert ErrorsMsgEnum.ERROR_USERNAME_INVALID in str(exc_info.value)
 
 
@@ -45,18 +43,16 @@ def test_user_role_model_valid(valid_role_data):
 
 
 def test_user_role_model_too_long(valid_role_data):
-    invalid_data = valid_role_data.copy()
-    invalid_data["role"] = "a" * 11  # Exceeds max_length
+    valid_role_data["role"] = "a" * 11  # Exceeds max_length
     with pytest.raises(ValidationError) as exc_info:
-        UserRoleModel(**invalid_data)
+        UserRoleModel(**valid_role_data)
     assert "role" in str(exc_info.value)
 
 
 def test_user_role_model_invalid_value(valid_role_data):
-    invalid_data = valid_role_data.copy()
-    invalid_data["role"] = "guest"  # Not in UserRolesEnum
+    valid_role_data["role"] = "guest"  # Not in UserRolesEnum
     with pytest.raises(InvalidDataError) as exc_info:
-        UserRoleModel(**invalid_data)
+        UserRoleModel(**valid_role_data)
     assert ErrorsMsgEnum.ERROR_ROLE_INVALID in str(exc_info.value)
 
 
@@ -67,18 +63,16 @@ def test_user_password_model_valid(valid_password_data):
 
 
 def test_user_password_model_too_long(valid_password_data):
-    invalid_data = valid_password_data.copy()
-    invalid_data["password"] = "a" * 33  # Exceeds max_length
+    valid_password_data["password"] = "a" * 33  # Exceeds max_length
     with pytest.raises(ValidationError) as exc_info:
-        UserPasswordModel(**invalid_data)
+        UserPasswordModel(**valid_password_data)
     assert "password" in str(exc_info.value)
 
 
 def test_user_password_model_invalid_format(valid_password_data):
-    invalid_data = valid_password_data.copy()
-    invalid_data["password"] = "weak"  # No digit
+    valid_password_data["password"] = "weak"  # No digit
     with pytest.raises(InvalidDataError) as exc_info:
-        UserPasswordModel(**invalid_data)
+        UserPasswordModel(**valid_password_data)
     assert ErrorsMsgEnum.ERROR_PASSWORD_WEAK in str(exc_info.value)
 
 
@@ -89,10 +83,9 @@ def test_user_email_model_valid(valid_email_data):
 
 
 def test_user_email_model_invalid_format(valid_email_data):
-    invalid_data = valid_email_data.copy()
-    invalid_data["email"] = "invalid-email"  # Not a valid email
+    valid_email_data["email"] = "invalid-email"  # Not a valid email
     with pytest.raises(ValidationError) as exc_info:
-        UserEmailModel(**invalid_data)
+        UserEmailModel(**valid_email_data)
     assert "email" in str(exc_info.value)
 
 
@@ -106,18 +99,16 @@ def test_user_get_model_valid(base_user_get_data):
 
 
 def test_user_get_model_invalid_id(base_user_get_data):
-    invalid_data = base_user_get_data.copy()
-    invalid_data["id"] = "not_an_int"
+    base_user_get_data["id"] = "not_an_int"
     with pytest.raises(ValidationError) as exc_info:
-        UserGetModel(**invalid_data)
+        UserGetModel(**base_user_get_data)
     assert "id" in str(exc_info.value)
 
 
 def test_user_get_model_missing_required_field(base_user_get_data):
-    invalid_data = base_user_get_data.copy()
-    del invalid_data["username"]
+    del base_user_get_data["username"]
     with pytest.raises(ValidationError) as exc_info:
-        UserGetModel(**invalid_data)
+        UserGetModel(**base_user_get_data)
     assert "username" in str(exc_info.value)
 
 
@@ -132,10 +123,9 @@ def test_user_admin_get_model_valid(base_user_admin_get_data):
 
 
 def test_user_admin_get_model_invalid_email(base_user_admin_get_data):
-    invalid_data = base_user_admin_get_data.copy()
-    invalid_data["email"] = "bad-email"
+    base_user_admin_get_data["email"] = "bad-email"
     with pytest.raises(ValidationError) as exc_info:
-        UserAdminGetModel(**invalid_data)
+        UserAdminGetModel(**base_user_admin_get_data)
     assert "email" in str(exc_info.value)
 
 
@@ -147,18 +137,16 @@ def test_user_login_model_valid(base_user_login_data):
 
 
 def test_user_login_model_invalid_username(base_user_login_data):
-    invalid_data = base_user_login_data.copy()
-    invalid_data["username"] = "us"  # Too short
+    base_user_login_data["username"] = "us"  # Too short
     with pytest.raises(InvalidDataError) as exc_info:
-        UserLogInModel(**invalid_data)
+        UserLogInModel(**base_user_login_data)
     assert ErrorsMsgEnum.ERROR_USERNAME_INVALID in str(exc_info.value)
 
 
 def test_user_login_model_invalid_password(base_user_login_data):
-    invalid_data = base_user_login_data.copy()
-    invalid_data["password"] = "pass123"  # Too short / no uppercase
+    base_user_login_data["password"] = "pass123"  # Too short / no uppercase
     with pytest.raises(InvalidDataError) as exc_info:
-        UserLogInModel(**invalid_data)
+        UserLogInModel(**base_user_login_data)
     assert ErrorsMsgEnum.ERROR_PASSWORD_WEAK in str(exc_info.value)
 
 
@@ -170,18 +158,16 @@ def test_user_role_update_model_valid(base_user_role_update_data):
 
 
 def test_user_role_update_model_invalid_id(base_user_role_update_data):
-    invalid_data = base_user_role_update_data.copy()
-    invalid_data["id"] = "not_an_int"
+    base_user_role_update_data["id"] = "not_an_int"
     with pytest.raises(ValidationError) as exc_info:
-        UserRoleUpdateModel(**invalid_data)
+        UserRoleUpdateModel(**base_user_role_update_data)
     assert "id" in str(exc_info.value)
 
 
 def test_user_role_update_model_invalid_role(base_user_role_update_data):
-    invalid_data = base_user_role_update_data.copy()
-    invalid_data["role"] = "superadmin"  # Not a valid role
+    base_user_role_update_data["role"] = "superadmin"  # Not a valid role
     with pytest.raises(InvalidDataError) as exc_info:
-        UserRoleUpdateModel(**invalid_data)
+        UserRoleUpdateModel(**base_user_role_update_data)
     assert ErrorsMsgEnum.ERROR_ROLE_INVALID in str(exc_info.value)
 
 
@@ -194,25 +180,22 @@ def test_user_update_model_valid(base_user_update_data):
 
 
 def test_user_update_model_invalid_username(base_user_update_data):
-    invalid_data = base_user_update_data.copy()
-    invalid_data["username"] = "u" * 25  # Too long
+    base_user_update_data["username"] = "u" * 25  # Too long
     with pytest.raises(ValidationError) as exc_info:
-        UserUpdateModel(**invalid_data)
+        UserUpdateModel(**base_user_update_data)
 
     assert "username" in str(exc_info.value)
 
 
 def test_user_update_model_invalid_password(base_user_update_data):
-    invalid_data = base_user_update_data.copy()
-    invalid_data["password"] = "short"  # Invalid format
+    base_user_update_data["password"] = "short"  # Invalid format
     with pytest.raises(InvalidDataError) as exc_info:
-        UserUpdateModel(**invalid_data)
+        UserUpdateModel(**base_user_update_data)
     assert ErrorsMsgEnum.ERROR_PASSWORD_WEAK in str(exc_info.value)
 
 
 def test_user_update_model_invalid_email(base_user_update_data):
-    invalid_data = base_user_update_data.copy()
-    invalid_data["email"] = "not-an-email"
+    base_user_update_data["email"] = "not-an-email"
     with pytest.raises(ValidationError) as exc_info:
-        UserUpdateModel(**invalid_data)
+        UserUpdateModel(**base_user_update_data)
     assert "email" in str(exc_info.value)

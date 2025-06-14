@@ -24,10 +24,9 @@ def test_course_create_model_title_too_long(base_course_create_data):
     """
     Tests that CourseCreateModel raises ValidationError when title exceeds max_length.
     """
-    invalid_data = base_course_create_data.copy()
-    invalid_data["title"] = "A" * 33  # Exceeds max_length of 32
+    base_course_create_data["title"] = "A" * 33  # Exceeds max_length of 32
     with pytest.raises(ValidationError) as exc_info:
-        CourseCreateModel(**invalid_data)
+        CourseCreateModel(**base_course_create_data)
     assert "title" in str(exc_info.value)
 
 
@@ -35,10 +34,9 @@ def test_course_create_model_text_content_too_long(base_course_create_data):
     """
     Tests that CourseCreateModel raises ValidationError when text_content exceeds max_length.
     """
-    invalid_data = base_course_create_data.copy()
-    invalid_data["text_content"] = "A" * 8001  # Exceeds max_length of 8000
+    base_course_create_data["text_content"] = "A" * 8001  # Exceeds max_length of 8000
     with pytest.raises(ValidationError) as exc_info:
-        CourseCreateModel(**invalid_data)
+        CourseCreateModel(**base_course_create_data)
     assert "text_content" in str(exc_info.value)
 
 
@@ -46,10 +44,9 @@ def test_course_create_model_category_too_long(base_course_create_data):
     """
     Tests that CourseCreateModel raises ValidationError when category exceeds max_length.
     """
-    invalid_data = base_course_create_data.copy()
-    invalid_data["category"] = "A" * 25  # Exceeds max_length of 24
+    base_course_create_data["category"] = "A" * 25  # Exceeds max_length of 24
     with pytest.raises(ValidationError) as exc_info:
-        CourseCreateModel(**invalid_data)
+        CourseCreateModel(**base_course_create_data)
     assert "category" in str(exc_info.value)
 
 
@@ -57,10 +54,9 @@ def test_course_create_model_invalid_title_content(base_course_create_data):
     """
     Tests that CourseCreateModel's custom validator rejects invalid characters in title.
     """
-    invalid_data = base_course_create_data.copy()
-    invalid_data["title"] = "Title with <bad> chars"
+    base_course_create_data["title"] = "Title with <bad> chars"
     with pytest.raises(InvalidDataError) as exc_info:
-        CourseCreateModel(**invalid_data)
+        CourseCreateModel(**base_course_create_data)
     assert ErrorsMsgEnum.ERROR_TEXT_CONTENT in str(exc_info.value)
 
 
@@ -68,10 +64,9 @@ def test_course_create_model_invalid_text_content(base_course_create_data):
     """
     Tests that CourseCreateModel's custom validator rejects invalid characters in text_content.
     """
-    invalid_data = base_course_create_data.copy()
-    invalid_data["text_content"] = "SQL INJECTION: DROP TABLE users;"
+    base_course_create_data["text_content"] = "SQL INJECTION: DROP TABLE users;"
     with pytest.raises(InvalidDataError) as exc_info:
-        CourseCreateModel(**invalid_data)
+        CourseCreateModel(**base_course_create_data)
     assert ErrorsMsgEnum.ERROR_TEXT_CONTENT in str(exc_info.value)
 
 
@@ -93,9 +88,8 @@ def test_course_get_model_valid_data(base_course_get_data):
     assert course_get.date_posted == base_course_get_data["date_posted"]
 
     # Test with date_posted as None
-    data_no_date = base_course_get_data.copy()
-    data_no_date["date_posted"] = None
-    course_get_no_date = CourseGetModel(**data_no_date)
+    base_course_get_data["date_posted"] = None
+    course_get_no_date = CourseGetModel(**base_course_get_data)
     assert course_get_no_date.date_posted is None
 
 
@@ -103,10 +97,9 @@ def test_course_get_model_invalid_id(base_course_get_data):
     """
     Tests that CourseGetModel raises ValidationError for invalid ID type.
     """
-    invalid_data = base_course_get_data.copy()
-    invalid_data["id"] = "not_an_int"
+    base_course_get_data["id"] = "not_an_int"
     with pytest.raises(ValidationError) as exc_info:
-        CourseGetModel(**invalid_data)
+        CourseGetModel(**base_course_get_data)
     assert "id" in str(exc_info.value)
 
 
@@ -114,10 +107,9 @@ def test_course_get_model_missing_user_id(base_course_get_data):
     """
     Tests that CourseGetModel raises ValidationError if user_id is missing.
     """
-    invalid_data = base_course_get_data.copy()
-    del invalid_data["user_id"]
+    del base_course_get_data["user_id"]
     with pytest.raises(ValidationError) as exc_info:
-        CourseGetModel(**invalid_data)
+        CourseGetModel(**base_course_get_data)
     assert "user_id" in str(exc_info.value)
 
 
@@ -141,8 +133,7 @@ def test_course_update_model_invalid_id(base_course_update_data):
     """
     Tests that CourseUpdateModel raises ValidationError for invalid ID type.
     """
-    invalid_data = base_course_update_data.copy()
-    invalid_data["id"] = [1, 2]  # Invalid ID type
+    base_course_update_data["id"] = [1, 2]  # Invalid ID type
     with pytest.raises(ValidationError) as exc_info:
-        CourseUpdateModel(**invalid_data)
+        CourseUpdateModel(**base_course_update_data)
     assert "id" in str(exc_info.value)

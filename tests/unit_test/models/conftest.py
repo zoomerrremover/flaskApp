@@ -156,13 +156,7 @@ def base_suggestion_get_data(base_suggestion_create_data):
     """
     data = base_suggestion_create_data.copy()
     data.update(
-        {
-            "id": 1,
-            "user_id": 101,
-            "date_posted": datetime.now(),
-            "likes": 5,
-            "dislikes": 1,
-        }
+        {"id": 1, "user_id": 101, "date_posted": datetime.now(), "stars_count": 10}
     )
     return data
 
@@ -183,4 +177,6 @@ def base_suggestion_reaction_data():
     """
     Provides a dictionary with valid data for SuggestionReactionModel.
     """
-    return {"id": 3, "like": True}
+    return {
+        "id": 3,
+    }
