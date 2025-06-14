@@ -23,6 +23,7 @@ class SuggestionCreateModel(ValidationTextModel):
 class SuggestionGetModel(SuggestionCreateModel, GenericIdModel):
     user_id: int = Field()
     date_posted: Optional[datetime] = None
+    stars_count: int = Field()
 
 
 class SuggestionUpdateModel(SuggestionCreateModel, GenericIdModel):
@@ -31,7 +32,3 @@ class SuggestionUpdateModel(SuggestionCreateModel, GenericIdModel):
 
 class SuggestionSearchModel(StringSearchModel):
     article_id: int = Field()
-
-
-class SuggestionReactionModel(GenericIdModel):
-    like: bool = Field()

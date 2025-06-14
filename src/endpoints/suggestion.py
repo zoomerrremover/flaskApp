@@ -9,7 +9,7 @@ from src.models import (
     GenericIdModel,
     IdSearchModel,
 )
-from src.db import Suggestion
+from src.db import Suggestion, SuggestionReaction
 from src.decorators import (
     validate_model_params,
     validate_model_request,
@@ -57,6 +57,26 @@ def create_suggestion(data: SuggestionCreateModel):
     return serialize_response(
         SuggestionGetModel, Suggestion(**data.dict(), **addon_data).save()
     )
+
+
+@suggestion_route.route("/star", methods=["POST"])
+@require_auth()
+@validate_model_params(GenericIdModel)
+@handle_db_exception(ErrorsMsgEnum.ERROR_ALREDY_REACTED)
+def star_suggestion(data: GenericIdModel):
+    input_data = {"suggestion_id": data.id, "user_id": g.current_user.id}
+    SuggestionReaction(**input_data).save()
+    return " ", HTTPStatus.OK
+
+
+@suggestion_route.route("/unstar", methods=["POST"])
+@require_auth()
+@validate_model_params(GenericIdModel)
+@handle_db_exception(ErrorsMsgEnum.ERROR_ALREDY_REACTED)
+def unstar_suggestion(data: GenericIdModel):
+    input_data = {"suggestion_id": data.id, "user_id": g.current_user.id}
+    SuggestionReaction.delete_reaction(**input_data)
+    return " ", HTTPStatus.OK
 
 
 @suggestion_route.route("/", methods=["PATCH"])

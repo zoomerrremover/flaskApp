@@ -12,6 +12,7 @@ class LocalDbModel(Base):
     __abstract__ = True
 
     def as_dict(self):
+        print({x: getattr(self, x) for x in self.__table__.c.keys()})
         return {x: getattr(self, x) for x in self.__table__.c.keys()}
 
     def save(self):

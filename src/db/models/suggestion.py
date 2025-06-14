@@ -31,6 +31,11 @@ class Suggestion(TextContentDbModel):
     article = relationship("Article", back_populates="suggestions")
     reactions = relationship("SuggestionReaction", back_populates="suggestion")
 
+    def as_dict(self):
+        ret_val = super().as_dict()
+        ret_val.update({"stars_count": self.stars_count})
+        return ret_val
+
     @classmethod
     def get_by_article(cls, article_id: int, limit: int):
         return cls._get_filtered(limit, cls.article_id == article_id)
@@ -44,15 +49,15 @@ class Suggestion(TextContentDbModel):
         )
 
     @hybrid_property
-    def likes_count(self):
+    def stars_count(self):
         """
         Python-side access: Returns the number of likes for this post.
         This iterates over the 'likes' collection (list of Like objects).
         """
-        return len(self.likes)
+        return len(self.reactions)
 
-    @likes_count.expression
-    def likes_count(cls):
+    @stars_count.expression
+    def stars_count(cls):
         """
         SQL-side access: Returns the number of likes for this post using a SQL COUNT.
         This now queries the 'Like' class directly, which maps to the 'likes' table.

@@ -49,6 +49,7 @@ class ErrorsMsgEnum(StrEnum):
     ERROR_RATE_LIMITED = "Rate limit exceeded."
     ERROR_USER_NOT_FOUND = "User does not exist."
     ERROR_TEXT_CONTENT = "Text content is invalid"
+    ERROR_ALREDY_REACTED = "You have already starred this suggestion."
 
 
 class CommonConstantsEnum(StrEnum):
