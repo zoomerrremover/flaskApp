@@ -4,7 +4,7 @@ from email_validator import validate_email, EmailNotValidError
 from src.constants import UserRolesEnum
 from src.exceptions import NothingFoundError
 from src.db import TextContentDbModel
-from src.exceptions import AuthorizationError
+from src.exceptions import AuthorizationError, InvalidDataError
 from src.constants import ErrorsMsgEnum
 
 
@@ -12,7 +12,7 @@ def is_valid_email(email: str):
     try:
         validate_email(email, check_deliverability=True)
     except EmailNotValidError:
-        raise InvalidDataError(ErrorsMsgEnum.ERROR_EMAIL_VALID)
+        raise InvalidDataError(ErrorsMsgEnum.ERROR_EMAIL_INVALID)
 
 
 def user_role_is_satisfactory(role_input: str, role_required: UserRolesEnum) -> bool:
@@ -36,9 +36,9 @@ def owner_or_editor_check(media: TextContentDbModel):
 
 def serialize_response(model: type[BaseModel], content):
     if isinstance(content, list):
-        result = [model(**data.as_dict()).json() for data in content]
+        result = [model(**data.as_dict()).model_dump(mode='json') for data in content]
     elif content is None:
         raise NothingFoundError
     else:
-        result = model(**content.as_dict()).json()
+        result = model(**content.as_dict()).model_dump(mode='json')
     return result

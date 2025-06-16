@@ -16,12 +16,12 @@ def require_auth(role: UserRolesEnum = UserRolesEnum.user):
             if not auth_header or not auth_header.startswith(
                 CommonConstantsEnum.AUTH_PREFIX
             ):
-                raise AuthenticationError(ErrorsMsgEnum.ERROR_LOGIN_REQUIRED)
+                raise AuthenticationError(ErrorsMsgEnum.ERROR_FIELD_REQUIRED)
             token = auth_header.split(" ")[1]
             user_token = verify_jwt(token)
             user_db = User.get_by_id(user_token.id)
             if not user_db:
-                raise AuthorizationError(ErrorsMsgEnum.ERROR_USER_DOES_NOT_EXIST)
+                raise AuthenticationError(ErrorsMsgEnum.ERROR_FIELD_REQUIRED)
             if not user_role_is_satisfactory(user_db.role, role):
                 raise AuthorizationError(ErrorsMsgEnum.ERROR_UNAUTHORIZED_ROLE)
             g.current_user = user_db

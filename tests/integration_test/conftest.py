@@ -16,20 +16,6 @@ def client(app):
 @pytest.fixture
 def generate_users():
     def _generate_users(num_users=3):
-        pre_existing_emails = [
-            "carmena@comcast.net",
-            "heine@sbcglobal.net",
-            "madanm@yahoo.ca",
-            "ryanshaw@att.net",
-            "jugalator@verizon.net",
-            "dmath@mac.com",
-            "jimxugle@live.com",
-            "gward@att.net",
-            "bigmauler@yahoo.com",
-            "vsprintf@outlook.com",
-            "neuffer@yahoo.ca",
-            "sacraver@gmail.com",
-        ]
         fake = Faker()  # Initialize a Faker instance
         for _ in range(num_users):
             yield {
@@ -41,7 +27,7 @@ def generate_users():
                     upper_case=True,
                     lower_case=True,
                 ),
-                "email": fake.random_element(elements=pre_existing_emails),
+                "email": f"{fake.user_name()}@gmail.com",
             }
 
     return _generate_users
@@ -53,5 +39,13 @@ def registered_user_and_token(client, generate_users):
     registration_response = client.post("/registration/", json=user_data)
     assert registration_response.status_code == HTTPStatus.OK
     access_token = registration_response.json["access_token"]
-
     return access_token, user_data
+
+
+@pytest.fixture()
+def registred_user_id_and_token(registered_user_and_token, client):
+    access_token, user_data = registered_user_and_token
+    headers = {"Authorization": f"Bearer {access_token}"}
+    response = client.get("/user/", headers=headers)
+    user_id = response.json["id"]
+    return user_id, access_token, user_data

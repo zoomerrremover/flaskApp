@@ -9,5 +9,5 @@ passlib
 PyJWT
 bcrypt
 pytest
-pytest-mock'
+pytest-mock
 faker
