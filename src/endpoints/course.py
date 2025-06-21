@@ -1,7 +1,6 @@
 from http import HTTPStatus
 from flask import Blueprint, render_template, Response, request, jsonify, g
 from datetime import datetime, timezone
-from sqlalchemy.exc import IntegrityError
 from src.decorators import (
     validate_model_request,
     validate_model_params,
@@ -14,11 +13,12 @@ from src.models import (
     GenericIdModel,
     CourseGetModel,
     StringSearchModel,
+    IdSearchModel,
 )
 from src.db import Course
 from src.constants import UserRolesEnum, ErrorsMsgEnum
-from src.exceptions import InvalidDataError
 from src.common import serialize_response, owner_or_editor_check
+
 
 course_route = Blueprint("course_route", __name__, url_prefix="/course")
 
@@ -26,12 +26,12 @@ course_route = Blueprint("course_route", __name__, url_prefix="/course")
 @course_route.route("/", methods=["GET"])
 @validate_model_params(GenericIdModel)
 def get_course(data: GenericIdModel):
-    return serialize_response(CourseGetModel, Course.get_by_id(data.id).save())
+    return serialize_response(CourseGetModel, Course.get_by_id(data.id))
 
 
 @course_route.route("/by_user", methods=["GET"])
-@validate_model_params(GenericIdModel)
-def get_course_by_user(data: GenericIdModel):
+@validate_model_params(IdSearchModel)
+def get_course_by_user(data: IdSearchModel):
     return serialize_response(CourseGetModel, Course.get_by_user(data.id, data.limit))
 
 
@@ -58,7 +58,7 @@ def create_course(data: CourseCreateModel):
         ),
     }
     return serialize_response(
-        CourseGetModel, Course(**data.dict(), **addon_data).save()
+        CourseGetModel, Course(**data.model_dump(), **addon_data).save()
     )
 
 
@@ -68,7 +68,7 @@ def create_course(data: CourseCreateModel):
 @handle_db_exception(ErrorsMsgEnum.ERROR_COURSE_UPDATE_FAILED)
 def update_course(data: CourseUpdateModel):
     owner_or_editor_check(Course.get_by_id(data.id))
-    Course.update_by_id(data.id, **data.dict(exclude={"id"}))
+    Course.update_by_id(data.id, **data.model_dump(exclude={"id"}))
     return "", HTTPStatus.OK
 
 

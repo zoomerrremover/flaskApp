@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from src.exceptions import InvalidDataError
 from src.db import session
 from src.constants import ErrorsMsgEnum
+from typing import List, Tuple
 
 
 def validate_model_request(model: type[BaseModel]):
@@ -14,9 +15,15 @@ def validate_model_request(model: type[BaseModel]):
         def wrapper(*args, **kwargs):
             try:
                 data = model(**request.get_json())
-            except ValueError:
-                raise InvalidDataError(ErrorsMsgEnum.ERROR_FIELD_REQUIRED)
-            return f(data, *args, **kwargs)
+                return f(data, *args, **kwargs)
+            except ValueError as e:
+                problematic_fields: List[Tuple[str, ...]] = []
+                for error_detail in e.errors():
+                    field_location = error_detail.get('loc')
+                    if field_location:
+                        problematic_fields.append(field_location)
+                raise InvalidDataError(f"{ErrorsMsgEnum.ERROR_FIELD_REQUIRED}{problematic_fields}")
+
 
         return wrapper
 
@@ -29,9 +36,14 @@ def validate_model_params(model: type[BaseModel]):
         def wrapper(*args, **kwargs):
             try:
                 data = model(**request.args)
-            except ValueError:
-                raise InvalidDataError(ErrorsMsgEnum.ERROR_FIELD_REQUIRED)
-            return f(data, *args, **kwargs)
+                return f(data, *args, **kwargs)
+            except ValueError as e:
+                problematic_fields: List[Tuple[str, ...]] = []
+                for error_detail in e.errors():
+                    field_location = error_detail.get('loc')
+                    if field_location:
+                        problematic_fields.append(field_location)
+                raise InvalidDataError(f"{ErrorsMsgEnum.ERROR_FIELD_REQUIRED}{problematic_fields}")
 
         return wrapper
 

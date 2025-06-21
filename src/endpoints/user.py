@@ -24,7 +24,7 @@ def get_user():
 @handle_db_exception(ErrorsMsgEnum.ERROR_USER_UPDATE_FAILED)
 def update_user(data: UserUpdateModel):
     user_id = g.current_user.id
-    User.update_by_id(user_id, **data.dict(exclude={"id"}))
+    User.update_by_id(user_id, **data.model_dump(exclude={"id"}))
     return "", HTTPStatus.OK
 
 

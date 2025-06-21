@@ -28,14 +28,18 @@ def user_role_is_satisfactory(role_input: str, role_required: UserRolesEnum) -> 
 def owner_or_editor_check(media: TextContentDbModel):
     author = g.current_user
     if (
-        user_role_is_satisfactory(author.role, UserRolesEnum.editor)
-        or media.user_id != author.id
+        not media or
+        not author or
+        not user_role_is_satisfactory(author.role, UserRolesEnum.editor) and
+        media.user_id != author.id
     ):
-        raise AuthorizationError(ErrorsMsgEnum.ERRO_rUNSATISFACTORY_ROLE)
+        raise AuthorizationError(ErrorsMsgEnum.ERROR_ROLE_INVALID)
 
 
 def serialize_response(model: type[BaseModel], content):
     if isinstance(content, list):
+        if len(content) == 0:
+            raise NothingFoundError
         result = [model(**data.as_dict()).model_dump(mode='json') for data in content]
     elif content is None:
         raise NothingFoundError

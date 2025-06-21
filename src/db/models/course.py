@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from sqlalchemy import UniqueConstraint, func
+from sqlalchemy import func
 from src.db.models.common import TextContentDbModel
 
 
@@ -23,8 +23,8 @@ class Course(TextContentDbModel):
         )
 
     @classmethod
-    def get_by_category(cls, category: str):
-        return cls._get_filtered_all(cls.category == category)
+    def get_by_category(cls, category: str, limit: int):
+        return cls._get_filtered(limit, cls.category == category)
 
     @classmethod
     def search(cls, search_query: str, limit: int):

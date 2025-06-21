@@ -36,7 +36,7 @@ class ErrorsMsgEnum(StrEnum):
     ERROR_TEXT_TOO_SHORT = "Text must be at least 3 characters."
     ERROR_AUTH_FAILED = "Invalid username or password."
     ERROR_JWT_INVALID = "Invalid JWT signature."
-    ERROR_FIELD_REQUIRED = "This field is required."
+    ERROR_FIELD_REQUIRED = "There is missing fields in your request. The following fields are missing: "
     ERROR_UNAUTHORIZED_ROLE = "Insufficient privileges for this action."
     ERROR_AUTHENTICATION_REQUIRED = "Authentication required."
     ERROR_EMAIL_INVALID = "Invalid email format."
