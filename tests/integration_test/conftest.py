@@ -5,6 +5,7 @@ from src import Base, engine
 from src.db import User, Course, Article, Suggestion
 from src.security.jwt_service import generate_jwt
 from src.constants import UserRolesEnum
+from src.security.hash import passwd_to_hash
 
 
 @pytest.fixture()
@@ -123,8 +124,10 @@ def registered_user(app, client, generate_users):
         cache = []
         for _ in range(num_users):
             user_data = next(user_gen)
+            db_entry = user_data.copy()
+            db_entry["password"] = passwd_to_hash(user_data["password"])
             with app.app_context():
-                editor_user_db = User(**user_data).save()
+                editor_user_db = User(**db_entry).save()
                 user_data["access_token"] = generate_jwt(editor_user_db)
                 user_data["id"] = editor_user_db.id
             cache.append(user_data["id"])
