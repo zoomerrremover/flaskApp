@@ -104,3 +104,4 @@ class SuggestionReaction(LocalDbModel):
     @classmethod
     def delete_reaction(cls, suggestion_id: int, user_id: int):
         return cls._delete(cls.suggestion_id == suggestion_id, cls.user_id == user_id)
+

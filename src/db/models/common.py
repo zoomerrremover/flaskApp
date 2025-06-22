@@ -33,8 +33,9 @@ class LocalDbModel(Base):
 
         :return: Model instance
         """
-        session.query(cls).filter(*args).delete()
+        result = session.query(cls).filter(*args).delete()
         session.commit()
+        return result
 
     def __str__(self):
         """
@@ -102,7 +103,7 @@ class IdDbModel(LocalDbModel):
 
     @classmethod
     def delete_by_id(cls, id: int):
-        cls._delete(cls.id == id)
+        return cls._delete(cls.id == id)
 
 
 class SearchableDbModel(IdDbModel):

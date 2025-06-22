@@ -1,7 +1,8 @@
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError
 from flask import Blueprint, render_template, Response, request, jsonify, g
 from datetime import datetime, timezone
 from http import HTTPStatus
-from sqlalchemy.exc import IntegrityError
 from src.models import (
     SuggestionGetModel,
     SuggestionCreateModel,
@@ -17,8 +18,8 @@ from src.decorators import (
     require_auth,
 )
 from src.common import serialize_response, owner_or_editor_check
-from src.exceptions import InvalidDataError
 from src.constants import ErrorsMsgEnum
+from src.exceptions import InvalidDataError
 
 suggestion_route = Blueprint("suggestion_route", __name__, url_prefix="/suggestion")
 
@@ -55,7 +56,7 @@ def create_suggestion(data: SuggestionCreateModel):
         "date_posted": datetime.now(timezone.utc),
     }
     return serialize_response(
-        SuggestionGetModel, Suggestion(**data.dict(), **addon_data).save()
+        SuggestionGetModel, Suggestion(**data.model_dump(), **addon_data).save()
     )
 
 
@@ -75,7 +76,9 @@ def star_suggestion(data: GenericIdModel):
 @handle_db_exception(ErrorsMsgEnum.ERROR_ALREDY_REACTED)
 def unstar_suggestion(data: GenericIdModel):
     input_data = {"suggestion_id": data.id, "user_id": g.current_user.id}
-    SuggestionReaction.delete_reaction(**input_data)
+    result = SuggestionReaction.delete_reaction(**input_data)
+    if result == 0:
+        raise InvalidDataError(ErrorsMsgEnum.ERROR_SUGGESTION_NOT_AFFECTED)
     return " ", HTTPStatus.OK
 
 
@@ -85,7 +88,7 @@ def unstar_suggestion(data: GenericIdModel):
 @handle_db_exception(ErrorsMsgEnum.ERROR_SUGGESTION_UPDATE_FAILED)
 def update_suggestion(data: SuggestionUpdateModel):
     owner_or_editor_check(Suggestion.get_by_id(data.id))
-    Suggestion.update_by_id(data.id, **data.dict(exclude={"id"}))
+    Suggestion.update_by_id(data.id, **data.model_dump(exclude={"id"}))
     return "", HTTPStatus.OK
 
 

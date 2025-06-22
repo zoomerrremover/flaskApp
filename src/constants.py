@@ -30,6 +30,7 @@ class UserRolesEnum(StrEnum):
 
 class ErrorsMsgEnum(StrEnum):
     ERROR_USERNAME_INVALID = "Username must be 3-20 characters, without spaces."
+    ERROR_SUGGESTION_NOT_AFFECTED = "You tried ti unstar suggestion that was not stared by you or did not exist."
     ERROR_USERNAME_NOT_ORIGINAL = "Username already exists."
     ERROR_PASSWORD_WEAK = "Password must contain at least one letter."
     ERROR_ROLE_INVALID = "Invalid role."
