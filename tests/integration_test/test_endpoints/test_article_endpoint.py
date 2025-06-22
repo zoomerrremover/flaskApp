@@ -1,7 +1,6 @@
 from http import HTTPStatus
 import json
 from urllib.parse import urlencode
-from datetime import datetime, timezone # Required for checking date_posted
 from src.constants import UserRolesEnum # Required for checking roles
 from src.db import Course
 

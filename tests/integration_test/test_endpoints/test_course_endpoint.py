@@ -1,4 +1,3 @@
-from faker import Faker
 from http import HTTPStatus
 from urllib.parse import urlencode
 
