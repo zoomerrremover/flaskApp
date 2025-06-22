@@ -1,9 +1,8 @@
 import pytest
 from datetime import datetime
 from faker import Faker  # Import Faker class
-from http import HTTPStatus
 from src import Base, engine
-from src.db import User, Course
+from src.db import User, Course, Article
 from src.security.jwt_service import generate_jwt
 from src.constants import UserRolesEnum
 
@@ -34,6 +33,43 @@ def generate_users():
             }
 
     return _generate_users
+
+
+@pytest.fixture()
+def article_data():
+    def _generate_article_data(num_articles=1, user_id=1, course_id=1):
+        fake = Faker()
+        for _ in range(num_articles):
+            yield {
+                "title": fake.unique.sentence(nb_words=5),
+                "text_content": fake.paragraph(nb_sentences=10),
+                "course_id": course_id,
+                "user_id": user_id,
+                "date_created": datetime.utcnow(),
+                "date_posted": None,
+            }
+    return _generate_article_data
+
+
+@pytest.fixture
+def registered_article(app, registered_user, registered_course, article_data):
+    """
+    Factory fixture to register a user (optionally with a specific role),
+    create a course for that user, then create an article within that course.
+    Returns the created article data (including its DB ID), the user data
+    (including their access token), and the course data.
+    """
+    def _registered_article(role="user", num_articles=1):
+        course_gen = registered_course()
+        course_data, user_data = next(course_gen)
+        article_gen = article_data(num_articles, user_data["id"], course_data["id"])
+        for _ in range(num_articles):
+            article_db_payload = next(article_gen)
+            with app.app_context():
+                created_article_db = Article(**article_db_payload).save()
+                article_db_payload["id"] = created_article_db.id
+            yield article_db_payload, user_data, course_data
+    return _registered_article
 
 
 @pytest.fixture()
