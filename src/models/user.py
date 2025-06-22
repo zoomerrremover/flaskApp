@@ -1,7 +1,6 @@
 from pydantic import field_validator, EmailStr
 from pydantic.fields import Field
 from pydantic.main import BaseModel
-from typing import Optional
 from datetime import datetime
 from src.models.common import (
     ValidationUserNameModel,

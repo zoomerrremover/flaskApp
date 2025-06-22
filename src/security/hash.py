@@ -1,5 +1,5 @@
 from passlib.context import CryptContext
-from ..settings import PASSWORD_KEY
+from src.settings import PASSWORD_KEY
 
 password_contex = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

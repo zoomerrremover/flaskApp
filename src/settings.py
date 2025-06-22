@@ -18,5 +18,5 @@ ALGORITHM = "HS256"
 AUTH_HEADER = "Authorization"
 
 RE_PASSWORD = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?!.*\s).+$")
-RE_USERNAME = re.compile("^[a-zA-Z0-9_]{3,20}$")
+RE_USERNAME = re.compile("^(?=.*[a-zA-Z_])[a-zA-Z0-9_]{3,20}$")
 RE_TEXT_CONTENT = re.compile(r"^[a-zA-Z0-9\s.,!?'-]+$")
