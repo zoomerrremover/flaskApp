@@ -1,13 +1,12 @@
-from pydantic import field_validator, EmailStr
+from pydantic import field_validator
 from pydantic.fields import Field
-from pydantic.main import BaseModel
 from typing import Optional
 from datetime import datetime
 from src.models.common import ValidationTextModel, GenericIdModel, StringSearchModel
 
 
 class ArticleCreateModel(ValidationTextModel):
-    title: str = Field(max_length=32)
+    title: str = Field(max_length=100)
     text_content: str = Field(max_length=8000)
     course_id: int = Field()
     next_article: Optional[int] = None

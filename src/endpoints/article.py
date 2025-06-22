@@ -19,7 +19,6 @@ from src.models import (
 )
 from src.constants import UserRolesEnum, ErrorsMsgEnum
 from src.common import serialize_response, owner_or_editor_check
-from src.exceptions import InvalidDataError
 
 article_route = Blueprint("article", __name__, url_prefix="/article")
 
@@ -59,7 +58,7 @@ def create_article(data: ArticleCreateModel):
         ),
     }
     return serialize_response(
-        ArticleGetModel, Article(**data.dict(), **addon_data).save()
+        ArticleGetModel, Article(**data.model_dump(), **addon_data).save()
     )
 
 
@@ -69,7 +68,7 @@ def create_article(data: ArticleCreateModel):
 @handle_db_exception(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_FAILED)
 def update_article(data: ArticleUpdateModel):
     owner_or_editor_check(Article.get_by_id(data.id))
-    Article.update_by_id(data.id, **data.dict(exclude={"id"}))
+    Article.update_by_id(data.id, **data.model_dump(exclude={"id"}))
     return "", HTTPStatus.OK
 
 
