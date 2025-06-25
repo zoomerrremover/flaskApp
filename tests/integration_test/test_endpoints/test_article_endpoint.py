@@ -1,7 +1,6 @@
 from http import HTTPStatus
-import json
 from urllib.parse import urlencode
-from src.constants import UserRolesEnum # Required for checking roles
+from src.constants import UserRolesEnum
 from src.db import Course
 
 
@@ -16,30 +15,37 @@ def test_get_article_successful_by_id(client, registered_article):
     assert response_json["title"] == article_info["title"]
     assert response_json["course_id"] == article_info["course_id"]
     assert response_json["user_id"] == article_info["user_id"]
-    # Check date_posted only if it was set (e.g., for editor/admin)
+
     if article_info["date_posted"]:
         assert response_json["date_posted"] is not None
 
 
 def test_get_article_not_found(client):
-    params = urlencode({"id": 99999})  # Non-existent ID
+    params = urlencode({"id": 99999})
     response = client.get(f"/article/?{params}")
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_get_articles_by_user_successful(client, registered_article):
-    article_info, user_data, course_data = next(registered_article(num_articles=3)) # Get 3 articles
+    (
+            article_info,
+            user_data,
+            course_data
+    ) = next(registered_article(num_articles=3))
     params = urlencode({"id": user_data["id"], "limit": 5})
     response = client.get(f"/article/by_user?{params}")
     assert response.status_code == HTTPStatus.OK
     response_json = response.json
     assert isinstance(response_json, list)
-    assert len(response_json) >= 1 # At least one article should be returned
-    assert any(article["id"] == article_info["id"] for article in response_json)
+    assert len(response_json) >= 1
+    assert any
+    (
+        article["id"] == article_info["id"] for article in response_json
+    )
 
 
 def test_get_articles_by_user_not_found(client, registered_user):
-    # Create a user who won't have any articles
+
     no_article_user_data = next(registered_user())
     params = urlencode({"id": no_article_user_data["id"], "limit": 5})
     response = client.get(f"/article/by_user?{params}")
@@ -47,25 +53,32 @@ def test_get_articles_by_user_not_found(client, registered_user):
 
 
 def test_get_articles_by_non_existent_user(client):
-    params = urlencode({"id": 999999, "limit": 5}) # Non-existent user ID
+    params = urlencode({"id": 999999, "limit": 5})
     response = client.get(f"/article/by_user?{params}")
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_get_articles_by_course_successful(client, registered_article):
-    # Create a user, a course, and a few articles for that course
-    article_info, user_data, course_data = next(registered_article(num_articles=2))
+
+    (
+            article_info,
+            user_data,
+            course_data
+    ) = next(registered_article(num_articles=2))
     params = urlencode({"id": course_data["id"], "limit": 5})
     response = client.get(f"/article/by_course?{params}")
     assert response.status_code == HTTPStatus.OK
     response_json = response.json
     assert isinstance(response_json, list)
-    assert len(response_json) >= 1 # At least one article should be returned
-    assert any(article["id"] == article_info["id"] for article in response_json)
+    assert len(response_json) >= 1
+    assert any
+    (
+        article["id"] == article_info["id"] for article in response_json
+    )
 
 
 def test_get_articles_by_course_not_found(client, registered_course):
-    # Create a course that won't have any articles linked
+
     _, course_data = next(registered_course())
     params = urlencode({"id": course_data["id"], "limit": 5})
     response = client.get(f"/article/by_course?{params}")
@@ -73,13 +86,15 @@ def test_get_articles_by_course_not_found(client, registered_course):
 
 
 def test_get_articles_by_non_existent_course(client):
-    params = urlencode({"id": 999999, "limit": 5}) # Non-existent course ID
+    params = urlencode({"id": 999999, "limit": 5})
     response = client.get(f"/article/by_course?{params}")
     assert response.status_code == HTTPStatus.NO_CONTENT
 
 
-## POST /article/ Tests
-def test_create_article_successful_user_role(client, registered_user, generate_course_data):
+def test_create_article_successful_user_role(
+        client,
+        registered_user,
+        generate_course_data):
     user_data = next(registered_user(role="user"))
     access_token = user_data["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -100,15 +115,17 @@ def test_create_article_successful_user_role(client, registered_user, generate_c
     assert response_json["title"] == article_payload["title"]
     assert response_json["user_id"] == user_data["id"]
     assert response_json["course_id"] == course_id
-    assert response_json["date_posted"] is None # Regular user should have date_posted as None
+    assert response_json["date_posted"] is None
 
 
-def test_create_article_successful_editor_role(client, registered_user, generate_course_data):
+def test_create_article_successful_editor_role(
+        client,
+        registered_user,
+        generate_course_data
+):
     editor_data = next(registered_user(role=UserRolesEnum.editor.value))
     access_token = editor_data["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
-
-    # Create a course first
     course_data = next(generate_course_data(user_id=editor_data["id"]))
     with client.application.app_context():
         created_course_db = Course(**course_data).save()
@@ -124,10 +141,14 @@ def test_create_article_successful_editor_role(client, registered_user, generate
     response_json = response.json
     assert response_json["title"] == article_payload["title"]
     assert response_json["user_id"] == editor_data["id"]
-    assert response_json["date_posted"] is not None # Editor should have date_posted set
+    assert response_json["date_posted"] is not None
 
 
-def test_create_article_unauthorized(client, generate_course_data, registered_user):
+def test_create_article_unauthorized(
+        client,
+        generate_course_data,
+        registered_user
+):
     user_data = next(registered_user())
     course_data = next(generate_course_data(user_id=user_data["id"]))
     with client.application.app_context():
@@ -139,11 +160,15 @@ def test_create_article_unauthorized(client, generate_course_data, registered_us
         "text_content": "Attempting to create without token.",
         "course_id": course_id,
     }
-    response = client.post("/article/", json=article_payload) # No headers
+    response = client.post("/article/", json=article_payload)
     assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-def test_create_article_missing_title(client, registered_user, generate_course_data):
+def test_create_article_missing_title(
+        client,
+        registered_user,
+        generate_course_data
+):
     user_data = next(registered_user())
     access_token = user_data["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -161,7 +186,10 @@ def test_create_article_missing_title(client, registered_user, generate_course_d
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_create_article_invalid_data_title_too_long(client, registered_course, article_data):
+def test_create_article_invalid_data_title_too_long(client,
+                                                    registered_course,
+                                                    article_data
+                                                    ):
     course_info, user_data = next(registered_course())
     access_token = user_data["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -171,7 +199,11 @@ def test_create_article_invalid_data_title_too_long(client, registered_course, a
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_create_article_invalid_data_text_content_too_long(client, registered_course, article_data):
+def test_create_article_invalid_data_text_content_too_long(
+        client,
+        registered_course,
+        article_data
+):
     course_info, user_data = next(registered_course())
     access_token = user_data["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -181,7 +213,11 @@ def test_create_article_invalid_data_text_content_too_long(client, registered_co
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_create_article_invalid_course_id(client, registered_course, article_data):
+def test_create_article_invalid_course_id(
+        client,
+        registered_course,
+        article_data
+):
     course_info, user_data = next(registered_course())
     access_token = user_data["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -190,7 +226,11 @@ def test_create_article_invalid_course_id(client, registered_course, article_dat
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_update_article_successful_by_owner(client, registered_article, article_data):
+def test_update_article_successful_by_owner(
+        client,
+        registered_article,
+        article_data
+):
     article_info, user_data, _ = next(registered_article(role="user"))
     access_token = user_data["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -207,9 +247,16 @@ def test_update_article_successful_by_owner(client, registered_article, article_
     assert get_response.json["title"] == new_params["title"]
 
 
-def test_update_article_successful_by_editor(client, registered_article, article_data):
-    # Editor creates the article, then updates it
-    article_info, editor_data, _ = next(registered_article(role=UserRolesEnum.editor.value))
+def test_update_article_successful_by_editor(
+        client,
+        registered_article,
+        article_data
+):
+    (
+            article_info,
+            editor_data,
+            _
+    ) = next(registered_article(role=UserRolesEnum.editor.value))
     access_token = editor_data["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
     new_data = next(article_data())
@@ -233,7 +280,12 @@ def test_update_article_unauthorized(client, registered_article, article_data):
     assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-def test_update_article_forbidden_not_owner_or_editor(client, registered_article, registered_user, article_data):
+def test_update_article_forbidden_not_owner_or_editor(
+        client,
+        registered_article,
+        registered_user,
+        article_data
+):
     article_info, owner_user_data, _ = next(registered_article(role="user"))
     other_user_data = next(registered_user(role="user"))
     other_user_token = other_user_data["access_token"]
@@ -256,7 +308,11 @@ def test_update_article_not_found(client, registered_user, article_data):
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-def test_update_article_invalid_data_title_too_long(client, registered_article, article_data):
+def test_update_article_invalid_data_title_too_long(
+        client,
+        registered_article,
+        article_data
+):
     article_info, user_data, _ = next(registered_article())
     access_token = user_data["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -286,16 +342,17 @@ def test_delete_article_successful_by_owner(client, registered_article):
     response = client.delete(f"/article/?{delete_params}", headers=headers)
     assert response.status_code == HTTPStatus.OK
     assert response.data == b""
-
-    # Verify deletion
     get_params = urlencode({"id": article_info["id"]})
     get_response = client.get(f"/article/?{get_params}")
     assert get_response.status_code == HTTPStatus.NO_CONTENT
 
 
 def test_delete_article_successful_by_editor(client, registered_article):
-    # Editor creates the article, then deletes it
-    article_info, editor_data, _ = next(registered_article(role=UserRolesEnum.editor.value))
+    (
+            article_info,
+            editor_data,
+            _
+    ) = next(registered_article(role=UserRolesEnum.editor.value))
     access_token = editor_data["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
 
@@ -303,8 +360,6 @@ def test_delete_article_successful_by_editor(client, registered_article):
     response = client.delete(f"/article/?{delete_params}", headers=headers)
     assert response.status_code == HTTPStatus.OK
     assert response.data == b""
-
-    # Verify deletion
     get_params = urlencode({"id": article_info["id"]})
     get_response = client.get(f"/article/?{get_params}")
     assert get_response.status_code == HTTPStatus.NO_CONTENT
@@ -313,14 +368,18 @@ def test_delete_article_successful_by_editor(client, registered_article):
 def test_delete_article_unauthorized(client, registered_article):
     article_info, _, _ = next(registered_article())
     delete_params = urlencode({"id": article_info["id"]})
-    response = client.delete(f"/article/?{delete_params}") # No headers
+    response = client.delete(f"/article/?{delete_params}")
     assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-def test_delete_article_forbidden_not_owner_or_editor(client, registered_article, registered_user):
-    # User 1 creates article
+def test_delete_article_forbidden_not_owner_or_editor(
+        client,
+        registered_article,
+        registered_user
+):
+
     article_info, owner_user_data, _ = next(registered_article(role="user"))
-    # User 2 tries to delete User 1's article
+
     other_user_data = next(registered_user(role="user"))
     other_user_token = other_user_data["access_token"]
     headers = {"Authorization": f"Bearer {other_user_token}"}
@@ -334,7 +393,7 @@ def test_delete_article_not_found(client, registered_user):
     user_data = next(registered_user())
     access_token = user_data["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
-    delete_params = urlencode({"id": 99999}) # Non-existent article ID
+    delete_params = urlencode({"id": 99999})
     response = client.delete(f"/article/?{delete_params}", headers=headers)
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 

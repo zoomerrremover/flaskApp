@@ -35,7 +35,11 @@ def test_get_course_missing_id_param(client):
 
 
 # GET /course/by_user
-def test_get_course_by_user_successful(client, registered_user, registered_course):
+def test_get_course_by_user_successful(
+        client,
+        registered_user,
+        registered_course
+):
     # Register two courses for the same user
     course_gen = registered_course(num_courses=2)
     course2, _ = next(course_gen)
@@ -72,7 +76,11 @@ def test_get_course_by_user_non_existent_user(client):
 
 
 # GET /course/by_category
-def test_get_course_by_category_successful(client, registered_course, generate_course_data):
+def test_get_course_by_category_successful(
+        client,
+        registered_course,
+        generate_course_data
+):
     user_with_courses = next(registered_course(num_courses=1))
     created_course1, user1_data = user_with_courses
     course_data_cat1_b = next(generate_course_data(user_id=user1_data["id"]))
@@ -96,7 +104,9 @@ def test_get_course_by_category_successful(client, registered_course, generate_c
     assert len(response_json) == 2
     assert any(c["id"] == created_course1["id"] for c in response_json)
     assert any(c["id"] == created_course2["id"] for c in response_json)
-    assert all(c["category"] == created_course1["category"] for c in response_json)
+    assert all(
+        c["category"] == created_course1["category"] for c in response_json
+    )
 
 
 def test_get_course_by_category_no_courses(client):
@@ -111,7 +121,9 @@ def test_get_course_by_category_invalid_category_param(client):
     response = client.get(f"/course/by_category?{urlencode(params)}")
     assert response.status_code == HTTPStatus.NO_CONTENT
     params_missing = {"limit": 10}
-    response_missing = client.get(f"/course/by_category?{urlencode(params_missing)}")
+    response_missing = client.get(
+        f"/course/by_category?{urlencode(params_missing)}"
+    )
     print(f"Content {response_missing.json}")
     assert response_missing.status_code == HTTPStatus.BAD_REQUEST
 
@@ -125,7 +137,7 @@ def test_create_course_successful_user(client, registered_user, course_data):
     response_json = response.json
     assert response_json["title"] == course_data["title"]
     assert response_json["user_id"] == user_info["id"]
-    assert response_json["date_posted"] is None # Assuming this is still None initially
+    assert response_json["date_posted"] is None
 
 
 def test_create_course_forbiden(client, course_data):
@@ -165,7 +177,11 @@ def test_create_course_duplicate_title(client, registered_course, course_data):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_create_course_invalid_data_types(client, registered_user, course_data):
+def test_create_course_invalid_data_types(
+        client,
+        registered_user,
+        course_data
+):
     user_info = next(registered_user(num_users=1))
     headers = {"Authorization": f"Bearer {user_info['access_token']}"}
 
@@ -180,12 +196,14 @@ def test_create_course_invalid_data_types(client, registered_user, course_data):
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-# PATCH /course/
-def test_update_course_successful(client, registered_course, generate_course_data):
+def test_update_course_successful(
+        client,
+        registered_course,
+        generate_course_data
+):
     created_course, user_info = next(registered_course(num_courses=1))
     headers = {"Authorization": f"Bearer {user_info['access_token']}"}
-    new_course_data = next(generate_course_data(user_id=user_info["id"])) # Ensure user_id matches
-    
+    new_course_data = next(generate_course_data(user_id=user_info["id"]))
     update_params = {
         "id": created_course["id"],
         "title": new_course_data["title"],
@@ -210,7 +228,12 @@ def test_update_course_successful_editor_admin(client,
                                                registered_course,
                                                generate_course_data,
                                                registered_user):
-    initial_course, regular_user_info = next(registered_course(num_courses=1, user_role="user"))
+    initial_course, regular_user_info = next(
+        registered_course(
+            num_courses=1,
+            user_role="user"
+        )
+    )
     editor_user_data_gen = registered_user(role="editor", num_users=1)
     editor_user_data = next(editor_user_data_gen)
     editor_access_token = editor_user_data["access_token"]
@@ -227,29 +250,43 @@ def test_update_course_successful_editor_admin(client,
     assert updated_course["title"] == update_params["title"]
 
 
-def test_update_course_unauthorized(client, registered_course, generate_course_data):
+def test_update_course_unauthorized(
+        client,
+        registered_course,
+        generate_course_data
+):
     created_course, _ = next(registered_course(num_courses=1))
-    new_course_data = next(generate_course_data(user_id=created_course["user_id"]))
+    new_course_data = next(
+        generate_course_data(
+            user_id=created_course["user_id"]
+        )
+    )
     update_params = {"id": created_course["id"],
                      "title": new_course_data["title"]}
     response = client.patch(f"/course/?{urlencode(update_params)}")
     assert response.status_code == HTTPStatus.FORBIDDEN
 
 
-def test_update_course_not_found(client, registered_user, generate_course_data):
+def test_update_course_not_found(
+        client,
+        registered_user,
+        generate_course_data
+):
     user_info = next(registered_user(num_users=1))
     headers = {"Authorization": f"Bearer {user_info['access_token']}"}
     new_course_data = next(generate_course_data(user_id=user_info["id"]))
     update_params = {"id": 999999, "title": new_course_data["title"]}
     response = client.patch(f"/course/?{urlencode(update_params)}",
                             headers=headers)
-    assert response.status_code == HTTPStatus.BAD_REQUEST # Or NOT_FOUND, depending on API behavior
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_update_course_unauthorized_not_owner(client,
-                                               registered_course,
-                                               registered_user,
-                                               generate_course_data):
+def test_update_course_unauthorized_not_owner(
+    client,
+    registered_course,
+    registered_user,
+    generate_course_data
+):
     course, _ = next(registered_course(num_courses=1,))
     other_user_info = next(registered_user(num_users=1))
     headers = {"Authorization": f"Bearer {other_user_info['access_token']}"}
@@ -261,7 +298,11 @@ def test_update_course_unauthorized_not_owner(client,
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-def test_update_course_invalid_id_param(client, registered_user, generate_course_data):
+def test_update_course_invalid_id_param(
+        client,
+        registered_user,
+        generate_course_data
+):
     user_info = next(registered_user(num_users=1))
     headers = {"Authorization": f"Bearer {user_info['access_token']}"}
     new_course_data = next(generate_course_data(user_id=user_info["id"]))
@@ -271,21 +312,21 @@ def test_update_course_invalid_id_param(client, registered_user, generate_course
     assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
-def test_update_course_duplicate_title_conflict(client, registered_course, generate_course_data):
-    # Create two courses by the same user
+def test_update_course_duplicate_title_conflict(
+        client,
+        registered_course,
+        generate_course_data
+):
     user_with_multiple_courses = next(registered_course(num_courses=1))
     course1, user_info = user_with_multiple_courses
-    
     course2_data_gen = generate_course_data(user_id=user_info["id"])
     course2_data = next(course2_data_gen)
-    
     headers = {"Authorization": f"Bearer {user_info['access_token']}"}
     response_create2 = client.post("/course/",
                                    json=course2_data,
                                    headers=headers)
     assert response_create2.status_code == HTTPStatus.OK
     course2 = response_create2.json
-    
     # Attempt to update course2's title to course1's title
     update_params = {"id": course2["id"], "title": course1["title"]}
     response_update = client.patch(f"/course/?{urlencode(update_params)}",
@@ -308,8 +349,18 @@ def test_delete_course_successful(client, registered_course):
     assert get_response.status_code == HTTPStatus.NO_CONTENT
 
 
-def test_delete_course_successful_editor_admin(client, registered_course, registered_user, app):
-    initial_course, regular_user_info = next(registered_course(num_courses=1, user_role="user"))
+def test_delete_course_successful_editor_admin(
+        client,
+        registered_course,
+        registered_user,
+        app
+):
+    initial_course, regular_user_info = next(
+        registered_course(
+            num_courses=1,
+            user_role="user"
+        )
+    )
     editor_user = next(registered_user("editor"))
     editor_access_token = editor_user["access_token"]
     headers = {"Authorization": f"Bearer {editor_access_token}"}
@@ -338,13 +389,19 @@ def test_delete_course_not_found(client, registered_user):
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-def test_delete_course_unauthorized_not_owner(client, registered_course, registered_user):
+def test_delete_course_unauthorized_not_owner(
+        client,
+        registered_course,
+        registered_user
+):
     course, _ = next(registered_course())
     other_user_info = next(registered_user())
     headers = {"Authorization": f"Bearer {other_user_info['access_token']}"}
     delete_params = {"id": course["id"]}
-    response = client.delete(f"/course/?{urlencode(delete_params)}",
-                             headers=headers)
+    response = client.delete(
+        f"/course/?{urlencode(delete_params)}",
+        headers=headers
+    )
     assert response.status_code == HTTPStatus.UNAUTHORIZED
 
 
@@ -355,3 +412,4 @@ def test_delete_course_invalid_id_param(client, registered_user):
     response = client.delete(f"/course/?{urlencode(delete_params)}",
                              headers=headers)
     assert response.status_code == HTTPStatus.BAD_REQUEST
+

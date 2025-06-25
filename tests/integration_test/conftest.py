@@ -63,7 +63,11 @@ def registered_article(app, registered_user, registered_course, article_data):
     def _registered_article(role="user", num_articles=1):
         course_gen = registered_course()
         course_data, user_data = next(course_gen)
-        article_gen = article_data(num_articles, user_data["id"], course_data["id"])
+        article_gen = article_data(
+            num_articles,
+            user_data["id"],
+            course_data["id"]
+        )
         cache = []
         for _ in range(num_articles):
             article_db_payload = next(article_gen)
@@ -84,8 +88,8 @@ def suggestion_data():
         fake = Faker()
         for _ in range(num_suggestions):
             yield {
-                "title": fake.unique.sentence(nb_words=5)[:32],  # Limit to max_length=32
-                "text_content": fake.paragraph(nb_sentences=5)[:8000],  # Limit to max_length=8000
+                "title": fake.unique.sentence(nb_words=5)[:32],
+                "text_content": fake.paragraph(nb_sentences=5)[:8000],
                 "article_id": article_id,
             }
     return _generate_suggestion_data
@@ -94,8 +98,11 @@ def suggestion_data():
 @pytest.fixture
 def registered_suggestion(app, registered_article, suggestion_data):
     def _registered_suggestion(num_suggestions=1, user_role="user"):
-        article_info, user_data, course_data = next(registered_article(num_articles=1, role=user_role))
-
+        (
+            article_info,
+            user_data,
+            course_data
+        ) = next(registered_article(num_articles=1, role=user_role))
         suggestion_gen = suggestion_data(num_suggestions, article_info["id"])
         cache = []
         for _ in range(num_suggestions):
@@ -105,10 +112,14 @@ def registered_suggestion(app, registered_article, suggestion_data):
                 "date_posted": datetime.utcnow(),
             }
             with app.app_context():
-                created_suggestion_db = Suggestion(**suggestion_db_payload, **addon_data).save()
+                created_suggestion_db = Suggestion(
+                    **suggestion_db_payload,
+                    **addon_data
+                ).save()
                 suggestion_db_payload["id"] = created_suggestion_db.id
                 suggestion_db_payload["user_id"] = addon_data["user_id"]
-                suggestion_db_payload["date_posted"] = addon_data["date_posted"].isoformat()
+                suggestion_db_payload["date_posted"] = \
+                    addon_data["date_posted"].isoformat()
             cache.append(suggestion_db_payload["id"])
             yield suggestion_db_payload, user_data, article_info, course_data
         for entry in cache:
