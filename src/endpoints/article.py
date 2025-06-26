@@ -1,7 +1,5 @@
-import datetime
 from http import HTTPStatus
-from flask import Blueprint, render_template, Response, request, jsonify, g
-from sqlalchemy.exc import IntegrityError
+from flask import Blueprint, g
 from datetime import datetime, timezone
 from src.db import Article
 from src.decorators import (
@@ -32,7 +30,12 @@ def get_article(data: GenericIdModel):
 @article_route.route("/by_user", methods=["GET"])
 @validate_model_params(IdSearchModel)
 def get_article_by_user(data: IdSearchModel):
-    return serialize_response(ArticleGetModel, Article.get_by_user(data.id, data.limit))
+    return serialize_response(
+        ArticleGetModel,
+        Article.get_by_user(
+            data.id, data.limit
+        )
+    )
 
 
 @article_route.route("/by_course", methods=["GET"])
@@ -53,7 +56,7 @@ def create_article(data: ArticleCreateModel):
         "date_created": datetime.now(timezone.utc),
         "date_posted": (
             None
-            if g.current_user.role == UserRolesEnum.user
+            if g.current_user.role == UserRolesEnum.USER
             else datetime.now(timezone.utc)
         ),
     }

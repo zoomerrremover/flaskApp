@@ -53,7 +53,7 @@ def create_course(data: CourseCreateModel):
         "date_created": datetime.now(timezone.utc),
         "date_posted": (
             None
-            if g.current_user.role == UserRolesEnum.user
+            if g.current_user.role == UserRolesEnum.USER
             else datetime.now(timezone.utc)
         ),
     }

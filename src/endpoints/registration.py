@@ -29,7 +29,7 @@ def register_user(data: UserUpdateModel):
     user = User(
         **db_entry,
         **{
-            "role": UserRolesEnum.user,
+            "role": UserRolesEnum.USER,
             "date_registered": datetime.now(timezone.utc),
         }
     ).save()

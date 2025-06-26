@@ -1,20 +1,19 @@
 from functools import wraps
 from flask import request, g
 from src.common import user_role_is_satisfactory
-from src.constants import UserRolesEnum, CommonConstantsEnum, ErrorsMsgEnum
+from src.constants import UserRolesEnum, AuthConstantsEnum, ErrorsMsgEnum
 from src.db import User
 from src.exceptions import AuthorizationError, AuthenticationError
-from src.settings import AUTH_HEADER
 from src.security import verify_jwt
 
 
-def require_auth(role: UserRolesEnum = UserRolesEnum.user):
+def require_auth(role: UserRolesEnum = UserRolesEnum.USER):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            auth_header = request.headers.get(AUTH_HEADER)
+            auth_header = request.headers.get(AuthConstantsEnum.AUTH_HEADER)
             if not auth_header or not auth_header.startswith(
-                CommonConstantsEnum.AUTH_PREFIX
+                AuthConstantsEnum.AUTH_PREFIX
             ):
                 raise AuthenticationError(ErrorsMsgEnum.ERROR_FIELD_REQUIRED)
             token = auth_header.split(" ")[1]

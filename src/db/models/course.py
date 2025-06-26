@@ -1,7 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from sqlalchemy import func
 from src.db.models.common import TextContentDbModel
 
 
@@ -16,11 +15,6 @@ class Course(TextContentDbModel):
     author = relationship("User", back_populates="courses")
     category: str = Column(String, nullable=False)
     articles = relationship("Article", back_populates="course")
-
-    def update_search_vector(self):
-        self.search_vector = func.to_tsvector(
-            "english", self.title + " " + self.text_content + " " + self.category
-        )
 
     @classmethod
     def get_by_category(cls, category: str, limit: int):

@@ -1,20 +1,20 @@
 import jwt
 from datetime import datetime, timedelta, timezone
 from flask import jsonify
-from ..settings import JWT_KEY, ALGORITHM, ACCESS_TOKEN_TIME
-from ..db import User
-from ..exceptions import AuthenticationError
-from ..constants import ErrorsMsgEnum
+from src.settings import JWT_KEY, ACCESS_TOKEN_TIME
+from src.db import User
+from src.exceptions import AuthenticationError
+from src.constants import ErrorsMsgEnum, AuthConstantsEnum
 
 
 def generate_jwt(user: User):
-    now = datetime.now(timezone.utc)
+    time_now = datetime.now(timezone.utc)
     payload = {
         "user_id": user.id,
-        "exp": (now + timedelta(minutes=ACCESS_TOKEN_TIME)).timestamp(),
-        "iat": now.timestamp(),
+        "exp": (time_now + timedelta(minutes=ACCESS_TOKEN_TIME)).timestamp(),
+        "iat": time_now.timestamp(),
     }
-    return jwt.encode(payload, JWT_KEY, ALGORITHM)
+    return jwt.encode(payload, JWT_KEY, AuthConstantsEnum.ALGORITHM)
 
 
 def generate_json_jwt(user: User):
@@ -30,7 +30,11 @@ def generate_json_jwt(user: User):
 
 def verify_jwt(token):
     try:
-        payload = jwt.decode(token, JWT_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            token,
+            JWT_KEY,
+            algorithms=[AuthConstantsEnum.ALGORITHM]
+        )
         result = User(id=payload["user_id"])
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
         raise AuthenticationError(ErrorsMsgEnum.ERROR_JWT_INVALID)
