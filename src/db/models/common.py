@@ -1,4 +1,5 @@
-from sqlalchemy.orm import relationship, declarative_base
+from abc import ABC, abstractmethod
+from sqlalchemy.orm import declarative_base
 from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from datetime import datetime
@@ -8,7 +9,7 @@ from src.db.engine import session
 Base = declarative_base()
 
 
-class LocalDbModel(Base):
+class LocalDbModel(Base, ABC):
     __abstract__ = True
 
     def as_dict(self):
@@ -85,7 +86,7 @@ class LocalDbModel(Base):
         return request
 
 
-class IdDbModel(LocalDbModel):
+class IdDbModel(LocalDbModel, ABC):
     __abstract__ = True
     id: int = Column(Integer, primary_key=True)
 
@@ -106,14 +107,22 @@ class IdDbModel(LocalDbModel):
         return cls._delete(cls.id == id)
 
 
-class SearchableDbModel(IdDbModel):
+class SearchableDbModel(IdDbModel, ABC):
     __abstract__ = True
     search_vector = Column(TSVECTOR)
 
     @classmethod
     def _search_vector_predicate(cls, text: str) -> object:
-        return cls.search_vector.op("@@")(func.websearch_to_tsquery("english", text))
+        return cls.search_vector.op(
+            "@@"
+        )
+        (
+            func.websearch_to_tsquery(
+                "english", text
+            )
+        )
 
+    @abstractmethod
     def update_search_vector(self):
         pass
 
@@ -129,7 +138,7 @@ def trigger_search_vector_update(mapper, connection, target):
     target.update_search_vector()
 
 
-class TextContentDbModel(SearchableDbModel):
+class TextContentDbModel(SearchableDbModel, ABC):
     __abstract__ = True
     title: str = Column(String, nullable=False)
     text_content: str = Column(String, nullable=False)

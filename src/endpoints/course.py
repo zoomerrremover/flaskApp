@@ -51,11 +51,7 @@ def create_course(data: CourseCreateModel):
     addon_data = {
         "user_id": g.current_user.id,
         "date_created": datetime.now(timezone.utc),
-        "date_posted": (
-            None
-            if g.current_user.role == UserRolesEnum.USER
-            else datetime.now(timezone.utc)
-        ),
+        "date_posted": None
     }
     return serialize_response(
         CourseGetModel, Course(**data.model_dump(), **addon_data).save()

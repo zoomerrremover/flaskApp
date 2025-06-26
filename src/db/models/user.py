@@ -2,9 +2,7 @@ from sqlalchemy import (
     Column,
     String,
     Integer,
-    ForeignKey,
     TIMESTAMP,
-    UniqueConstraint,
     func,
 )
 from sqlalchemy.orm import relationship
@@ -40,4 +38,9 @@ class User(SearchableDbModel):
 
     @classmethod
     def search(cls, search_query: str, limit: int):
-        return cls._get_filtered(limit, cls._search_vector_predicate(search_query))
+        return cls._get_filtered(
+            limit,
+            cls._search_vector_predicate(
+                search_query
+            )
+        )

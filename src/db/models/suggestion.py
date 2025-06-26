@@ -5,7 +5,6 @@ from sqlalchemy import (
     Integer,
     TIMESTAMP,
     ForeignKey,
-    Boolean,
     UniqueConstraint,
     func,
 )
@@ -18,7 +17,9 @@ class Suggestion(TextContentDbModel):
     __tablename__ = "suggestions"
     __table_args__ = (
         UniqueConstraint(
-            "article_id", "title", name="unique_suggestion_title_within_article"
+            "article_id",
+            "title",
+            name="unique_suggestion_title_within_article"
         ),
     )
     id: int = Column(Integer, primary_key=True)
@@ -27,7 +28,11 @@ class Suggestion(TextContentDbModel):
     date_posted: datetime = Column(TIMESTAMP)
     user_id: int = Column(Integer, ForeignKey("users.id"), nullable=False)
     author = relationship("User", back_populates="suggestions")
-    article_id: int = Column(Integer, ForeignKey("articles.id"), nullable=False)
+    article_id: int = Column(
+        Integer,
+        ForeignKey("articles.id"),
+        nullable=False
+    )
     article = relationship("Article", back_populates="suggestions")
     reactions = relationship("SuggestionReaction", back_populates="suggestion")
 
@@ -58,11 +63,7 @@ class Suggestion(TextContentDbModel):
 
     @stars_count.expression
     def stars_count(cls):
-        """
-        SQL-side access: Returns the number of likes for this post using a SQL COUNT.
-        This now queries the 'Like' class directly, which maps to the 'likes' table.
-        """
-        from sqlalchemy import select  # Import select for modern SQLAlchemy queries
+        from sqlalchemy import select
 
         return (
             select(
@@ -71,7 +72,7 @@ class Suggestion(TextContentDbModel):
             .where(
                 SuggestionReaction.suggestion_id == cls.id
             )  # Filter by this Post's ID
-            .scalar_subquery()  # Makes it a scalar subquery for use in SELECT list
+            .scalar_subquery()
         )
 
 
@@ -103,5 +104,7 @@ class SuggestionReaction(LocalDbModel):
 
     @classmethod
     def delete_reaction(cls, suggestion_id: int, user_id: int):
-        return cls._delete(cls.suggestion_id == suggestion_id, cls.user_id == user_id)
-
+        return cls._delete(
+            cls.suggestion_id == suggestion_id,
+            cls.user_id == user_id
+        )
