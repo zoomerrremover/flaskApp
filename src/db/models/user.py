@@ -7,10 +7,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from src.db.models.common import SearchableDbModel
+from src.db.models.common import SearchableDbModelABC
 
 
-class User(SearchableDbModel):
+class User(SearchableDbModelABC):
     __tablename__: str = "users"
     id: int = Column(Integer, primary_key=True)
     username: str = Column(String, nullable=False, unique=True)

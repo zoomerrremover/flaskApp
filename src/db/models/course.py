@@ -1,10 +1,10 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from src.db.models.common import TextContentDbModel
+from src.db.models.common import TextContentDbModelABC
 
 
-class Course(TextContentDbModel):
+class Course(TextContentDbModelABC):
     __tablename__ = "courses"
     id: int = Column(Integer, primary_key=True)
     title: str = Column(String, nullable=False, unique=True)

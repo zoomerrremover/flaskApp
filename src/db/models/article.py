@@ -2,10 +2,10 @@ from sqlalchemy import Column, String, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy import UniqueConstraint
-from src.db.models.common import TextContentDbModel
+from src.db.models.common import TextContentDbModelABC
 
 
-class Article(TextContentDbModel):
+class Article(TextContentDbModelABC):
     __tablename__ = "articles"
     __table_args__ = (
         UniqueConstraint(

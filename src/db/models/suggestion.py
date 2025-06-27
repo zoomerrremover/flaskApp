@@ -10,10 +10,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime
-from src.db.models.common import TextContentDbModel, LocalDbModel
+from src.db.models.common import TextContentDbModelABC, LocalDbModelABC
 
 
-class Suggestion(TextContentDbModel):
+class Suggestion(TextContentDbModelABC):
     __tablename__ = "suggestions"
     __table_args__ = (
         UniqueConstraint(
@@ -76,7 +76,7 @@ class Suggestion(TextContentDbModel):
         )
 
 
-class SuggestionReaction(LocalDbModel):
+class SuggestionReaction(LocalDbModelABC):
     __tablename__ = "suggestion_reactions"
     suggestion_id: int = Column(
         Integer, ForeignKey("suggestions.id"), nullable=False, primary_key=True

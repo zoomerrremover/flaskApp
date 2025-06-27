@@ -61,6 +61,22 @@ def create_article(data: ArticleCreateModel):
     )
 
 
+@article_route.route("/post", methods=["PATCH"])
+@require_auth(UserRolesEnum.EDITOR)
+@validate_model_params(GenericIdModel)
+@handle_db_exception(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_FAILED)
+def post_article(data: GenericIdModel):
+    Article.update_by_id(
+        data.id,
+        **{
+            'date_posted': datetime.now(
+                timezone.utc
+            )
+        }
+    )
+    return "", HTTPStatus.OK
+
+
 @article_route.route("/", methods=["PATCH"])
 @require_auth()
 @validate_model_params(ArticleUpdateModel)

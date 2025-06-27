@@ -3,7 +3,7 @@ from pydantic.main import BaseModel
 from email_validator import validate_email, EmailNotValidError
 from src.constants import UserRolesEnum
 from src.exceptions import NothingFoundError
-from src.db import TextContentDbModel
+from src.db import TextContentDbModelABC
 from src.exceptions import AuthorizationError, InvalidDataError
 from src.constants import ErrorsMsgEnum
 
@@ -28,7 +28,7 @@ def user_role_is_satisfactory(
     return result
 
 
-def owner_or_editor_check(media: TextContentDbModel):
+def owner_or_editor_check(media: TextContentDbModelABC):
     author = g.current_user
     if (
         not media or
