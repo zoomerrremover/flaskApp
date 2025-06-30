@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from flask import Blueprint, render_template, Response, request, jsonify, g
+from flask import Blueprint, g
 from datetime import datetime, timezone
 from src.decorators import (
     validate_model_request,
@@ -32,7 +32,12 @@ def get_course(data: GenericIdModel):
 @course_route.route("/by_user", methods=["GET"])
 @validate_model_params(IdSearchModel)
 def get_course_by_user(data: IdSearchModel):
-    return serialize_response(CourseGetModel, Course.get_by_user(data.id, data.limit))
+    return serialize_response(
+        CourseGetModel,
+        Course.get_by_user(
+            data.id, data.limit
+        )
+    )
 
 
 @course_route.route("/by_category", methods=["GET"])
@@ -58,7 +63,7 @@ def create_course(data: CourseCreateModel):
     )
 
 
-@course_route.route("/post", methods=["PATCH"])
+@course_route.route("/post_course", methods=["PATCH"])
 @require_auth(UserRolesEnum.EDITOR)
 @validate_model_params(GenericIdModel)
 @handle_db_exception(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_FAILED)

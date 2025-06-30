@@ -54,7 +54,8 @@ def base_course_create_data():
     """
     return {
         "title": "Introduction to Python",
-        "text_content": "This course covers the basics of Python programming, from variables to functions.",
+        "text_content": "This course covers the basics of Python programming,\
+        from variables to functions.",
         "category": "Programming",
     }
 
@@ -139,7 +140,11 @@ def base_user_role_update_data(valid_role_data):
 
 
 @pytest.fixture
-def base_user_update_data(valid_username_data, valid_password_data, valid_email_data):
+def base_user_update_data(
+        valid_username_data,
+        valid_password_data,
+        valid_email_data
+):
     """Provides valid data for UserUpdateModel."""
     data = valid_username_data.copy()
     data.update(valid_password_data)
@@ -154,7 +159,8 @@ def base_suggestion_create_data():
     """
     return {
         "title": "Improve Section 3",
-        "text_content": "The explanation in section 3 could be clearer with an additional example.",
+        "text_content": "The explanation in section 3 \
+        could be clearer with an additional example.",
         "article_id": 10,
     }
 

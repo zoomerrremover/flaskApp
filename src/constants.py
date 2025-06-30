@@ -29,18 +29,18 @@ class UserRolesEnum(StrEnum):
 
 
 class ErrorsMsgEnum(StrEnum):
-    ERROR_USERNAME_INVALID = "Username must be 3-20 characters,",
-    "without spaces."
-    ERROR_SUGGESTION_NOT_AFFECTED = "You tried to unstar suggestion"
-    "that was not stared by you or did not exist."
+    ERROR_USERNAME_INVALID = "Username must be 3-20 characters,\
+    without spaces."
+    ERROR_SUGGESTION_NOT_AFFECTED = "You tried to unstar suggestion \
+    that was not stared by you or did not exist."
     ERROR_USERNAME_NOT_ORIGINAL = "Username already exists."
     ERROR_PASSWORD_WEAK = "Password must contain at least one letter."
     ERROR_ROLE_INVALID = "Invalid role."
     ERROR_TEXT_TOO_SHORT = "Text must be at least 3 characters."
     ERROR_AUTH_FAILED = "Invalid username or password."
     ERROR_JWT_INVALID = "Invalid JWT signature."
-    ERROR_FIELD_REQUIRED = "There is missing fields in your request."
-    "The following fields are missing: "
+    ERROR_FIELD_REQUIRED = "There is missing fields in your request.\
+    The following fields are missing: "
     ERROR_UNAUTHORIZED_ROLE = "Insufficient privileges for this action."
     ERROR_AUTHENTICATION_REQUIRED = "Authentication required."
     ERROR_EMAIL_INVALID = "Invalid email format."
@@ -58,5 +58,4 @@ class ErrorsMsgEnum(StrEnum):
 
 class AuthConstantsEnum(StrEnum):
     AUTH_PREFIX = "Bearer "
-    ALGORITHM = "HS256"
-    AUTH_HEADER = "Authorization"
+    AUTH_HEADER = "Authentication"

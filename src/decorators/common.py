@@ -1,7 +1,6 @@
-from flask import request, Response, jsonify, g
+from flask import request
 from functools import wraps
 from pydantic.main import BaseModel
-from werkzeug.exceptions import HTTPException
 from sqlalchemy.exc import IntegrityError
 from src.exceptions import InvalidDataError
 from src.db import session
@@ -22,7 +21,9 @@ def validate_model_request(model: type[BaseModel]):
                     field_location = error_detail.get('loc')
                     if field_location:
                         problematic_fields.append(field_location)
-                raise InvalidDataError(f"{ErrorsMsgEnum.ERROR_FIELD_REQUIRED}{problematic_fields}")
+                raise InvalidDataError(
+                    f"{ErrorsMsgEnum.ERROR_FIELD_REQUIRED}{problematic_fields}"
+                )
         return wrapper
     return decorator
 

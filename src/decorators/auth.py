@@ -25,7 +25,5 @@ def require_auth(role: UserRolesEnum = UserRolesEnum.USER):
                 raise AuthorizationError(ErrorsMsgEnum.ERROR_UNAUTHORIZED_ROLE)
             g.current_user = user_db
             return f(*args, **kwargs)
-
         return wrapper
-
     return decorator

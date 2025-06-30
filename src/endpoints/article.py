@@ -61,7 +61,7 @@ def create_article(data: ArticleCreateModel):
     )
 
 
-@article_route.route("/post", methods=["PATCH"])
+@article_route.route("post_article", methods=["PATCH"])
 @require_auth(UserRolesEnum.EDITOR)
 @validate_model_params(GenericIdModel)
 @handle_db_exception(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_FAILED)
