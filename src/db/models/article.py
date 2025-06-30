@@ -26,7 +26,7 @@ class Article(TextContentDbModelABC):
     suggestions = relationship("Suggestion", back_populates="article")
 
     @classmethod
-    def get_by_course(cls, course_id: int, limit: int):
+    def get_article_by_course(cls, course_id: int, limit: int):
         return cls._get_filtered(limit, cls.course_id == course_id)
 
     @classmethod

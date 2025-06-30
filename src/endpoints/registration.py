@@ -26,13 +26,13 @@ def register_user(data: UserUpdateModel):
     is_valid_email(data.email)
     db_entry = data.model_dump()
     db_entry["password"] = passwd_to_hash(data.password)
-    user = User(
+    user = User.create(
         **db_entry,
         **{
             "role": UserRolesEnum.USER,
             "date_registered": datetime.now(timezone.utc),
         }
-    ).save()
+    )
     return generate_json_jwt(user)
 
 

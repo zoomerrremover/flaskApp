@@ -56,7 +56,10 @@ def create_suggestion(data: SuggestionCreateModel):
         "date_posted": datetime.now(timezone.utc),
     }
     return serialize_response(
-        SuggestionGetModel, Suggestion(**data.model_dump(), **addon_data).save()
+        SuggestionGetModel, Suggestion.create(
+            **data.model_dump(),
+            **addon_data
+        )
     )
 
 
@@ -66,7 +69,7 @@ def create_suggestion(data: SuggestionCreateModel):
 @handle_db_exception(ErrorsMsgEnum.ERROR_ALREDY_REACTED)
 def star_suggestion(data: GenericIdModel):
     input_data = {"suggestion_id": data.id, "user_id": g.current_user.id}
-    SuggestionReaction(**input_data).save()
+    SuggestionReaction.create(**input_data)
     return " ", HTTPStatus.OK
 
 

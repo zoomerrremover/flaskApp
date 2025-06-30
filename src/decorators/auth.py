@@ -15,7 +15,7 @@ def require_auth(role: UserRolesEnum = UserRolesEnum.USER):
             if not auth_header or not auth_header.startswith(
                 AuthConstantsEnum.AUTH_PREFIX
             ):
-                raise AuthenticationError(ErrorsMsgEnum.ERROR_FIELD_REQUIRED)
+                raise AuthenticationError(ErrorsMsgEnum.ERROR_AUTH_FAILED)
             token = auth_header.split(" ")[1]
             user_token = verify_jwt(token)
             user_db = User.get_by_id(user_token.id)

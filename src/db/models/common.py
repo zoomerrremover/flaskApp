@@ -16,17 +16,6 @@ class LocalDbModelABC(Base):
         print({x: getattr(self, x) for x in self.__table__.c.keys()})
         return {x: getattr(self, x) for x in self.__table__.c.keys()}
 
-    def save(self):
-        """
-        Save a model instance.
-
-        :return: Model instance
-        """
-        session.add(self)
-        session.commit()
-
-        return self
-
     @classmethod
     def _delete(cls, *args) -> None:
         """
@@ -85,14 +74,17 @@ class LocalDbModelABC(Base):
         session.commit()
         return request
 
+    @classmethod
+    def create(cls, **kwargs):
+        create_obj = cls(**kwargs)
+        session.add(create_obj)
+        session.commit()
+        return create_obj
+
 
 class IdDbModelABC(LocalDbModelABC):
     __abstract__ = True
     id: int = Column(Integer, primary_key=True)
-
-    @classmethod
-    def get_all_models(cls):
-        return cls._get_list_all()
 
     @classmethod
     def get_by_id(cls, id: int) -> object:

@@ -54,7 +54,7 @@ def create_course(data: CourseCreateModel):
         "date_posted": None
     }
     return serialize_response(
-        CourseGetModel, Course(**data.model_dump(), **addon_data).save()
+        CourseGetModel, Course.create(**data.model_dump(), **addon_data)
     )
 
 

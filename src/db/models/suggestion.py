@@ -7,6 +7,7 @@ from sqlalchemy import (
     ForeignKey,
     UniqueConstraint,
     func,
+    select
 )
 from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime
@@ -42,7 +43,7 @@ class Suggestion(TextContentDbModelABC):
         return ret_val
 
     @classmethod
-    def get_by_article(cls, article_id: int, limit: int):
+    def get_suggestion_by_article(cls, article_id: int, limit: int):
         return cls._get_filtered(limit, cls.article_id == article_id)
 
     @classmethod
@@ -61,9 +62,12 @@ class Suggestion(TextContentDbModelABC):
         """
         return len(self.reactions)
 
+    @stars_count.setter
+    def stars_count(self, value):
+        pass
+
     @stars_count.expression
     def stars_count(cls):
-        from sqlalchemy import select
 
         return (
             select(

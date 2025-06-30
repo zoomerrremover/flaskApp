@@ -17,7 +17,7 @@ class Course(TextContentDbModelABC):
     articles = relationship("Article", back_populates="course")
 
     @classmethod
-    def get_by_category(cls, category: str, limit: int):
+    def get_course_by_category(cls, category: str, limit: int):
         return cls._get_filtered(limit, cls.category == category)
 
     @classmethod

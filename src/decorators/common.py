@@ -23,10 +23,7 @@ def validate_model_request(model: type[BaseModel]):
                     if field_location:
                         problematic_fields.append(field_location)
                 raise InvalidDataError(f"{ErrorsMsgEnum.ERROR_FIELD_REQUIRED}{problematic_fields}")
-
-
         return wrapper
-
     return decorator
 
 

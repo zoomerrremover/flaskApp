@@ -57,7 +57,7 @@ def create_article(data: ArticleCreateModel):
         "date_posted": None
     }
     return serialize_response(
-        ArticleGetModel, Article(**data.model_dump(), **addon_data).save()
+        ArticleGetModel, Article.create(**data.model_dump(), **addon_data)
     )
 
 
