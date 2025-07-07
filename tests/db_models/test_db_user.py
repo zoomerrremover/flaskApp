@@ -1,7 +1,9 @@
-from src.db import User
 from unittest.mock import Mock
-from tests.helper_functions import generate_user_data
+
 from mock_alchemy.comparison import ExpressionMatcher
+
+from src.db import User
+from tests.helper_functions import generate_user_data
 
 
 def test_get_user_by_id(mock_db_session):
@@ -19,11 +21,16 @@ def test_get_user_by_id(mock_db_session):
     mock_query_result.first.assert_called_once()
 
 
-def test_create_user(mock_db_session):
+def test_create_user(mock_db_session, mocker):
     expected_return = generate_user_data("user")
+    mock_update_vector = mocker.patch(
+        "src.db.models.user.User.update_search_vector",
+        return_value=expected_return.as_dict(),
+    )
     return_val = User.create(**expected_return.as_dict())
     assert return_val.as_dict() == expected_return.as_dict()
     mock_db_session.add.assert_called_once_with(return_val)
+    mock_update_vector.assert_called_once_with(**expected_return.as_dict())
     mock_db_session.commit.assert_called_once()
 
 
@@ -36,13 +43,16 @@ def test_update_user(mock_db_session, mocker):
     mock_query.update.return_value = expected_return
     mock_db_session.query.return_value = mock_query
     update_data = generate_user_data("user").as_dict()
+    mock_update_vector = mocker.patch(
+        "src.db.models.user.User.update_search_vector",
+        return_value=update_data,
+    )
     actual_return = User.update_by_id(expected_id, **update_data)
     assert actual_return == expected_return
     mock_query.update.assert_called_once_with(update_data)
-    mock_query.where.assert_called_once_with(
-        ExpressionMatcher(User.id == expected_id)
-    )
+    mock_query.where.assert_called_once_with(ExpressionMatcher(User.id == expected_id))
     mock_db_session.commit.assert_called_once()
+    mock_update_vector.assert_called_once_with(**update_data)
 
 
 def test_delete_user(mock_db_session):
@@ -54,9 +64,7 @@ def test_delete_user(mock_db_session):
     mock_db_session.query.return_value = mock_query
     actual_return = User.delete_by_id(expected_id)
     assert actual_return == expected_return
-    mock_query.filter.assert_called_once_with(
-        ExpressionMatcher(User.id == expected_id)
-    )
+    mock_query.filter.assert_called_once_with(ExpressionMatcher(User.id == expected_id))
     mock_db_session.commit.assert_called_once()
 
 

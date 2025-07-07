@@ -1,7 +1,9 @@
-from src.db import Suggestion
 from unittest.mock import Mock
-from tests.helper_functions import generate_suggestion_data
+
 from mock_alchemy.comparison import ExpressionMatcher
+
+from src.db import Suggestion
+from tests.helper_functions import generate_suggestion_data
 
 
 def test_get_suggestion_by_id(mock_db_session):
@@ -23,9 +25,14 @@ def test_create_suggestion(mock_db_session, mocker):
     select_mock = mocker.patch("src.db.models.suggestion.select")
     select_mock.where.scalar_sub
     expected_return = generate_suggestion_data()
+    mock_update_vector = mocker.patch(
+        "src.db.models.common.TextContentDbModelABC.update_search_vector",
+        return_value=expected_return.as_dict(),
+    )
     return_val = Suggestion.create(**expected_return.as_dict())
     assert return_val.as_dict() == expected_return.as_dict()
     mock_db_session.add.assert_called_once_with(return_val)
+    mock_update_vector.assert_called_once_with(**expected_return.as_dict())
     mock_db_session.commit.assert_called_once()
 
 
@@ -38,9 +45,14 @@ def test_update_suggestion(mock_db_session, mocker):
     mock_query.update.return_value = expected_return
     mock_db_session.query.return_value = mock_query
     update_data = generate_suggestion_data().as_dict()
+    mock_update_vector = mocker.patch(
+        "src.db.models.common.TextContentDbModelABC.update_search_vector",
+        return_value=update_data,
+    )
     actual_return = Suggestion.update_by_id(expected_id, **update_data)
     assert actual_return == expected_return
     mock_query.update.assert_called_once_with(update_data)
+    mock_update_vector.assert_called_once_with(**update_data)
     mock_query.where.assert_called_once_with(
         ExpressionMatcher(Suggestion.id == expected_id)
     )
@@ -87,10 +99,7 @@ def test_get_suggestion_by_article(mock_db_session):
     mock_query_result.limit.return_value = mock_query_result
     mock_query_result.all.return_value = expected_courses
     mock_db_session.query.return_value = mock_query_result
-    course = Suggestion.get_suggestion_by_article(
-        expected_article_id,
-        test_limit
-    )
+    course = Suggestion.get_suggestion_by_article(expected_article_id, test_limit)
     assert course == expected_courses
     mock_query_result.limit.assert_called_once_with(test_limit)
     mock_query_result.filter.assert_called_once_with(

@@ -1,7 +1,9 @@
-from src.db import Article
 from unittest.mock import Mock
-from tests.helper_functions import generate_article_data
+
 from mock_alchemy.comparison import ExpressionMatcher
+
+from src.db import Article
+from tests.helper_functions import generate_article_data
 
 
 def test_get_article_by_id(mock_db_session):
@@ -19,10 +21,15 @@ def test_get_article_by_id(mock_db_session):
     mock_query_result.first.assert_called_once()
 
 
-def test_create_article(mock_db_session):
+def test_create_article(mock_db_session, mocker):
     expected_return = generate_article_data()
+    mock_update_vector = mocker.patch(
+        "src.db.models.common.TextContentDbModelABC.update_search_vector",
+        return_value=expected_return.as_dict(),
+    )
     return_val = Article.create(**expected_return.as_dict())
     assert return_val.as_dict() == expected_return.as_dict()
+    mock_update_vector.assert_called_once_with(**expected_return.as_dict())
     mock_db_session.add.assert_called_once_with(return_val)
     mock_db_session.commit.assert_called_once()
 
@@ -36,12 +43,17 @@ def test_update_article(mock_db_session, mocker):
     mock_query.update.return_value = expected_return
     mock_db_session.query.return_value = mock_query
     update_data = generate_article_data().as_dict()
+    mock_update_vector = mocker.patch(
+        "src.db.models.common.TextContentDbModelABC.update_search_vector",
+        return_value=update_data,
+    )
     actual_return = Article.update_by_id(expected_id, **update_data)
     assert actual_return == expected_return
     mock_query.update.assert_called_once_with(update_data)
     mock_query.where.assert_called_once_with(
         ExpressionMatcher(Article.id == expected_id)
     )
+    mock_update_vector.assert_called_once_with(**update_data)
     mock_db_session.commit.assert_called_once()
 
 

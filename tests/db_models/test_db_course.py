@@ -21,15 +21,20 @@ def test_get_course_by_id(mock_db_session):
     mock_query_result.first.assert_called_once()
 
 
-def test_create_course(mock_db_session):
+def test_create_course(mock_db_session, mocker):
     expected_return = generate_course_data()
+    mock_update_vector = mocker.patch(
+        "src.db.models.common.TextContentDbModelABC.update_search_vector",
+        return_value=expected_return.as_dict(),
+    )
     return_val = Course.create(**expected_return.as_dict())
     assert return_val.as_dict() == expected_return.as_dict()
     mock_db_session.add.assert_called_once_with(return_val)
+    mock_update_vector.assert_called_once_with(**expected_return.as_dict())
     mock_db_session.commit.assert_called_once()
 
 
-def test_update_course(mock_db_session):
+def test_update_course(mock_db_session, mocker):
     initial_course = generate_course_data()
     expected_return = 7
     expected_id = initial_course.id
@@ -38,9 +43,14 @@ def test_update_course(mock_db_session):
     mock_query.update.return_value = expected_return
     mock_db_session.query.return_value = mock_query
     update_data = generate_course_data().as_dict()
+    mock_update_vector = mocker.patch(
+        "src.db.models.common.TextContentDbModelABC.update_search_vector",
+        return_value=update_data,
+    )
     actual_return = Course.update_by_id(expected_id, **update_data)
     assert actual_return == expected_return
     mock_query.update.assert_called_once_with(update_data)
+    mock_update_vector.assert_called_once_with(**update_data)
     mock_query.where.assert_called_once_with(
         ExpressionMatcher(Course.id == expected_id)
     )
