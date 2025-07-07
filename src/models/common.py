@@ -1,10 +1,12 @@
-from pydantic.main import BaseModel
+from typing import Optional
+
 from pydantic import field_validator
 from pydantic.fields import Field
-from typing import Optional
-from src.settings import RE_USERNAME, RE_PASSWORD, RE_TEXT_CONTENT
+from pydantic.main import BaseModel
+
 from src.constants import ErrorsMsgEnum, UserRolesEnum
 from src.exceptions import InvalidDataError
+from src.settings import RE_PASSWORD, RE_TEXT_CONTENT, RE_USERNAME
 
 
 class ValidationTextModel(BaseModel):

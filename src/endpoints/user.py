@@ -1,12 +1,12 @@
 from http import HTTPStatus
-from flask import Blueprint, render_template, Response, request, jsonify, g
-from sqlalchemy.exc import IntegrityError
-from src.decorators import validate_model_params, handle_db_exception, require_auth
-from src.models import UserUpdateModel, UserGetModel
-from src.db import User
+
+from flask import Blueprint, g
+
 from src.common import serialize_response
 from src.constants import ErrorsMsgEnum
-from src.exceptions import InvalidDataError
+from src.db import User
+from src.decorators import handle_db_exception, require_auth, validate_model_params
+from src.models import UserGetModel, UserUpdateModel
 
 user_route = Blueprint("user_route", __name__, url_prefix="/user")
 

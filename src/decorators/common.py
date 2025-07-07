@@ -1,11 +1,13 @@
-from flask import request
 from functools import wraps
+from typing import List, Tuple
+
+from flask import request
 from pydantic.main import BaseModel
 from sqlalchemy.exc import IntegrityError
-from src.exceptions import InvalidDataError
-from src.db import session
+
 from src.constants import ErrorsMsgEnum
-from typing import List, Tuple
+from src.db import session
+from src.exceptions import InvalidDataError
 
 
 def validate_model_request(model: type[BaseModel]):
@@ -18,13 +20,15 @@ def validate_model_request(model: type[BaseModel]):
             except ValueError as e:
                 problematic_fields: List[Tuple[str, ...]] = []
                 for error_detail in e.errors():
-                    field_location = error_detail.get('loc')
+                    field_location = error_detail.get("loc")
                     if field_location:
                         problematic_fields.append(field_location)
                 raise InvalidDataError(
                     f"{ErrorsMsgEnum.ERROR_FIELD_REQUIRED}{problematic_fields}"
                 )
+
         return wrapper
+
     return decorator
 
 
@@ -38,10 +42,12 @@ def validate_model_params(model: type[BaseModel]):
             except ValueError as e:
                 problematic_fields: List[Tuple[str, ...]] = []
                 for error_detail in e.errors():
-                    field_location = error_detail.get('loc')
+                    field_location = error_detail.get("loc")
                     if field_location:
                         problematic_fields.append(field_location)
-                raise InvalidDataError(f"{ErrorsMsgEnum.ERROR_FIELD_REQUIRED}{problematic_fields}")
+                raise InvalidDataError(
+                    f"{ErrorsMsgEnum.ERROR_FIELD_REQUIRED}{problematic_fields}"
+                )
 
         return wrapper
 

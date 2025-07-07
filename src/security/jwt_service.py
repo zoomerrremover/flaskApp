@@ -1,10 +1,12 @@
-import jwt
 from datetime import datetime, timedelta, timezone
+
+import jwt
 from flask import jsonify
-from src.settings import JWT_KEY, ACCESS_TOKEN_TIME
+
+from src.constants import AuthConstantsEnum, ErrorsMsgEnum
 from src.db import User
 from src.exceptions import AuthenticationError
-from src.constants import ErrorsMsgEnum, AuthConstantsEnum
+from src.settings import ACCESS_TOKEN_TIME, JWT_KEY
 
 
 def generate_jwt(user: User):
@@ -14,7 +16,7 @@ def generate_jwt(user: User):
         "exp": (time_now + timedelta(minutes=ACCESS_TOKEN_TIME)).timestamp(),
         "iat": time_now.timestamp(),
     }
-    return jwt.encode(payload, JWT_KEY, AuthConstantsEnum.ALGORITHM)
+    return jwt.encode(payload, JWT_KEY, AuthConstantsEnum.AUTH_ALGORITHM)
 
 
 def generate_json_jwt(user: User):
@@ -31,9 +33,7 @@ def generate_json_jwt(user: User):
 def verify_jwt(token):
     try:
         payload = jwt.decode(
-            token,
-            JWT_KEY,
-            algorithms=[AuthConstantsEnum.ALGORITHM]
+            token, JWT_KEY, algorithms=[AuthConstantsEnum.AUTH_ALGORITHM]
         )
         result = User(id=payload["user_id"])
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):

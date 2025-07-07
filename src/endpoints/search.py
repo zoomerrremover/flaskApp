@@ -1,19 +1,17 @@
-from flask import Blueprint, g
-from src.db import Article, Course, Suggestion, User
-from src.models import (
-    StringSearchModel,
-    GenericIdModel,
-    ArticleGetModel,
-    CourseGetModel,
-    SuggestionGetModel,
-    UserGetModel,
-    UserAdminGetModel,
-    ArticleSearchModel,
-    SuggestionSearchModel,
-)
-from src.decorators import validate_model_params
+from flask import Blueprint
+
 from src.common import serialize_response
-from src.constants import UserRolesEnum
+from src.db import Article, Course, Suggestion, User
+from src.decorators import validate_model_params
+from src.models import (
+    ArticleGetModel,
+    ArticleSearchModel,
+    CourseGetModel,
+    StringSearchModel,
+    SuggestionGetModel,
+    SuggestionSearchModel,
+    UserGetModel,
+)
 
 search_route = Blueprint("search_route", __name__, url_prefix="/search")
 

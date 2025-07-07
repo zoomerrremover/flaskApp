@@ -1,6 +1,6 @@
 from passlib.context import CryptContext
-from src.settings import AUTH_SALT_HASH_KEY
 
+from src.settings import AUTH_SALT_HASH_KEY
 
 password_contex = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

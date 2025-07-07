@@ -1,17 +1,13 @@
-from flask import Blueprint, render_template, abort, Response, jsonify
+from flask import Blueprint
+
 from src.constants import ErrorsMsgEnum
+from src.db import User
 from src.decorators import validate_model_params
 from src.exceptions import AuthenticationError
-from src.db import User
-from src.security import generate_json_jwt, verify_password
 from src.models import UserLogInModel
+from src.security import generate_json_jwt, verify_password
 
 login_route = Blueprint("login_route", __name__, url_prefix="/login")
-from ..decorators import (
-    validate_model_request,
-    validate_model_params,
-    handle_db_exception,
-)
 
 
 @login_route.route("/", methods=["POST"])

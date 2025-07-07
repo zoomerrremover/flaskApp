@@ -1,22 +1,24 @@
-from http import HTTPStatus
-from flask import Blueprint, g
 from datetime import datetime, timezone
+from http import HTTPStatus
+
+from flask import Blueprint, g
+
+from src.common import owner_or_editor_check, serialize_response
+from src.constants import ErrorsMsgEnum, UserRolesEnum
 from src.db import Article
 from src.decorators import (
-    validate_model_request,
-    validate_model_params,
     handle_db_exception,
     require_auth,
+    validate_model_params,
+    validate_model_request,
 )
 from src.models import (
-    ArticleUpdateModel,
     ArticleCreateModel,
-    GenericIdModel,
     ArticleGetModel,
+    ArticleUpdateModel,
+    GenericIdModel,
     IdSearchModel,
 )
-from src.constants import UserRolesEnum, ErrorsMsgEnum
-from src.common import serialize_response, owner_or_editor_check
 
 article_route = Blueprint("article", __name__, url_prefix="/article")
 
@@ -30,19 +32,14 @@ def get_article(data: GenericIdModel):
 @article_route.route("/by_user", methods=["GET"])
 @validate_model_params(IdSearchModel)
 def get_article_by_user(data: IdSearchModel):
-    return serialize_response(
-        ArticleGetModel,
-        Article.get_by_user(
-            data.id, data.limit
-        )
-    )
+    return serialize_response(ArticleGetModel, Article.get_by_user(data.id, data.limit))
 
 
 @article_route.route("/by_course", methods=["GET"])
 @validate_model_params(IdSearchModel)
 def get_article_by_course(data: IdSearchModel):
     return serialize_response(
-        ArticleGetModel, Article.get_by_course(data.id, data.limit)
+        ArticleGetModel, Article.get_article_by_course(data.id, data.limit)
     )
 
 
@@ -54,7 +51,7 @@ def create_article(data: ArticleCreateModel):
     addon_data = {
         "user_id": g.current_user.id,
         "date_created": datetime.now(timezone.utc),
-        "date_posted": None
+        "date_posted": None,
     }
     return serialize_response(
         ArticleGetModel, Article.create(**data.model_dump(), **addon_data)
@@ -66,14 +63,7 @@ def create_article(data: ArticleCreateModel):
 @validate_model_params(GenericIdModel)
 @handle_db_exception(ErrorsMsgEnum.ERROR_ARTICLE_UPDATE_FAILED)
 def post_article(data: GenericIdModel):
-    Article.update_by_id(
-        data.id,
-        **{
-            'date_posted': datetime.now(
-                timezone.utc
-            )
-        }
-    )
+    Article.update_by_id(data.id, **{"date_posted": datetime.now(timezone.utc)})
     return "", HTTPStatus.OK
 
 

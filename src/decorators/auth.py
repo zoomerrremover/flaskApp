@@ -1,9 +1,11 @@
 from functools import wraps
-from flask import request, g
+
+from flask import g, request
+
 from src.common import user_role_is_satisfactory
-from src.constants import UserRolesEnum, AuthConstantsEnum, ErrorsMsgEnum
+from src.constants import AuthConstantsEnum, ErrorsMsgEnum, UserRolesEnum
 from src.db import User
-from src.exceptions import AuthorizationError, AuthenticationError
+from src.exceptions import AuthenticationError, AuthorizationError
 from src.security import verify_jwt
 
 
@@ -25,5 +27,7 @@ def require_auth(role: UserRolesEnum = UserRolesEnum.USER):
                 raise AuthorizationError(ErrorsMsgEnum.ERROR_UNAUTHORIZED_ROLE)
             g.current_user = user_db
             return f(*args, **kwargs)
+
         return wrapper
+
     return decorator

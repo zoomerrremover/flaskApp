@@ -58,4 +58,5 @@ class ErrorsMsgEnum(StrEnum):
 
 class AuthConstantsEnum(StrEnum):
     AUTH_PREFIX = "Bearer "
-    AUTH_HEADER = "Authentication"
+    AUTH_HEADER = "Authorization"
+    AUTH_ALGORITHM = "HS512"

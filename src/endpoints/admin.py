@@ -1,18 +1,12 @@
-from flask import Blueprint
 from http import HTTPStatus
-from src.db import User
-from src.decorators import (
-    validate_model_request,
-    handle_db_exception,
-    require_auth
-)
-from src.models import (
-    UserRoleUpdateModel,
-    GenericIdModel,
-)
-from src.constants import UserRolesEnum, ErrorsMsgEnum
-from src.exceptions import AuthorizationError
 
+from flask import Blueprint
+
+from src.constants import ErrorsMsgEnum, UserRolesEnum
+from src.db import User
+from src.decorators import handle_db_exception, require_auth, validate_model_request
+from src.exceptions import AuthorizationError
+from src.models import GenericIdModel, UserRoleUpdateModel
 
 admin_route = Blueprint("admin_route", __name__, url_prefix="/admin")
 

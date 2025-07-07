@@ -1,7 +1,9 @@
+from datetime import datetime
+from typing import Optional
+
 from pydantic import field_validator
 from pydantic.fields import Field
-from typing import Optional
-from datetime import datetime
+
 from src.models.common import GenericIdModel, ValidationTextModel
 
 

@@ -1,11 +1,10 @@
+from email_validator import EmailNotValidError, validate_email
 from flask import g
 from pydantic.main import BaseModel
-from email_validator import validate_email, EmailNotValidError
-from src.constants import UserRolesEnum
-from src.exceptions import NothingFoundError
+
+from src.constants import ErrorsMsgEnum, UserRolesEnum
 from src.db import TextContentDbModelABC
-from src.exceptions import AuthorizationError, InvalidDataError
-from src.constants import ErrorsMsgEnum
+from src.exceptions import AuthorizationError, InvalidDataError, NothingFoundError
 
 
 def is_valid_email(email: str):
@@ -15,10 +14,7 @@ def is_valid_email(email: str):
         raise InvalidDataError(ErrorsMsgEnum.ERROR_EMAIL_INVALID)
 
 
-def user_role_is_satisfactory(
-        role_input: str,
-        role_required: UserRolesEnum
-) -> bool:
+def user_role_is_satisfactory(role_input: str, role_required: UserRolesEnum) -> bool:
     if role_input == UserRolesEnum.ADMIN:
         result = True
     elif role_input == UserRolesEnum.EDITOR:
@@ -31,10 +27,10 @@ def user_role_is_satisfactory(
 def owner_or_editor_check(media: TextContentDbModelABC):
     author = g.current_user
     if (
-        not media or
-        not author or
-        not user_role_is_satisfactory(author.role, UserRolesEnum.EDITOR) and
-        media.user_id != author.id
+        not media
+        or not author
+        or not user_role_is_satisfactory(author.role, UserRolesEnum.EDITOR)
+        and media.user_id != author.id
     ):
         raise AuthorizationError(ErrorsMsgEnum.ERROR_ROLE_INVALID)
 
@@ -43,15 +39,9 @@ def serialize_response(model: type[BaseModel], content):
     if isinstance(content, list):
         if len(content) == 0:
             raise NothingFoundError
-        result = [
-            model(
-                **data.as_dict()
-            ).model_dump(
-                mode='json'
-            ) for data in content
-        ]
+        result = [model(**data.as_dict()).model_dump(mode="json") for data in content]
     elif content is None:
         raise NothingFoundError
     else:
-        result = model(**content.as_dict()).model_dump(mode='json')
+        result = model(**content.as_dict()).model_dump(mode="json")
     return result

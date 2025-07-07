@@ -1,12 +1,14 @@
-from pydantic import field_validator, EmailStr
+from datetime import datetime
+
+from pydantic import EmailStr, field_validator
 from pydantic.fields import Field
 from pydantic.main import BaseModel
-from datetime import datetime
+
 from src.models.common import (
-    ValidationUserNameModel,
+    GenericIdModel,
     ValidationPasswordModel,
     ValidationRoleModel,
-    GenericIdModel,
+    ValidationUserNameModel,
 )
 
 

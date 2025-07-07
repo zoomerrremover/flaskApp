@@ -1,18 +1,19 @@
-from flask import Blueprint, Response
-from http import HTTPStatus
 from datetime import datetime, timezone
-from sqlalchemy.exc import IntegrityError
-from src.decorators import (
-    validate_model_request,
-    validate_model_params,
-    handle_db_exception,
-)
-from src.models import UserUsernameModel, UserUpdateModel
-from src.db import User
-from src.exceptions import ConflictingDataError
-from src.constants import ErrorsMsgEnum, UserRolesEnum
-from src.security import generate_json_jwt, passwd_to_hash
+from http import HTTPStatus
+
+from flask import Blueprint
+
 from src.common import is_valid_email
+from src.constants import ErrorsMsgEnum, UserRolesEnum
+from src.db import User
+from src.decorators import (
+    handle_db_exception,
+    validate_model_params,
+    validate_model_request,
+)
+from src.exceptions import ConflictingDataError
+from src.models import UserUpdateModel, UserUsernameModel
+from src.security import generate_json_jwt, passwd_to_hash
 
 registration_route = Blueprint(
     "registration_route", __name__, url_prefix="/registration"
@@ -40,6 +41,6 @@ def register_user(data: UserUpdateModel):
 @validate_model_params(UserUsernameModel)
 def check_username(data: UserUsernameModel):
     if not User.get_user_by_name(data.username):
-        return "", 200
+        return "", HTTPStatus.OK
     else:
-        raise ConflictingDataError(ErrorsMsgEnum.ERROR_USERNAME_ORIGINAL)
+        raise ConflictingDataError(ErrorsMsgEnum.ERROR_USERNAME_NOT_ORIGINAL)

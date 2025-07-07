@@ -1,25 +1,25 @@
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.exc import IntegrityError
-from flask import Blueprint, render_template, Response, request, jsonify, g
 from datetime import datetime, timezone
 from http import HTTPStatus
-from src.models import (
-    SuggestionGetModel,
-    SuggestionCreateModel,
-    SuggestionUpdateModel,
-    GenericIdModel,
-    IdSearchModel,
-)
+
+from flask import Blueprint, g
+
+from src.common import owner_or_editor_check, serialize_response
+from src.constants import ErrorsMsgEnum
 from src.db import Suggestion, SuggestionReaction
 from src.decorators import (
-    validate_model_params,
-    validate_model_request,
     handle_db_exception,
     require_auth,
+    validate_model_params,
+    validate_model_request,
 )
-from src.common import serialize_response, owner_or_editor_check
-from src.constants import ErrorsMsgEnum
 from src.exceptions import InvalidDataError
+from src.models import (
+    GenericIdModel,
+    IdSearchModel,
+    SuggestionCreateModel,
+    SuggestionGetModel,
+    SuggestionUpdateModel,
+)
 
 suggestion_route = Blueprint("suggestion_route", __name__, url_prefix="/suggestion")
 
@@ -42,7 +42,7 @@ def get_suggestion_by_user(data: IdSearchModel):
 @validate_model_params(IdSearchModel)
 def get_suggestion_by_article(data: IdSearchModel):
     return serialize_response(
-        SuggestionGetModel, Suggestion.get_by_article(data.id, data.limit)
+        SuggestionGetModel, Suggestion.get_suggestion_by_article(data.id, data.limit)
     )
 
 
@@ -56,10 +56,7 @@ def create_suggestion(data: SuggestionCreateModel):
         "date_posted": datetime.now(timezone.utc),
     }
     return serialize_response(
-        SuggestionGetModel, Suggestion.create(
-            **data.model_dump(),
-            **addon_data
-        )
+        SuggestionGetModel, Suggestion.create(**data.model_dump(), **addon_data)
     )
 
 

@@ -1,5 +1,6 @@
-from werkzeug.exceptions import HTTPException
 from http import HTTPStatus
+
+from werkzeug.exceptions import HTTPException
 
 
 class AuthorizationError(HTTPException):
