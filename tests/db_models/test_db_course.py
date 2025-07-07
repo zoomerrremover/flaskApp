@@ -1,7 +1,9 @@
-from src.db import Course
 from unittest.mock import Mock
-from tests.helper_functions import generate_course_data
+
 from mock_alchemy.comparison import ExpressionMatcher
+
+from src.db import Course
+from tests.helper_functions import generate_course_data
 
 
 def test_get_course_by_id(mock_db_session):
@@ -20,22 +22,22 @@ def test_get_course_by_id(mock_db_session):
 
 
 def test_create_course(mock_db_session):
-    expected_return = generate_course_data("user")
+    expected_return = generate_course_data()
     return_val = Course.create(**expected_return.as_dict())
     assert return_val.as_dict() == expected_return.as_dict()
     mock_db_session.add.assert_called_once_with(return_val)
     mock_db_session.commit.assert_called_once()
 
 
-def test_update_course(mock_db_session, mocker):
-    initial_course = generate_course_data("user")
+def test_update_course(mock_db_session):
+    initial_course = generate_course_data()
     expected_return = 7
     expected_id = initial_course.id
     mock_query = Mock()
     mock_query.where.return_value = mock_query
     mock_query.update.return_value = expected_return
     mock_db_session.query.return_value = mock_query
-    update_data = generate_course_data("user").as_dict()
+    update_data = generate_course_data().as_dict()
     actual_return = Course.update_by_id(expected_id, **update_data)
     assert actual_return == expected_return
     mock_query.update.assert_called_once_with(update_data)
@@ -61,7 +63,7 @@ def test_delete_course(mock_db_session):
 
 
 def test_search_course(mock_db_session, mocker):
-    expected_courses = [generate_course_data("user") for _ in range(0, 7)]
+    expected_courses = [generate_course_data() for _ in range(0, 7)]
     mock_query_result = Mock()
     mock_query_result.filter.return_value = mock_query_result
     mock_query_result.limit.return_value = mock_query_result
@@ -76,7 +78,7 @@ def test_search_course(mock_db_session, mocker):
 
 
 def test_get_course_by_category(mock_db_session):
-    expected_courses = [generate_course_data("user") for _ in range(0, 7)]
+    expected_courses = [generate_course_data() for _ in range(0, 7)]
     test_limit = 7
     expected_category = "test_category"
     mock_query_result = Mock()

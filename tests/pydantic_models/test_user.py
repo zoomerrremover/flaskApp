@@ -1,20 +1,50 @@
+from datetime import datetime, timezone
+
 import pytest
-from datetime import datetime
 from pydantic import ValidationError
-from src.models import (
-    UserAdminGetModel,
-    UserEmailModel,
-    UserGetModel,
-    UserLogInModel,
-    UserPasswordModel,
-    UserRoleModel,
-    UserRoleUpdateModel,
-    UserUpdateModel,
-    UserUsernameModel,
-)
-from src.exceptions import InvalidDataError
+
 from src.constants import ErrorsMsgEnum
+from src.exceptions import InvalidDataError
+from src.models import (UserAdminGetModel, UserEmailModel, UserGetModel,
+                        UserLogInModel, UserPasswordModel, UserRoleModel,
+                        UserRoleUpdateModel, UserUpdateModel,
+                        UserUsernameModel)
+
 # Tests for UserUsernameModel
+
+
+valid_username_data = {"username": "test_user123"}
+
+
+valid_role_data = {"role": "user"}
+
+
+valid_password_data = {"password": "StrongPass123!"}
+
+
+valid_email_data = {"email": "test@example.com"}
+
+
+base_user_get_data = {"id": 1, "date_registered": datetime.now(timezone.utc)}
+base_user_get_data.update(valid_username_data)
+base_user_get_data.update(valid_role_data)
+
+
+base_user_admin_get_data = base_user_get_data.copy()
+base_user_get_data.update(valid_email_data)
+
+
+base_user_login_data = valid_username_data.copy()
+base_user_login_data.update(valid_password_data)
+
+
+base_user_role_update_data = {"id": 5}
+base_user_role_update_data.update(valid_role_data)
+
+
+base_user_update_data = valid_username_data.copy()
+base_user_update_data.update(valid_password_data)
+base_user_update_data.update(valid_email_data)
 
 
 def test_user_username_model_valid(valid_username_data):
@@ -36,6 +66,8 @@ def test_user_username_model_invalid_format(valid_username_data):
     with pytest.raises(InvalidDataError) as exc_info:
         UserUsernameModel(**invalid_data)
     assert ErrorsMsgEnum.ERROR_USERNAME_INVALID in str(exc_info.value)
+
+
 # Tests for UserRoleModel
 
 
@@ -58,6 +90,8 @@ def test_user_role_model_invalid_value(valid_role_data):
     with pytest.raises(InvalidDataError) as exc_info:
         UserRoleModel(**invalid_data)
     assert ErrorsMsgEnum.ERROR_ROLE_INVALID in str(exc_info.value)
+
+
 # Tests for UserPasswordModel
 
 
@@ -80,6 +114,8 @@ def test_user_password_model_invalid_format(valid_password_data):
     with pytest.raises(InvalidDataError) as exc_info:
         UserPasswordModel(**invalid_data)
     assert ErrorsMsgEnum.ERROR_PASSWORD_WEAK in str(exc_info.value)
+
+
 # Tests for UserEmailModel
 
 
@@ -94,6 +130,8 @@ def test_user_email_model_invalid_format(valid_email_data):
     with pytest.raises(ValidationError) as exc_info:
         UserEmailModel(**invalid_data)
     assert "email" in str(exc_info.value)
+
+
 # Tests for UserGetModel
 
 
@@ -119,6 +157,8 @@ def test_user_get_model_missing_required_field(base_user_get_data):
     with pytest.raises(ValidationError) as exc_info:
         UserGetModel(**invalid_data)
     assert "username" in str(exc_info.value)
+
+
 # Tests for UserAdminGetModel
 
 
@@ -137,6 +177,8 @@ def test_user_admin_get_model_invalid_email(base_user_admin_get_data):
     with pytest.raises(ValidationError) as exc_info:
         UserAdminGetModel(**invalid_data)
     assert "email" in str(exc_info.value)
+
+
 # Tests for UserLogInModel
 
 
@@ -160,6 +202,8 @@ def test_user_login_model_invalid_password(base_user_login_data):
     with pytest.raises(InvalidDataError) as exc_info:
         UserLogInModel(**invalid_data)
     assert ErrorsMsgEnum.ERROR_PASSWORD_WEAK in str(exc_info.value)
+
+
 # Tests for UserRoleUpdateModel
 
 
@@ -183,6 +227,8 @@ def test_user_role_update_model_invalid_role(base_user_role_update_data):
     with pytest.raises(InvalidDataError) as exc_info:
         UserRoleUpdateModel(**invalid_data)
     assert ErrorsMsgEnum.ERROR_ROLE_INVALID in str(exc_info.value)
+
+
 # Tests for UserUpdateModel
 
 
