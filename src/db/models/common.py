@@ -1,9 +1,10 @@
 from abc import abstractmethod
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, String, Integer, TIMESTAMP, ForeignKey
-from sqlalchemy.dialects.postgresql import TSVECTOR
 from datetime import datetime
-from sqlalchemy import func, event
+
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, func
+from sqlalchemy.dialects.postgresql import TSVECTOR
+from sqlalchemy.orm import declarative_base
+
 from src.db.engine import session
 
 Base = declarative_base()
@@ -105,29 +106,21 @@ class SearchableDbModelABC(IdDbModelABC):
 
     @classmethod
     def _search_vector_predicate(cls, text: str) -> object:
-        return cls.search_vector.op(
-            "@@"
-        )
-        (
-            func.websearch_to_tsquery(
-                "english", text
-            )
-        )
+        return cls.search_vector.op("@@")(func.websearch_to_tsquery("english", text))
 
     @abstractmethod
-    def update_search_vector(self):
+    def update_search_vector(**kwargs) -> dict:
         pass
 
     @classmethod
     def update_by_id(cls, model_id: int, **kwargs) -> int:
-        model = cls.get_by_id(model_id)
-        model.update_search_vector()
+        kwargs = cls.update_search_vector(**kwargs)
         return super().update_by_id(model_id, **kwargs)
 
-
-@event.listens_for(SearchableDbModelABC, "before_insert", propagate=True)
-def trigger_search_vector_update(mapper, connection, target):
-    target.update_search_vector()
+    @classmethod
+    def create(cls, **kwargs):
+        kwargs = cls.update_search_vector(**kwargs)
+        return super().create(**kwargs)
 
 
 class TextContentDbModelABC(SearchableDbModelABC):
@@ -137,10 +130,13 @@ class TextContentDbModelABC(SearchableDbModelABC):
     date_posted: datetime = Column(TIMESTAMP)
     user_id: int = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    def update_search_vector(self):
-        self.search_vector = func.to_tsvector(
-            "english", self.title + " " + self.text_content
+    def update_search_vector(**kwargs):
+        title = kwargs["title"]
+        text_content = kwargs["text_content"]
+        kwargs["search_vector"] = func.to_tsvector(
+            "english", title + " " + text_content
         )
+        return kwargs
 
     @classmethod
     def get_by_user(cls, user_id: int, limit: int):

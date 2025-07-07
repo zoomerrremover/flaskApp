@@ -1,12 +1,8 @@
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    TIMESTAMP,
-    func,
-)
-from sqlalchemy.orm import relationship
 from datetime import datetime
+
+from sqlalchemy import TIMESTAMP, Column, Integer, String, func
+from sqlalchemy.orm import relationship
+
 from src.db.models.common import SearchableDbModelABC
 
 
@@ -23,10 +19,11 @@ class User(SearchableDbModelABC):
     suggestions = relationship("Suggestion", back_populates="author")
     reactions = relationship("SuggestionReaction", back_populates="user")
 
-    def update_search_vector(self):
-        self.search_vector = func.to_tsvector(
-            "english", self.username + " " + self.email
-        )
+    def update_search_vector(**kwargs):
+        username = kwargs["username"]
+        email = kwargs["email"]
+        kwargs["search_vector"] = func.to_tsvector("english", username + " " + email)
+        return kwargs
 
     @classmethod
     def get_user_by_name(cls, username: str) -> object:
@@ -38,9 +35,4 @@ class User(SearchableDbModelABC):
 
     @classmethod
     def search(cls, search_query: str, limit: int):
-        return cls._get_filtered(
-            limit,
-            cls._search_vector_predicate(
-                search_query
-            )
-        )
+        return cls._get_filtered(limit, cls._search_vector_predicate(search_query))

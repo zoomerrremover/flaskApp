@@ -1,7 +1,8 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, TIMESTAMP
-from sqlalchemy.orm import relationship
 from datetime import datetime
-from sqlalchemy import UniqueConstraint
+
+from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy.orm import relationship
+
 from src.db.models.common import TextContentDbModelABC
 
 

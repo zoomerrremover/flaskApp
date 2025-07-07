@@ -1,26 +1,26 @@
-from sqlalchemy.orm import relationship
+from datetime import datetime
+
 from sqlalchemy import (
-    Column,
-    String,
-    Integer,
     TIMESTAMP,
+    Column,
     ForeignKey,
+    Integer,
+    String,
     UniqueConstraint,
     func,
-    select
+    select,
 )
 from sqlalchemy.ext.hybrid import hybrid_property
-from datetime import datetime
-from src.db.models.common import TextContentDbModelABC, LocalDbModelABC
+from sqlalchemy.orm import relationship
+
+from src.db.models.common import LocalDbModelABC, TextContentDbModelABC
 
 
 class Suggestion(TextContentDbModelABC):
     __tablename__ = "suggestions"
     __table_args__ = (
         UniqueConstraint(
-            "article_id",
-            "title",
-            name="unique_suggestion_title_within_article"
+            "article_id", "title", name="unique_suggestion_title_within_article"
         ),
     )
     id: int = Column(Integer, primary_key=True)
@@ -29,11 +29,7 @@ class Suggestion(TextContentDbModelABC):
     date_posted: datetime = Column(TIMESTAMP)
     user_id: int = Column(Integer, ForeignKey("users.id"), nullable=False)
     author = relationship("User", back_populates="suggestions")
-    article_id: int = Column(
-        Integer,
-        ForeignKey("articles.id"),
-        nullable=False
-    )
+    article_id: int = Column(Integer, ForeignKey("articles.id"), nullable=False)
     article = relationship("Article", back_populates="suggestions")
     reactions = relationship("SuggestionReaction", back_populates="suggestion")
 
@@ -108,7 +104,4 @@ class SuggestionReaction(LocalDbModelABC):
 
     @classmethod
     def delete_reaction(cls, suggestion_id: int, user_id: int):
-        return cls._delete(
-            cls.suggestion_id == suggestion_id,
-            cls.user_id == user_id
-        )
+        return cls._delete(cls.suggestion_id == suggestion_id, cls.user_id == user_id)
