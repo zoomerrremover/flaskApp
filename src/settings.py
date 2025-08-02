@@ -10,6 +10,7 @@ DB_PASS = getenv("DB_PASS", default=12345)
 DB_HOST = getenv("DB_HOST", default="localhost")
 DB_PORT = getenv("DB_PORT", default=5432)
 DB_NAME = getenv("DB_NAME", default="default_db")
+APP_VERSION = getenv("APP_VERSION", default="0.1.0")
 DB_STRING = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 JWT_KEY = getenv("JWT_KEY", default="SECRET")

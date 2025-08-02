@@ -1,15 +1,8 @@
 from flask import Flask
 
-from src.endpoints import (
-    admin_route,
-    article_route,
-    course_route,
-    login_route,
-    registration_route,
-    search_route,
-    suggestion_route,
-    user_route,
-)
+from src.endpoints import (admin_route, article_route, common_route,
+                           course_route, login_route, registration_route,
+                           search_route, suggestion_route, user_route)
 
 
 def add_routes(app: Flask):
@@ -21,3 +14,4 @@ def add_routes(app: Flask):
     app.register_blueprint(search_route)
     app.register_blueprint(suggestion_route)
     app.register_blueprint(user_route)
+    app.register_blueprint(common_route)

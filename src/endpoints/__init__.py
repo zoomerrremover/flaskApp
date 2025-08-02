@@ -1,5 +1,6 @@
 from src.endpoints.admin import admin_route
 from src.endpoints.article import article_route
+from src.endpoints.common import common_route
 from src.endpoints.course import course_route
 from src.endpoints.login import login_route
 from src.endpoints.registration import registration_route
